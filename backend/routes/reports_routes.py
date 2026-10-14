@@ -105,7 +105,6 @@ def get_report(report_id):
 def submit_report():
     data = request.get_json(silent=True) or request.form.to_dict() or {}
     event_id = data.get('event_id')
-    chapter_id = data.get('chapter_id') or session.get('chapter_id')
     total_participants = int(data.get('total_participants') or 0)
     first_timers = int(data.get('first_timers') or 0)
     existing_members = int(data.get('existing_members') or 0)
@@ -118,27 +117,52 @@ def submit_report():
     highlights = data.get('highlights', '').strip()
     challenges = data.get('challenges', '').strip()
     recommendations = data.get('recommendations', '').strip()
-    submitted_by = session.get('user_id')
+    submitted_by = data.get('submitted_by') or session.get('user_id')
 
     if not event_id:
         return api_error('Event ID is required.', 400)
 
-    if not submitted_by:
-        with get_db() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT id, chapter_id FROM users WHERE account_status = 'active' LIMIT 1")
-                first = cur.fetchone()
-                if first:
-                    submitted_by = first['id']
-                    if not chapter_id:
-                        chapter_id = first['chapter_id']
-
     with get_db() as conn:
         with conn.cursor() as cur:
-            if not chapter_id:
-                cur.execute("SELECT chapter_id FROM events WHERE id = %s", (event_id,))
-                ev = cur.fetchone()
-                chapter_id = ev['chapter_id'] if ev else 1
+            # 1. Fetch event and verify existence
+            cur.execute("SELECT id, chapter_id, title, status FROM events WHERE id = %s", (event_id,))
+            ev = cur.fetchone()
+            if not ev:
+                return api_error('Event not found.', 404)
+            
+            event_chapter_id = ev['chapter_id']
+
+            # 2. Enforce: ONLY chapter_admin can submit reports!
+            if submitted_by:
+                cur.execute("SELECT id, role, chapter_id, full_name FROM users WHERE id = %s", (submitted_by,))
+                submitter = cur.fetchone()
+                if not submitter:
+                    return api_error('Submitting user account does not exist.', 404)
+                
+                # Reject National Admin submission
+                if submitter['role'] == 'national_admin':
+                    return api_error('Submission restricted: Only Chapter-based administrators can submit post-event reports. National Admins evaluate and audit submissions.', 403)
+                
+                if submitter['role'] != 'chapter_admin':
+                    return api_error('Unauthorized: Only active Chapter Admins can submit post-event reports.', 403)
+                
+                if submitter['chapter_id'] and submitter['chapter_id'] != event_chapter_id:
+                    return api_error('You can only submit event reports for events belonging to your assigned chapter.', 403)
+                
+                if not signed_by_name:
+                    signed_by_name = submitter['full_name']
+                chapter_id = submitter['chapter_id']
+            else:
+                # If no session/user passed explicitly, find active chapter_admin for this event's chapter
+                cur.execute("SELECT id, full_name, chapter_id FROM users WHERE role = 'chapter_admin' AND chapter_id = %s AND account_status = 'active' LIMIT 1", (event_chapter_id,))
+                default_chapter_admin = cur.fetchone()
+                if default_chapter_admin:
+                    submitted_by = default_chapter_admin['id']
+                    if not signed_by_name:
+                        signed_by_name = default_chapter_admin['full_name']
+                    chapter_id = default_chapter_admin['chapter_id']
+                else:
+                    return api_error('Only Chapter-based administrators can submit reports. No authorized chapter admin found for this chapter.', 403)
 
             # Check if report already exists for this event
             cur.execute("SELECT id FROM event_reports WHERE event_id = %s LIMIT 1", (event_id,))

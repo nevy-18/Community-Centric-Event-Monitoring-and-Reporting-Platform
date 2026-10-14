@@ -63,9 +63,11 @@ def login():
         'chapter_name': user['chapter_name']
     }
 
+    redirect_url = 'ChapterDashboard.php' if user['role'] == 'chapter_admin' else 'Dashboard.php'
+
     return api_response({
         'user': user_info,
-        'redirect': 'Dashboard.php'
+        'redirect': redirect_url
     }, 'Login successful.')
 
 @auth_bp.route('/register', methods=['POST'])

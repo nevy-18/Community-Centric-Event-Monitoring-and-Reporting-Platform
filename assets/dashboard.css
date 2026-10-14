@@ -473,6 +473,76 @@ tr:hover td { background-color: #f9fafb; }
   padding: 2px;
 }
 
+/* --- PORTAL SWITCHER & CHAPTER UI HELPERS --- */
+.portal-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.portal-indicator.national {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+.portal-indicator.chapter {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.role-switch-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.role-switch-link:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+.chapter-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+.chapter-pill-select {
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+.roster-grid-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
 /* --- PRINTABLE REPORT STYLING --- */
 @media print {
   body {

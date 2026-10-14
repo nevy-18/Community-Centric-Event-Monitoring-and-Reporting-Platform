@@ -155,9 +155,17 @@ const loginTab = document.getElementById('loginTab');
             })).json();
 
         if (result.status === 'success') {
-          showToast('Welcome back!', 'Login successful. Redirecting to your dashboard...');
+          const user = result.data.user;
+          if (user) {
+            localStorage.setItem('ytr_user', JSON.stringify(user));
+            if (user.chapter_id) {
+              localStorage.setItem('ytr_chapter_id', user.chapter_id);
+            }
+          }
+          const roleLabel = (user && user.role === 'chapter_admin') ? 'Chapter Administrator' : 'National Administrator';
+          showToast('Welcome back!', `Login successful as ${roleLabel}. Redirecting to workspace...`);
           setTimeout(() => {
-            window.location.href = result.data.redirect || 'Dashboard.php';
+            window.location.href = result.data.redirect || ((user && user.role === 'chapter_admin') ? 'ChapterDashboard.php' : 'Dashboard.php');
           }, 800);
         } else {
           showError('loginError', result.message || 'Login failed.');

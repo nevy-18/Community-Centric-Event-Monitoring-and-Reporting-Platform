@@ -68,6 +68,12 @@ const YTR_API = {
     },
     getById(id) {
       return YTR_API.request(`/chapters/${id}`);
+    },
+    getWorkspace(id) {
+      return YTR_API.request(`/chapters/${id}/workspace`);
+    },
+    getUnreportedEvents(id) {
+      return YTR_API.request(`/chapters/${id}/unreported-events`);
     }
   },
 

@@ -79,17 +79,35 @@
       <main class="page-content">
         
         <!-- Page Header -->
-        <div class="page-header">
+        <div class="page-header flex-between" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
           <div class="header-title-group">
-            <div class="header-icon"><i class="ph-fill ph-file-text"></i></div>
+            <div class="header-icon"><i class="ph-fill ph-shield-check"></i></div>
             <div>
-              <h1 class="font-roboto">Chapter Event Reports</h1>
-              <p class="font-roboto">Track attendee turnout, evaluate threshold performance, and review e-signed chapter documentation.</p>
+              <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <h1 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 800;">National Reports & Compliance Audit</h1>
+                <span class="portal-indicator national"><i class="ph-fill ph-shield-check"></i> National Admin Portal</span>
+              </div>
+              <p class="font-roboto" style="margin-top: 0.25rem;">Audit chapter-submitted dossiers, inspect attendee turnouts and thresholds, verify digital e-signatures, and print official documents.</p>
             </div>
           </div>
-          <button class="btn btn-primary font-roboto" onclick="openReportModal()">
-            <i class="ph ph-plus-circle"></i> Submit Event Report & Attendees
-          </button>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="ChapterReport.php" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; text-decoration: none;" title="Open Chapter Submission Portal">
+              <i class="ph ph-arrow-square-out"></i> Go to Chapter Submission View
+            </a>
+          </div>
+        </div>
+
+        <!-- Role Submission Policy Alert Banner -->
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <i class="ph-fill ph-info" style="font-size: 1.5rem; color: #1d4ed8;"></i>
+            <div style="font-size: 0.875rem; color: #1e40af;">
+              <strong>National Audit Authority:</strong> Post-event reports and attendee rosters are submitted strictly by <strong>Chapter Admins</strong>. As National Administrator, use this screen to audit submissions, verify digital signatures, check thresholds, and print official records.
+            </div>
+          </div>
+          <a href="ChapterReport.php" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; background: #ffffff; text-decoration: none;">
+            <i class="ph ph-buildings"></i> Test Chapter Submission
+          </a>
         </div>
 
         <!-- 2-Column Responsive Layout -->
