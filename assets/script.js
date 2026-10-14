@@ -109,98 +109,141 @@ const loginTab = document.getElementById('loginTab');
 
 
 
-    document.getElementById('loginForm').addEventListener('submit', event => {
+    // Load real chapters from Python backend API
+    async function loadChapters() {
+      try {
+        const result = window.YTR_API ? await YTR_API.chapters.getAll() : await (await fetch('http://127.0.0.1:5000/api/chapters')).json();
+        if (result.status === 'success' && Array.isArray(result.data)) {
+          chapterName.innerHTML = '<option value="" selected disabled>Select your chapter</option>';
+          result.data.forEach(ch => {
+            const opt = document.createElement('option');
+            opt.value = ch.id;
+            opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
+            chapterName.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.warn('Could not load chapters dynamically:', err);
+      }
+    }
+    loadChapters();
 
-      event.preventDefault(); clearErrors();
+    // Live Login Handler using Python Backend
+    document.getElementById('loginForm').addEventListener('submit', async event => {
+      event.preventDefault(); 
+      clearErrors();
 
       const email = document.getElementById('loginEmail');
-
       const password = document.getElementById('loginPassword');
+      const submitBtn = event.target.querySelector('button[type="submit"]');
 
       if (!validEmail(email.value.trim()) || !password.value) {
-
         showError('loginError', 'Enter a valid email address and password.', [!validEmail(email.value.trim()) ? 'loginEmail' : '', !password.value ? 'loginPassword' : ''].filter(Boolean));
-
         return;
-
       }
 
-      showToast('Login form is ready', 'This page is a front-end prototype. Connect it to your PHP login endpoint to verify credentials securely.', true);
+      try {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
 
+        const result = window.YTR_API 
+          ? await YTR_API.auth.login(email.value.trim(), password.value)
+          : await (await fetch('http://127.0.0.1:5000/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: email.value.trim(), password: password.value })
+            })).json();
+
+        if (result.status === 'success') {
+          showToast('Welcome back!', 'Login successful. Redirecting to your dashboard...');
+          setTimeout(() => {
+            window.location.href = result.data.redirect || 'Dashboard.php';
+          }, 800);
+        } else {
+          showError('loginError', result.message || 'Login failed.');
+        }
+      } catch (err) {
+        showError('loginError', 'Could not reach the Python backend API (http://127.0.0.1:5000). Please ensure it is running.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+      }
     });
 
-
-
     const requestedRole = document.getElementById('requestedRole');
-
     const chapterField = document.getElementById('chapterField');
-
     const chapterName = document.getElementById('chapterName');
 
     requestedRole.addEventListener('change', () => {
-
       const national = requestedRole.value === 'national_admin';
-
       chapterField.classList.toggle('hidden', national);
-
       chapterName.required = !national;
-
       if (national) chapterName.value = '';
-
     });
 
-
-
-    document.getElementById('signupForm').addEventListener('submit', event => {
-
-      event.preventDefault(); clearErrors();
+    // Live Registration (Account Request) Handler
+    document.getElementById('signupForm').addEventListener('submit', async event => {
+      event.preventDefault(); 
+      clearErrors();
 
       const fullName = document.getElementById('fullName');
-
       const email = document.getElementById('signupEmail');
-
       const password = document.getElementById('signupPassword');
-
       const confirmPassword = document.getElementById('confirmPassword');
-
       const agree = document.getElementById('agreeTerms');
+      const submitBtn = event.target.querySelector('button[type="submit"]');
 
       const errors = [];
-
       const invalid = [];
 
       if (!fullName.value.trim()) { errors.push('Enter your full name.'); invalid.push('fullName'); }
-
       if (!validEmail(email.value.trim())) { errors.push('Enter a valid email address.'); invalid.push('signupEmail'); }
-
       if (!requestedRole.value) { errors.push('Select the role you are requesting.'); invalid.push('requestedRole'); }
-
       if (requestedRole.value === 'chapter_admin' && !chapterName.value) { errors.push('Select your chapter.'); invalid.push('chapterName'); }
-
       if (password.value.length < 8) { errors.push('Your password must contain at least 8 characters.'); invalid.push('signupPassword'); }
-
       if (password.value !== confirmPassword.value) { errors.push('The passwords do not match.'); invalid.push('confirmPassword'); }
-
       if (!agree.checked) { errors.push('Confirm the account request statement.'); invalid.push('agreeTerms'); }
 
       if (errors.length) {
-
         showError('signupError', errors[0], invalid);
-
         return;
-
       }
 
-      // Prototype only: intentionally does not save data or grant access.
+      try {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
 
-      showToast('Account request form completed', 'This is a UI prototype. Connect it to your PHP backend to save the request as pending approval in MySQL.');
+        const payload = {
+          full_name: fullName.value.trim(),
+          email: email.value.trim(),
+          password: password.value,
+          requested_role: requestedRole.value,
+          chapter_id: chapterName.value || null
+        };
 
-      document.getElementById('signupForm').reset();
+        const result = window.YTR_API 
+          ? await YTR_API.auth.register(payload)
+          : await (await fetch('http://127.0.0.1:5000/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            })).json();
 
-      chapterField.classList.remove('hidden');
-
-      chapterName.required = true;
-
+        if (result.status === 'success') {
+          showToast('Account Request Submitted', result.message);
+          document.getElementById('signupForm').reset();
+          chapterField.classList.remove('hidden');
+          chapterName.required = true;
+          setTimeout(() => showView('login'), 2000);
+        } else {
+          showError('signupError', result.message || 'Registration failed.');
+        }
+      } catch (err) {
+        showError('signupError', 'Could not reach the Python backend API (http://127.0.0.1:5000). Please ensure it is running.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+      }
     });
 
 

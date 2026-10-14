@@ -1,0 +1,14 @@
+# Environment variables
+.env
+
+# Uploads & Temp files
+upload/*
+!upload/.gitkeep
+
+# Operating System files
+Thumbs.db
+.DS_Store
+
+# VS Code
+.vscode/*
+!.vscode/settings.json

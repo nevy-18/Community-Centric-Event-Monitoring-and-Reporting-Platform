@@ -286,3 +286,221 @@ tr:hover td { background-color: #f9fafb; }
   .announcement-grid { grid-template-columns: 1fr; }
   .tab-controls-wrapper { flex-direction: column; align-items: flex-start; gap: 1rem; }
 }
+
+/* --- HIGH-CONTRAST HEADERS & REFINED PALETTE --- */
+.page-header h1 {
+  font-size: 1.65rem;
+  color: #0f172a !important; /* Deep Slate 900 for WCAG AAA contrast */
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.header-title-group p {
+  color: #334155 !important; /* Slate 700 - highly readable */
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.review-panel-title {
+  color: #0f172a !important;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.table-header h2 {
+  color: #0f172a !important;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+/* --- STATUS & DUE DATE BADGES --- */
+.badge.overdue {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #f87171;
+  font-weight: 800;
+  animation: pulse-border 2s infinite;
+}
+.badge.due-soon {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b;
+  font-weight: 800;
+}
+.badge.approved {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+  font-weight: 700;
+}
+.badge.timer {
+  background: #f8fafc;
+  color: #1e293b;
+  border-color: #cbd5e1;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.badge.threshold-met {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #6ee7b7;
+  font-weight: 700;
+}
+.badge.threshold-warn {
+  background: #fff7ed;
+  color: #9a3412;
+  border-color: #fdba74;
+  font-weight: 700;
+}
+
+@keyframes pulse-border {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* --- VISUAL PENDING QUEUE INTERFACE --- */
+.pending-alert-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fcd34d;
+  border-left: 5px solid #d97706;
+  padding: 0.95rem 1.25rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(217, 119, 6, 0.08);
+}
+.pending-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.pending-banner-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #d97706;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+.pending-banner-text h4 {
+  font-size: 0.925rem;
+  color: #78350f;
+  font-weight: 800;
+  margin: 0;
+}
+.pending-banner-text p {
+  font-size: 0.75rem;
+  color: #92400e;
+  margin: 2px 0 0;
+  font-weight: 500;
+}
+.pending-banner-btn {
+  background: #d97706;
+  color: #ffffff;
+  padding: 0.45rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background 0.2s;
+}
+.pending-banner-btn:hover {
+  background: #b45309;
+}
+
+/* --- THRESHOLDS PROGRESS BAR --- */
+.threshold-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.threshold-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.threshold-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+.threshold-fill.met { background: #10b981; }
+.threshold-fill.warn { background: #f59e0b; }
+.threshold-fill.low { background: #ef4444; }
+
+/* --- DIGITAL E-SIGNATURE PAD --- */
+.signature-box {
+  border: 2px dashed #94a3b8;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  padding: 0.5rem;
+  text-align: center;
+  position: relative;
+}
+.signature-canvas {
+  width: 100%;
+  height: 130px;
+  background: #ffffff;
+  border-radius: 4px;
+  cursor: crosshair;
+  touch-action: none;
+}
+.signature-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding: 0 0.25rem;
+}
+.signature-preview-img {
+  max-height: 70px;
+  max-width: 180px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+/* --- PRINTABLE REPORT STYLING --- */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .app-wrapper {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .main-wrapper {
+    overflow: visible !important;
+  }
+  .page-content {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  .sidebar, .topbar, .tabs-container, .table-header, .page-header, .search-bar, .modal-overlay, .btn, .icon-btn, .pending-alert-banner, .layout-sidebar {
+    display: none !important;
+  }
+  .printable-document {
+    display: block !important;
+    width: 100% !important;
+    padding: 1.5rem !important;
+    background: #ffffff !important;
+    font-family: 'Roboto', sans-serif !important;
+  }
+}

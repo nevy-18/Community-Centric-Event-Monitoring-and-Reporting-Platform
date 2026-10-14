@@ -227,8 +227,8 @@
 
 
 
+    <script src="assets/api-client.js"></script>
     <script src="assets/script.js" defer></script>
-
 </body>
 
 </html>

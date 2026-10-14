@@ -75,7 +75,7 @@
             <div class="metric-icon blue"><i class="ph-fill ph-files"></i></div>
             <div>
               <h5 class="metric-title font-roboto">Total Chapter Proposals</h5>
-              <p class="metric-value font-roboto">18</p>
+              <p class="metric-value font-roboto" id="propMetricTotal">...</p>
               <p class="metric-sub font-roboto">Across all chapters</p>
             </div>
           </div>
@@ -83,7 +83,7 @@
             <div class="metric-icon amber"><i class="ph-fill ph-clock"></i></div>
             <div>
               <h5 class="metric-title font-roboto">Pending Review</h5>
-              <p class="metric-value font-roboto">5</p>
+              <p class="metric-value font-roboto" id="propMetricPending">...</p>
               <p class="metric-sub font-roboto">Awaiting National evaluation</p>
             </div>
           </div>
@@ -91,7 +91,7 @@
             <div class="metric-icon green"><i class="ph-fill ph-check-circle"></i></div>
             <div>
               <h5 class="metric-title font-roboto">Approved Proposals</h5>
-              <p class="metric-value font-roboto">11</p>
+              <p class="metric-value font-roboto" id="propMetricApproved">...</p>
               <p class="metric-sub font-roboto">Cleared for poster creation</p>
             </div>
           </div>
@@ -99,7 +99,7 @@
             <div class="metric-icon rose"><i class="ph-fill ph-warning-circle"></i></div>
             <div>
               <h5 class="metric-title font-roboto">Needs Revision</h5>
-              <p class="metric-value font-roboto">2</p>
+              <p class="metric-value font-roboto" id="propMetricRevision">...</p>
               <p class="metric-sub font-roboto">Notes returned to chapters</p>
             </div>
           </div>
@@ -110,6 +110,21 @@
           
           <!-- LEFT COLUMN: CHAPTER PROPOSALS LIST -->
           <div class="layout-main">
+            
+            <!-- High-Contrast Visual Pending Queue Banner -->
+            <div id="pendingReviewBanner" class="pending-alert-banner" style="display: none;">
+              <div class="pending-banner-left">
+                <div class="pending-banner-icon"><i class="ph-fill ph-bell-ringing"></i></div>
+                <div class="pending-banner-text">
+                  <h4 class="font-roboto"><span id="pendingBannerCount">0</span> Proposals Awaiting National Approval</h4>
+                  <p class="font-roboto">Review chapter submissions promptly to maintain event lead times and activate poster production.</p>
+                </div>
+              </div>
+              <button class="pending-banner-btn font-roboto" onclick="filterProposals('pending', document.querySelectorAll('.tabs-container .tab-btn')[1])">
+                <i class="ph ph-lightning"></i> Review Queue
+              </button>
+            </div>
+
             <div class="table-section">
               
               <!-- Tabs for Filter -->
@@ -151,154 +166,11 @@
                       <th style="text-align: center;">Action</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <!-- Row 1: Laguna -->
-                    <tr class="proposal-row" data-status="pending" data-chapter="Laguna Chapter">
-                      <td>
-                        <div class="td-user">
-                          <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
-                            <i class="ph-fill ph-compass"></i>
-                          </div>
-                          <div>
-                            <span class="proposal-name font-roboto" style="font-weight: bold; color: var(--primary); font-size: 0.875rem; display: block;">Annual Youth Leadership Camp</span>
-                            <span class="td-sub font-roboto">Fellowship & Capacity Building</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td><span class="badge chapter-admin font-roboto">Laguna Chapter</span></td>
-                      <td>
-                        <p class="font-roboto" style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Nov 15-17, 2026</p>
-                        <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> Los Baños Assembly Center</p>
-                      </td>
-                      <td style="text-align: center;">
-                        <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> 120</p>
-                        <p class="td-sub font-roboto">₱18,000</p>
-                      </td>
-                      <td style="text-align: center;"><span class="badge pending font-roboto">Pending Review</span></td>
-                      <td style="text-align: center;">
-                        <button class="btn btn-primary btn-sm font-roboto" style="margin: 0 auto;" onclick="selectProposal('Annual Youth Leadership Camp', 'Laguna Chapter', 'Nov 15-17, 2026', 'Los Baños Assembly Center, Laguna', '120 participants', '₱18,000.00', 'Youth Fellowship & Spiritual Alignment', 'Three-day immersive leadership and spiritual retreat focused on youth empowerment and discipleship across collegiate units.', 'pending')">
-                          <i class="ph ph-eye"></i> Review
-                        </button>
-                      </td>
-                    </tr>
-
-                    <!-- Row 2: NCR -->
-                    <tr class="proposal-row" data-status="approved" data-chapter="NCR Chapter">
-                      <td>
-                        <div class="td-user">
-                          <div style="width: 36px; height: 36px; border-radius: 8px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
-                            <i class="ph-fill ph-fire"></i>
-                          </div>
-                          <div>
-                            <span class="proposal-name font-roboto" style="font-weight: bold; color: var(--primary); font-size: 0.875rem; display: block;">Ignite Metro Youth Convergence</span>
-                            <span class="td-sub font-roboto">Regional Summit</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td><span class="badge chapter-admin font-roboto">NCR Chapter</span></td>
-                      <td>
-                        <p class="font-roboto" style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Dec 05, 2026</p>
-                        <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> Quezon City Multi-Purpose Hall</p>
-                      </td>
-                      <td style="text-align: center;">
-                        <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> 250</p>
-                        <p class="td-sub font-roboto">₱35,000</p>
-                      </td>
-                      <td style="text-align: center;"><span class="badge chapter-admin font-roboto" style="background: #f0fdf4; color: #16a34a; border-color: #bbf7d0;">Approved</span></td>
-                      <td style="text-align: center;">
-                        <button class="btn btn-outline btn-sm font-roboto" style="margin: 0 auto;" onclick="selectProposal('Ignite Metro Youth Convergence', 'NCR Chapter', 'Dec 05, 2026', 'Quezon City Multi-Purpose Hall', '250 participants', '₱35,000.00', 'Metro Convergence & Worship Night', 'Mega youth gathering bringing together university and high school youth chapters across Metro Manila for worship and vision casting.', 'approved')">
-                          <i class="ph ph-eye"></i> View
-                        </button>
-                      </td>
-                    </tr>
-
-                    <!-- Row 3: Cavite -->
-                    <tr class="proposal-row" data-status="pending" data-chapter="Cavite Chapter">
-                      <td>
-                        <div class="td-user">
-                          <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
-                            <i class="ph-fill ph-heart-straight"></i>
-                          </div>
-                          <div>
-                            <span class="proposal-name font-roboto" style="font-weight: bold; color: var(--primary); font-size: 0.875rem; display: block;">Community Care & Feeding Mission</span>
-                            <span class="td-sub font-roboto">Community Outreach</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td><span class="badge chapter-admin font-roboto">Cavite Chapter</span></td>
-                      <td>
-                        <p class="font-roboto" style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Dec 12, 2026</p>
-                        <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> Tagaytay Covered Court</p>
-                      </td>
-                      <td style="text-align: center;">
-                        <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> 90</p>
-                        <p class="td-sub font-roboto">₱15,000</p>
-                      </td>
-                      <td style="text-align: center;"><span class="badge pending font-roboto">Pending Review</span></td>
-                      <td style="text-align: center;">
-                        <button class="btn btn-primary btn-sm font-roboto" style="margin: 0 auto;" onclick="selectProposal('Community Care & Feeding Mission', 'Cavite Chapter', 'Dec 12, 2026', 'Tagaytay Covered Court, Cavite', '90 participants', '₱15,000.00', 'Social Responsibility Outreach', 'Outreach program providing warm meals, hygiene kits, and basic educational materials to underprivileged children.', 'pending')">
-                          <i class="ph ph-eye"></i> Review
-                        </button>
-                      </td>
-                    </tr>
-
-                    <!-- Row 4: Pampanga -->
-                    <tr class="proposal-row" data-status="revision" data-chapter="Pampanga Chapter">
-                      <td>
-                        <div class="td-user">
-                          <div style="width: 36px; height: 36px; border-radius: 8px; background: #fff1f2; color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
-                            <i class="ph-fill ph-music-notes"></i>
-                          </div>
-                          <div>
-                            <span class="proposal-name font-roboto" style="font-weight: bold; color: var(--primary); font-size: 0.875rem; display: block;">Pampanga Praise & Worship Night</span>
-                            <span class="td-sub font-roboto">Music & Worship Night</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td><span class="badge chapter-admin font-roboto">Pampanga Chapter</span></td>
-                      <td>
-                        <p class="font-roboto" style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Dec 18, 2026</p>
-                        <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> San Fernando Gym</p>
-                      </td>
-                      <td style="text-align: center;">
-                        <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> 180</p>
-                        <p class="td-sub font-roboto">₱28,000</p>
-                      </td>
-                      <td style="text-align: center;"><span class="badge pending font-roboto" style="background: #fff1f2; color: #e11d48; border-color: #fecdd3;">Needs Revision</span></td>
-                      <td style="text-align: center;">
-                        <button class="btn btn-outline btn-sm font-roboto" style="margin: 0 auto;" onclick="selectProposal('Pampanga Praise & Worship Night', 'Pampanga Chapter', 'Dec 18, 2026', 'San Fernando Gym, Pampanga', '180 participants', '₱28,000.00', 'Music Ministry Concert', 'Concert and worship night featuring regional youth band teams. Needs itemized breakdown for sound rental.', 'revision')">
-                          <i class="ph ph-eye"></i> Review
-                        </button>
-                      </td>
-                    </tr>
-
-                    <!-- Row 5: Batangas -->
-                    <tr class="proposal-row" data-status="approved" data-chapter="Batangas Chapter">
-                      <td>
-                        <div class="td-user">
-                          <div style="width: 36px; height: 36px; border-radius: 8px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
-                            <i class="ph-fill ph-graduation-cap"></i>
-                          </div>
-                          <div>
-                            <span class="proposal-name font-roboto" style="font-weight: bold; color: var(--primary); font-size: 0.875rem; display: block;">Campus Discipleship Forum</span>
-                            <span class="td-sub font-roboto">Campus Ministry</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td><span class="badge chapter-admin font-roboto">Batangas Chapter</span></td>
-                      <td>
-                        <p class="font-roboto" style="font-size: 0.8rem; font-weight: bold; color: var(--text-main);">Dec 22, 2026</p>
-                        <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> BSU Amphitheater</p>
-                      </td>
-                      <td style="text-align: center;">
-                        <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> 140</p>
-                        <p class="td-sub font-roboto">₱12,500</p>
-                      </td>
-                      <td style="text-align: center;"><span class="badge chapter-admin font-roboto" style="background: #f0fdf4; color: #16a34a; border-color: #bbf7d0;">Approved</span></td>
-                      <td style="text-align: center;">
-                        <button class="btn btn-outline btn-sm font-roboto" style="margin: 0 auto;" onclick="selectProposal('Campus Discipleship Forum', 'Batangas Chapter', 'Dec 22, 2026', 'BSU Amphitheater, Batangas City', '140 participants', '₱12,500.00', 'University Leadership Orientation', 'Campus ambassadors forum teaching youth life skills, mental health resilience, and faith-based values.', 'approved')">
-                          <i class="ph ph-eye"></i> View
-                        </button>
+                  <tbody id="proposalsTableBody">
+                    <tr>
+                      <td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;">
+                        <i class="ph ph-spinner" style="font-size: 1.5rem; animation: spin 1s linear infinite;"></i>
+                        <br>Loading chapter proposals from Python backend...
                       </td>
                     </tr>
                   </tbody>
@@ -332,19 +204,32 @@
                 </div>
 
                 <div class="review-details">
+                  <!-- Badges Container (Due status, Timer upon approval) -->
+                  <div id="detailProposalBadges" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;"></div>
+
                   <div class="review-detail-group">
                     <label class="font-roboto"><i class="ph-fill ph-calendar-blank"></i> Proposed Schedule & Venue</label>
-                    <p id="detailProposalSchedule" class="font-roboto" style="font-size: 0.75rem; color: var(--text-main);">-</p>
+                    <p id="detailProposalSchedule" class="font-roboto" style="font-size: 0.8rem; color: #0f172a; font-weight: bold;">-</p>
+                    <p id="detailApprovalTimer" style="font-size: 0.75rem; color: #166534; font-weight: 700; margin-top: 2px;"></p>
                   </div>
 
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border); margin: 0.25rem 0;">
-                    <div>
-                      <span style="font-size: 0.65rem; color: var(--text-muted); display: block;">Turnout</span>
-                      <strong id="detailProposalTurnout" style="color: var(--primary); font-size: 0.95rem;">-</strong>
+                  <!-- Threshold Cards: Target Turnout & Budget -->
+                  <div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 0.25rem 0;">
+                    <div style="background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-size: 0.7rem; color: #334155; font-weight: bold;">Attendance Threshold</span>
+                        <strong id="detailProposalTurnout" style="color: #1a2f63; font-size: 0.85rem;">100 Target</strong>
+                      </div>
+                      <div class="threshold-bar">
+                        <div id="detailTurnoutFill" class="threshold-fill met" style="width: 100%;"></div>
+                      </div>
                     </div>
-                    <div>
-                      <span style="font-size: 0.65rem; color: var(--text-muted); display: block;">Est. Budget</span>
-                      <strong id="detailProposalBudget" style="color: #2563eb; font-size: 0.95rem;">-</strong>
+
+                    <div style="background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.7rem; color: #334155; font-weight: bold;">Budget Threshold</span>
+                        <span id="detailProposalBudget" class="badge threshold-met font-roboto">₱0 / ₱25,000 Cap</span>
+                      </div>
                     </div>
                   </div>
 
@@ -419,17 +304,12 @@
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label font-roboto">Event Title <span style="color: #f43f5e;">*</span></label>
-              <input type="text" class="form-input font-roboto" placeholder="e.g. Regional Youth Leadership Camp" required>
+              <input type="text" id="formPropTitle" class="form-input font-roboto" placeholder="e.g. Regional Youth Leadership Camp" required>
             </div>
             <div class="form-group">
               <label class="form-label font-roboto">Host Chapter <span style="color: #f43f5e;">*</span></label>
-              <select class="form-select font-roboto" required>
+              <select id="formPropChapter" class="form-select font-roboto" required>
                 <option value="" disabled selected>Select Chapter</option>
-                <option value="Laguna Chapter">Laguna Chapter</option>
-                <option value="NCR Chapter">NCR Chapter</option>
-                <option value="Cavite Chapter">Cavite Chapter</option>
-                <option value="Pampanga Chapter">Pampanga Chapter</option>
-                <option value="Batangas Chapter">Batangas Chapter</option>
               </select>
             </div>
           </div>
@@ -437,116 +317,297 @@
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label font-roboto">Event Category <span style="color: #f43f5e;">*</span></label>
-              <select class="form-select font-roboto" required>
-                <option value="youth_camp">Youth Camp & Fellowship</option>
-                <option value="leadership">Leadership Conference</option>
-                <option value="community_outreach">Community Outreach</option>
-                <option value="anniversary">Anniversary Celebration</option>
+              <select id="formPropCategory" class="form-select font-roboto" required>
+                <option value="chapter">Youth Camp & Fellowship</option>
+                <option value="national">Leadership Conference</option>
+                <option value="community">Community Outreach</option>
                 <option value="other">Other Activity</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label font-roboto">Expected Turnout <span style="color: #f43f5e;">*</span></label>
-              <input type="number" class="form-input font-roboto" placeholder="e.g. 150" min="1" required>
+              <label class="form-label font-roboto">Expected Turnout</label>
+              <input type="number" id="formPropTurnout" class="form-input font-roboto" placeholder="e.g. 150" min="1">
             </div>
           </div>
 
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label font-roboto">Proposed Start Date <span style="color: #f43f5e;">*</span></label>
-              <input type="date" class="form-input font-roboto" required>
+              <input type="date" id="formPropStartDate" class="form-input font-roboto" required>
             </div>
             <div class="form-group">
-              <label class="form-label font-roboto">Proposed End Date <span style="color: #f43f5e;">*</span></label>
-              <input type="date" class="form-input font-roboto" required>
+              <label class="form-label font-roboto">Proposed End Date</label>
+              <input type="date" id="formPropEndDate" class="form-input font-roboto">
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label font-roboto">Proposed Venue / Address <span style="color: #f43f5e;">*</span></label>
-            <input type="text" class="form-input font-roboto" placeholder="e.g. YTR Assembly Center, Los Baños" required>
+            <input type="text" id="formPropVenue" class="form-input font-roboto" placeholder="e.g. YTR Assembly Center, Los Baños" required>
           </div>
 
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label font-roboto">Estimated Budget (PHP)</label>
-              <input type="number" class="form-input font-roboto" placeholder="e.g. 20000" min="0">
+              <input type="number" id="formPropBudget" class="form-input font-roboto" placeholder="e.g. 20000" min="0">
             </div>
             <div class="form-group">
-              <label class="form-label font-roboto">Contact Coordinator</label>
-              <input type="text" class="form-input font-roboto" placeholder="e.g. Rayvhen P. Muñoz">
+              <label class="form-label font-roboto">Milestone Due Date (Lead Time Deadline)</label>
+              <input type="date" id="formPropDueDate" class="form-input font-roboto">
             </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label font-roboto">Contact Coordinator</label>
+            <input type="text" id="formPropCoordinator" class="form-input font-roboto" placeholder="e.g. Rayvhen P. Muñoz">
           </div>
 
           <div class="form-group">
             <label class="form-label font-roboto">Objectives & Description <span style="color: #f43f5e;">*</span></label>
-            <textarea class="form-textarea font-roboto" rows="3" placeholder="State the goals and expected outcomes of the event..." required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label font-roboto">Attach Proposal Document (.PDF, .DOCX)</label>
-            <input type="file" class="form-input font-roboto" accept=".pdf,.doc,.docx">
+            <textarea id="formPropDescription" class="form-textarea font-roboto" rows="3" placeholder="State the goals and expected outcomes of the event..." required></textarea>
           </div>
 
           <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
             <button type="button" class="btn btn-outline font-roboto" onclick="closeProposalModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary font-roboto"><i class="ph ph-paper-plane-tilt"></i> Submit Proposal</button>
+            <button type="submit" id="btnSubmitProposal" class="btn btn-primary font-roboto"><i class="ph ph-paper-plane-tilt"></i> Submit Proposal</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
+  <script src="assets/api-client.js"></script>
   <!-- Interactive JavaScript Logic -->
   <script>
+    let activeProposalId = null;
+    let currentStatus = 'all';
+    let currentChapter = 'all';
+
+    // Load Metrics from Python backend
+    async function loadProposalMetrics() {
+      const res = await YTR_API.proposals.getMetrics();
+      if (res.status === 'success' && res.data) {
+        document.getElementById('propMetricTotal').textContent = res.data.total_proposals || 0;
+        document.getElementById('propMetricPending').textContent = res.data.pending_review || 0;
+        document.getElementById('propMetricApproved').textContent = res.data.approved || 0;
+        document.getElementById('propMetricRevision').textContent = res.data.needs_revision || 0;
+
+        // Visual Interface for Pending Proposals
+        const banner = document.getElementById('pendingReviewBanner');
+        const countSpan = document.getElementById('pendingBannerCount');
+        if (res.data.pending_review > 0) {
+          banner.style.display = 'flex';
+          countSpan.textContent = res.data.pending_review;
+        } else {
+          banner.style.display = 'none';
+        }
+      }
+    }
+
+    // Load Chapters for Dropdowns
+    async function loadChapters() {
+      const res = await YTR_API.chapters.getAll();
+      if (res.status === 'success' && Array.isArray(res.data)) {
+        const filterSelect = document.getElementById('chapterFilterSelect');
+        const formSelect = document.getElementById('formPropChapter');
+        
+        filterSelect.innerHTML = '<option value="all">All Chapters</option>';
+        formSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+
+        res.data.forEach(ch => {
+          const opt1 = document.createElement('option');
+          opt1.value = ch.id;
+          opt1.textContent = ch.chapter_name;
+          filterSelect.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = ch.id;
+          opt2.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
+          formSelect.appendChild(opt2);
+        });
+      }
+    }
+
+    // Load Proposals list
+    async function loadProposals() {
+      const tbody = document.getElementById('proposalsTableBody');
+      const search = document.getElementById('proposalSearchInput').value.trim();
+
+      const res = await YTR_API.proposals.list(currentStatus, currentChapter, search);
+      if (res.status === 'success' && Array.isArray(res.data)) {
+        if (res.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;">No proposals match the selected filters.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        res.data.forEach((p, idx) => {
+          const row = document.createElement('tr');
+          const isPending = p.status === 'pending_approval';
+          const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
+          const isRevision = p.status === 'draft';
+
+          let statusBadge = '<span class="badge pending font-roboto">Pending Review</span>';
+          if (isApproved) statusBadge = '<span class="badge approved font-roboto"><i class="ph ph-check"></i> Approved</span>';
+          if (isRevision) statusBadge = '<span class="badge pending font-roboto" style="background: #fff1f2; color: #e11d48; border-color: #fecdd3;">Needs Revision</span>';
+
+          // Due Date Badge
+          let dueBadgeHtml = '';
+          if (p.due_badge) {
+            const badgeClass = p.due_badge.type === 'overdue' ? 'badge overdue' : (p.due_badge.type === 'due_soon' ? 'badge due-soon' : 'badge timer');
+            const icon = p.due_badge.type === 'overdue' ? 'ph-warning-octagon' : 'ph-clock';
+            dueBadgeHtml = `<span class="${badgeClass} font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ${icon}"></i> ${p.due_badge.text}</span>`;
+          }
+
+          // Approval Timer Badge
+          let timerBadgeHtml = '';
+          if (p.approval_timer) {
+            timerBadgeHtml = `<span class="badge timer font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ph-hourglass-high"></i> ${p.approval_timer}</span>`;
+          }
+
+          const startDate = p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD';
+          const budgetFormatted = Number(p.budget_amount || 0).toLocaleString();
+          const targetTurnout = p.target_turnout || 100;
+
+          row.className = 'proposal-row';
+          row.innerHTML = `
+            <td>
+              <div class="td-user">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
+                  <i class="ph-fill ph-compass"></i>
+                </div>
+                <div>
+                  <span class="proposal-name font-roboto" style="font-weight: 800; color: #0f172a; font-size: 0.9rem; display: block;">${p.title}</span>
+                  <span class="td-sub font-roboto" style="font-weight: 600; color: #2563eb;">${p.event_type.toUpperCase()} EVENT</span>
+                  <div>${timerBadgeHtml} ${dueBadgeHtml}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge chapter-admin font-roboto">${p.chapter_name || 'All Chapters'}</span></td>
+            <td>
+              <p class="font-roboto" style="font-size: 0.825rem; font-weight: bold; color: #0f172a;">${startDate}</p>
+              <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> ${p.venue || 'TBD'}</p>
+            </td>
+            <td style="text-align: center;">
+              <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem; color: #0f172a;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> ${targetTurnout} Target</p>
+              <p class="td-sub font-roboto">₱${budgetFormatted}</p>
+            </td>
+            <td style="text-align: center;">${statusBadge}</td>
+            <td style="text-align: center;">
+              <button class="btn btn-primary btn-sm font-roboto" style="margin: 0 auto;" onclick='selectProposalRecord(${JSON.stringify(p)})'>
+                <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
+
+          if (idx === 0 && !activeProposalId) {
+            selectProposalRecord(p);
+          }
+        });
+      }
+    }
+
     // Select proposal to review in sidebar
-    function selectProposal(title, chapter, date, venue, turnout, budget, theme, notes, status) {
+    function selectProposalRecord(p) {
+      activeProposalId = p.id;
       document.getElementById('emptyProposalState').style.display = 'none';
       document.getElementById('activeProposalContent').style.display = 'block';
 
-      document.getElementById('detailProposalTitle').textContent = title;
-      document.getElementById('detailProposalChapter').textContent = chapter;
-      document.getElementById('detailProposalSchedule').textContent = date + ' • ' + venue;
-      document.getElementById('detailProposalTurnout').textContent = turnout;
-      document.getElementById('detailProposalBudget').textContent = budget;
-      document.getElementById('detailProposalNotes').textContent = notes;
+      document.getElementById('detailProposalTitle').textContent = p.title;
+      document.getElementById('detailProposalChapter').textContent = p.chapter_name || 'National HQ';
+      document.getElementById('detailProposalSchedule').textContent = (p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (p.venue || 'TBD');
+      document.getElementById('detailProposalNotes').textContent = p.description || 'No description provided.';
+
+      // Badges Container
+      const badgesContainer = document.getElementById('detailProposalBadges');
+      badgesContainer.innerHTML = '';
+
+      // Status Badge
+      const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
+      const isPending = p.status === 'pending_approval';
+      const statusBadge = document.createElement('span');
+      statusBadge.className = isApproved ? 'badge approved font-roboto' : (isPending ? 'badge pending font-roboto' : 'badge rose font-roboto');
+      statusBadge.textContent = p.status.toUpperCase();
+      badgesContainer.appendChild(statusBadge);
+
+      // Due Badge
+      if (p.due_badge) {
+        const dueSpan = document.createElement('span');
+        dueSpan.className = (p.due_badge.type === 'overdue' ? 'badge overdue' : 'badge due-soon') + ' font-roboto';
+        dueSpan.innerHTML = `<i class="ph ph-clock"></i> ${p.due_badge.text}`;
+        badgesContainer.appendChild(dueSpan);
+      }
+
+      // Approval Timer
+      const timerP = document.getElementById('detailApprovalTimer');
+      if (p.approval_timer) {
+        timerP.textContent = `⏱️ ${p.approval_timer}`;
+        timerP.style.display = 'block';
+      } else {
+        timerP.style.display = 'none';
+      }
+
+      // Thresholds: Turnout
+      const targetTurnout = p.target_turnout || 100;
+      document.getElementById('detailProposalTurnout').textContent = `${targetTurnout} Attendees Target`;
+      document.getElementById('detailTurnoutFill').style.width = '100%';
+
+      // Thresholds: Budget
+      const budgetAmt = Number(p.budget_amount || 0);
+      const budgetCap = Number(p.budget_threshold || 25000);
+      const budgetBadge = document.getElementById('detailProposalBudget');
+      if (budgetAmt > budgetCap) {
+        budgetBadge.className = 'badge threshold-warn font-roboto';
+        budgetBadge.textContent = `₱${budgetAmt.toLocaleString()} (Exceeds ₱${budgetCap.toLocaleString()} Cap)`;
+      } else {
+        budgetBadge.className = 'badge threshold-met font-roboto';
+        budgetBadge.textContent = `₱${budgetAmt.toLocaleString()} / ₱${budgetCap.toLocaleString()} Cap (Passed)`;
+      }
     }
 
     // Filter proposals by status tab
     function filterProposals(status, clickedBtn) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      currentStatus = status;
+      document.querySelectorAll('.tabs-container .tab-btn').forEach(btn => btn.classList.remove('active'));
       clickedBtn.classList.add('active');
-
-      const rows = document.querySelectorAll('.proposal-row');
-      rows.forEach(row => {
-        if (status === 'all' || row.dataset.status === status) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
+      loadProposals();
     }
 
     // Filter proposals by Chapter dropdown
-    function filterByChapter(chapter) {
-      const rows = document.querySelectorAll('.proposal-row');
-      rows.forEach(row => {
-        if (chapter === 'all' || row.dataset.chapter === chapter) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
+    function filterByChapter(chapterId) {
+      currentChapter = chapterId;
+      loadProposals();
     }
 
     // Live search proposals
+    let searchTimeout;
     function searchProposals() {
-      const query = document.getElementById('proposalSearchInput').value.toLowerCase();
-      const rows = document.querySelectorAll('.proposal-row');
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(query) ? '' : 'none';
-      });
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(loadProposals, 300);
+    }
+
+    // Review Actions (Approve / Request Revision)
+    async function handleReviewProposal(status) {
+      if (!activeProposalId) {
+        alert('Please select a proposal from the list first.');
+        return;
+      }
+
+      let note = '';
+      if (status === 'draft') {
+        note = prompt('Please specify the revision notes for the chapter coordinator:');
+        if (note === null) return;
+      }
+
+      const res = await YTR_API.proposals.review(activeProposalId, status, note);
+      if (res.status === 'success') {
+        alert(status === 'approved' ? 'Proposal approved successfully! Approval timer and poster creation activated.' : 'Revision request sent to chapter.');
+        loadProposalMetrics();
+        loadProposals();
+      } else {
+        alert(res.message || 'Error updating proposal.');
+      }
     }
 
     // Modal controls
@@ -557,12 +618,64 @@
       document.getElementById('proposalModal').classList.remove('open');
     }
 
-    function handleModalProposalSubmit(e) {
+    // Submit New Proposal to Python API
+    async function handleModalProposalSubmit(e) {
       e.preventDefault();
-      alert('Event proposal has been submitted successfully and added to the review queue!');
-      closeProposalModal();
-      e.target.reset();
+      const submitBtn = document.getElementById('btnSubmitProposal');
+      submitBtn.disabled = true;
+
+      const payload = {
+        title: document.getElementById('formPropTitle').value.trim(),
+        chapter_id: document.getElementById('formPropChapter').value,
+        event_type: document.getElementById('formPropCategory').value,
+        start_date: document.getElementById('formPropStartDate').value,
+        end_date: document.getElementById('formPropEndDate').value,
+        venue: document.getElementById('formPropVenue').value.trim(),
+        target_turnout: document.getElementById('formPropTurnout').value || 100,
+        budget_amount: document.getElementById('formPropBudget').value || 0,
+        due_date: document.getElementById('formPropDueDate').value || document.getElementById('formPropStartDate').value,
+        description: document.getElementById('formPropDescription').value.trim()
+      };
+
+      try {
+        const res = await YTR_API.proposals.create(payload);
+        if (res.status === 'success') {
+          alert('Event proposal has been submitted successfully with threshold milestones!');
+          closeProposalModal();
+          e.target.reset();
+          loadProposalMetrics();
+          loadProposals();
+        } else {
+          alert(res.message || 'Error submitting event proposal.');
+        }
+      } catch (err) {
+        alert('Could not submit proposal. Make sure the Python backend is running at http://127.0.0.1:5000.');
+      } finally {
+        submitBtn.disabled = false;
+      }
     }
+
+    // Wire action buttons in sidebar
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProposalMetrics();
+      loadChapters();
+      loadProposals();
+
+      // Hook up sidebar approve / revision buttons
+      const actionBox = document.getElementById('proposalActionButtons');
+      if (actionBox) {
+        actionBox.innerHTML = `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <button class="btn btn-outline-danger font-roboto" onclick="handleReviewProposal('draft')">
+              <i class="ph ph-pencil-simple"></i> Request Revision
+            </button>
+            <button class="btn btn-primary font-roboto" onclick="handleReviewProposal('approved')">
+              <i class="ph ph-check"></i> Approve
+            </button>
+          </div>
+        `;
+      }
+    });
   </script>
 </body>
 </html>
