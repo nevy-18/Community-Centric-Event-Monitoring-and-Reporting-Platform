@@ -10,10 +10,13 @@ const YTR_API = {
 
   async request(endpoint, options = {}) {
     const url = `${this.baseUrl}${endpoint}`;
+    const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
     const defaultHeaders = {
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     };
+    if (!isFormData) {
+      defaultHeaders['Content-Type'] = 'application/json';
+    }
 
     const config = {
       ...options,
@@ -157,6 +160,22 @@ const YTR_API = {
     list(tab = 'accepted') {
       return YTR_API.request(`/poster-requests?tab=${encodeURIComponent(tab)}`);
     },
+    getTimeline(id) {
+      return YTR_API.request(`/poster-requests/${id}/timeline`);
+    },
+    verifyApprove(id, data = {}) {
+      return YTR_API.request(`/poster-requests/${id}/verify-approve`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
+    updateTimelineStep(id, dataOrFormData) {
+      const isFormData = typeof FormData !== 'undefined' && dataOrFormData instanceof FormData;
+      return YTR_API.request(`/poster-requests/${id}/timeline-step`, {
+        method: 'POST',
+        body: isFormData ? dataOrFormData : JSON.stringify(dataOrFormData)
+      });
+    },
     approve(id, review_note = '') {
       return YTR_API.request(`/poster-requests/${id}/approve`, {
         method: 'POST',
@@ -170,9 +189,10 @@ const YTR_API = {
       });
     },
     create(data) {
+      const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
       return YTR_API.request('/poster-requests', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: isFormData ? data : JSON.stringify(data)
       });
     }
   },

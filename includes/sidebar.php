@@ -44,9 +44,6 @@
         <p style="color: #f59e0b;">System Admin</p>
       </div>
     </div>
-    <a href="ChapterDashboard.php" class="role-switch-link" title="Switch to Chapter Admin Portal">
-      <i class="ph ph-buildings"></i> Chapter Portal View
-    </a>
     <a href="login.php" class="sign-out">
       <div class="icon"><i class="ph ph-sign-out"></i></div>
       Sign Out

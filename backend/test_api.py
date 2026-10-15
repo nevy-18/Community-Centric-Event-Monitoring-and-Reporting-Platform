@@ -177,5 +177,49 @@ class TestYTRBackendAPI(unittest.TestCase):
         self.assertEqual(p.get('status'), 'approved')
         print("[PASS] National admin proposal evaluation & status update passed.")
 
+    def test_18_poster_timeline_retrieval(self):
+        res = self.client.get('/api/poster-requests/2/timeline')
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json().get('data', {})
+        self.assertIn('request', data)
+        self.assertIn('steps', data)
+        self.assertIn('updates', data)
+        self.assertEqual(len(data['steps']), 5)
+        print("[PASS] Poster request timeline retrieval passed with 5-step pipeline.")
+
+    def test_19_poster_verify_approve_workflow(self):
+        payload = {
+            'checklist': ['date_time', 'venue', 'participants', 'chapter_name', 'visuals', 'caption_link'],
+            'review_note': 'Pre-approval checklist verified by National Media lead.'
+        }
+        res = self.client.post('/api/poster-requests/4/verify-approve', json=payload)
+        self.assertEqual(res.status_code, 200)
+        
+        # Verify timeline reflects in_progress and step 1 completed
+        res_tl = self.client.get('/api/poster-requests/4/timeline')
+        data = res_tl.get_json().get('data', {})
+        self.assertEqual(data['request']['status'], 'in_progress')
+        steps = {s['step_order']: s['status'] for s in data['steps']}
+        self.assertEqual(steps[1], 'completed')
+        self.assertEqual(steps[2], 'in_progress')
+        print("[PASS] Poster verification review and approval workflow passed.")
+
+    def test_20_poster_timeline_step_update_and_proof(self):
+        payload = {
+            'step_order': 2,
+            'step_status': 'completed',
+            'notes': 'Official Facebook post published with 500+ impressions.',
+            'proof_file_path': 'assets/uploads/proofs/sample_fb_proof.png'
+        }
+        res = self.client.post('/api/poster-requests/2/timeline-step', json=payload)
+        self.assertEqual(res.status_code, 200)
+
+        # Verify update recorded
+        res_tl = self.client.get('/api/poster-requests/2/timeline')
+        data = res_tl.get_json().get('data', {})
+        updates = data.get('updates', [])
+        self.assertTrue(any('sample_fb_proof.png' in (u.get('proof_file_path') or '') for u in updates))
+        print("[PASS] Poster milestone step update and proof ledger passed.")
+
 if __name__ == '__main__':
     unittest.main()
