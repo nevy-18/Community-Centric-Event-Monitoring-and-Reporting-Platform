@@ -9,7 +9,14 @@
   <meta name="theme-color" content="#122b4a" />
   <title>YTR | Sign in</title>
     <link rel="stylesheet" href="assets/style.css" />
-
+    <script>
+      // Clear previous session when returning to login page
+      localStorage.removeItem('ytr_user');
+      localStorage.removeItem('ytr_role');
+      document.cookie = "ytr_role=; path=/; max-age=0;";
+      document.cookie = "ytr_chapter_id=; path=/; max-age=0;";
+      document.cookie = "ytr_user_id=; path=/; max-age=0;";
+    </script>
 </head>
 
 <body>

@@ -158,14 +158,22 @@ const loginTab = document.getElementById('loginTab');
           const user = result.data.user;
           if (user) {
             localStorage.setItem('ytr_user', JSON.stringify(user));
+            localStorage.setItem('ytr_role', user.role);
             if (user.chapter_id) {
               localStorage.setItem('ytr_chapter_id', user.chapter_id);
             }
+            // Set cookies for server-side PHP guards
+            document.cookie = "ytr_role=" + encodeURIComponent(user.role) + "; path=/; max-age=86400";
+            document.cookie = "ytr_chapter_id=" + encodeURIComponent(user.chapter_id || '') + "; path=/; max-age=86400";
+            document.cookie = "ytr_user_id=" + encodeURIComponent(user.id) + "; path=/; max-age=86400";
           }
-          const roleLabel = (user && user.role === 'chapter_admin') ? 'Chapter Administrator' : 'National Administrator';
-          showToast('Welcome back!', `Login successful as ${roleLabel}. Redirecting to workspace...`);
+          const isChapterAdmin = (user && user.role === 'chapter_admin');
+          const roleLabel = isChapterAdmin ? 'Chapter Administrator' : 'National Administrator';
+          const targetUrl = isChapterAdmin ? 'ChapterDashboard.php' : 'Dashboard.php';
+
+          showToast('Welcome back!', `Login successful as ${roleLabel}. Redirecting to ${isChapterAdmin ? 'Chapter Workspace' : 'National Dashboard'}...`);
           setTimeout(() => {
-            window.location.href = result.data.redirect || ((user && user.role === 'chapter_admin') ? 'ChapterDashboard.php' : 'Dashboard.php');
+            window.location.href = targetUrl;
           }, 800);
         } else {
           showError('loginError', result.message || 'Login failed.');

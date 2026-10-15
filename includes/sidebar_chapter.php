@@ -44,11 +44,6 @@
       </div>
     </div>
 
-    <!-- Toggle to National View for demonstration and multi-role access -->
-    <a href="Dashboard.php" class="role-switch-link" title="Switch to National Administrator Portal">
-      <i class="ph ph-shield-check"></i> National Admin View
-    </a>
-
     <a href="login.php" class="sign-out">
       <div class="icon"><i class="ph ph-sign-out"></i></div>
       Sign Out

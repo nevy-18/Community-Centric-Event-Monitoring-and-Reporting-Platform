@@ -36,7 +36,7 @@
           </div>
           
           <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 0.35rem; background: #ffffff; padding: 0.3rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <div id="chapter-selector-wrapper" style="display: flex; align-items: center; gap: 0.35rem; background: #ffffff; padding: 0.3rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px;">
               <label for="chapter-switch-select" style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Active Chapter:</label>
               <select id="chapter-switch-select" class="chapter-pill-select" onchange="onChapterChange(this.value)" style="border: none; outline: none; background: transparent; padding: 0.2rem 0.4rem; font-size: 0.85rem; font-weight: 700; color: #1e3a8a; cursor: pointer;">
                 <option value="1">Laguna Chapter (YTR-LAG)</option>
@@ -182,7 +182,14 @@
   </div>
 
   <script>
-    let activeChapterId = parseInt(localStorage.getItem('ytr_chapter_id') || '1');
+    let currentUser = null;
+    try {
+      const raw = localStorage.getItem('ytr_user');
+      if (raw) currentUser = JSON.parse(raw);
+    } catch(e) {}
+
+    const isChapterAdmin = (currentUser && currentUser.role === 'chapter_admin');
+    let activeChapterId = parseInt((isChapterAdmin && currentUser.chapter_id) ? currentUser.chapter_id : (localStorage.getItem('ytr_chapter_id') || '1'));
     let chapterWorkspaceData = null;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -191,10 +198,27 @@
     });
 
     async function loadChapterList() {
+      const wrapper = document.getElementById('chapter-selector-wrapper');
+      if (isChapterAdmin) {
+        // Locked strictly to their chapter
+        const chName = currentUser.chapter_name || 'My Chapter';
+        if (wrapper) {
+          wrapper.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.65rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 0.825rem; font-weight: 700; color: #166534;">
+              <i class="ph-fill ph-buildings"></i> <span>${escapeHtml(chName)}</span>
+              <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.65rem; padding: 2px 6px; margin-left: 0.35rem;">Assigned Branch</span>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      // If National Admin viewing Chapter UI, allow dropdown switching between chapters
       try {
         const res = await YTR_API.chapters.getAll();
         if (res.ok && res.data) {
           const sel = document.getElementById('chapter-switch-select');
+          if (!sel) return;
           sel.innerHTML = '';
           res.data.forEach(c => {
             const opt = document.createElement('option');
@@ -210,6 +234,7 @@
     }
 
     function onChapterChange(newId) {
+      if (isChapterAdmin) return; // Prevent tampering
       activeChapterId = parseInt(newId);
       localStorage.setItem('ytr_chapter_id', activeChapterId);
       loadWorkspace(activeChapterId);

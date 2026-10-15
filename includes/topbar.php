@@ -86,6 +86,56 @@
       notifDropdown.classList.toggle('show');
     });
 
+    // Sync Topbar with Logged In User
+    try {
+      const rawUser = localStorage.getItem('ytr_user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u) {
+          const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
+          const avatar = document.querySelector('.profile-avatar');
+          if (avatar) avatar.textContent = initials;
+          
+          const pName = document.querySelector('.profile-info h4');
+          if (pName) pName.textContent = u.full_name || 'User';
+          
+          const pRole = document.querySelector('.profile-info p');
+          if (pRole) pRole.textContent = u.role === 'chapter_admin' ? (u.chapter_name || 'Chapter Admin') : 'National Administrator';
+
+          const topbarBadge = document.querySelector('.topbar-left .role-badge');
+          if (topbarBadge) {
+            if (u.role === 'chapter_admin') {
+              topbarBadge.textContent = 'Chapter: ' + (u.chapter_name || 'Branch');
+              topbarBadge.style.cssText = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700;';
+            } else {
+              topbarBadge.textContent = 'National Admin';
+            }
+          }
+
+          // If Chapter Admin, customize profile dropdown links
+          if (u.role === 'chapter_admin') {
+            const dropdown = document.getElementById('profile-dropdown');
+            if (dropdown) {
+              dropdown.innerHTML = `
+                <div class="dropdown-header">
+                  <h4 style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">${u.full_name}</h4>
+                  <p style="font-size: 0.75rem; color: #64748b;">${u.email} (${u.chapter_name || 'Chapter'})</p>
+                </div>
+                <a href="ChapterDashboard.php" class="dropdown-item"><i class="ph ph-squares-four"></i> Chapter Dashboard</a>
+                <a href="ChapterProposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> My Event Proposals</a>
+                <a href="ChapterReport.php" class="dropdown-item"><i class="ph ph-file-arrow-up"></i> Submit Event Report</a>
+                <a href="ChapterRequest.php" class="dropdown-item"><i class="ph ph-image"></i> My Poster Requests</a>
+                <div class="dropdown-divider"></div>
+                <a href="login.php" class="dropdown-item text-rose" onclick="localStorage.removeItem('ytr_user'); localStorage.removeItem('ytr_role'); document.cookie='ytr_role=; path=/; max-age=0;'"><i class="ph ph-sign-out"></i> Sign Out</a>
+              `;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Could not sync user profile in topbar:', e);
+    }
+
     // Load Live Notification Alerts from Python Backend
     async function loadNotifications() {
       try {

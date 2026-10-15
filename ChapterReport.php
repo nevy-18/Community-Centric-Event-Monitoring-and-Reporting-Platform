@@ -311,7 +311,12 @@
   </div>
 
   <script>
-    let chapterId = parseInt(localStorage.getItem('ytr_chapter_id') || '1');
+    let currentUser = null;
+    try {
+      const raw = localStorage.getItem('ytr_user');
+      if (raw) currentUser = JSON.parse(raw);
+    } catch(e) {}
+    let chapterId = parseInt((currentUser && currentUser.chapter_id) ? currentUser.chapter_id : (localStorage.getItem('ytr_chapter_id') || '1'));
     let chapterReports = [];
     let unreportedEvents = [];
     let selectedEventTarget = 100;
@@ -608,6 +613,12 @@
 
     function openSubmitReportModal() {
       document.getElementById('submit-report-modal').style.display = 'flex';
+      if (currentUser && currentUser.full_name) {
+        const signerInput = document.getElementById('rep-signer-name');
+        if (signerInput && !signerInput.value) {
+          signerInput.value = currentUser.full_name;
+        }
+      }
       setTimeout(() => {
         clearSignatureCanvas();
       }, 100);
@@ -641,6 +652,7 @@
       const payload = {
         event_id: parseInt(document.getElementById('rep-event-id').value),
         chapter_id: chapterId,
+        submitted_by: currentUser ? currentUser.id : null,
         total_participants: parseInt(document.getElementById('rep-total').value),
         first_timers: parseInt(document.getElementById('rep-first-timers').value),
         existing_members: parseInt(document.getElementById('rep-members').value || '0'),

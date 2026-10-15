@@ -165,7 +165,12 @@
     </div>
 
     <script>
-        let chapterId = parseInt(localStorage.getItem('ytr_chapter_id') || '1');
+        let currentUser = null;
+        try {
+            const raw = localStorage.getItem('ytr_user');
+            if (raw) currentUser = JSON.parse(raw);
+        } catch(e) {}
+        let chapterId = parseInt((currentUser && currentUser.chapter_id) ? currentUser.chapter_id : (localStorage.getItem('ytr_chapter_id') || '1'));
         let currentTab = 'accepted';
         let acceptedCache = [];
         let queueCache = [];
