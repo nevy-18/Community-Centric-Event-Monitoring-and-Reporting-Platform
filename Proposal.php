@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YTR | Chapter Event Proposals</title>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" href="assets/dashboard.css">
+  <link rel="stylesheet" href="assets/National.css">
   <style>
     /* Proposal-specific modal and interactive styles */
     .modal-overlay {

@@ -9,7 +9,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- Centralized CSS -->
-  <link rel="stylesheet" href="assets/dashboard.css">
+  <link rel="stylesheet" href="assets/Chapter.css">
   <script src="assets/api-client.js"></script>
 </head>
 <body>

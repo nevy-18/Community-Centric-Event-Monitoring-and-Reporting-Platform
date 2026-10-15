@@ -1,3 +1,4 @@
+<?php include 'includes/auth_guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- Centralized CSS -->
-  <link rel="stylesheet" href="assets/dashboard.css">
+  <link rel="stylesheet" href="assets/National.css">
 </head>
 <body>
 

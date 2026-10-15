@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Poster Approval | YTR Portal</title>
-    <link rel="stylesheet" href="assets/dashboard.css">
+    <link rel="stylesheet" href="assets/National.css">
     <!-- Include Phosphor Icons for icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="assets/api-client.js"></script>

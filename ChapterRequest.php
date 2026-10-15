@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter Poster Requests | YTR Portal</title>
-    <link rel="stylesheet" href="assets/dashboard.css">
+    <link rel="stylesheet" href="assets/Chapter.css">
     <!-- Include Phosphor Icons for icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="assets/api-client.js"></script>
