@@ -575,10 +575,10 @@ def update_timeline_step(request_id):
             # NOTE: Step 3 (Promotional Video) is NOT required per user requirement:
             # Chapter or National can complete or skip it without requiring a video attachment.
 
-            # VALIDATION 3: Step 4 (Documentation & Report) cannot be completed before Chapter submits
-            if step_order == 4 and step_status == 'completed':
-                if req.get('documentation_status') != 'submitted' and not req.get('documentation_proof_path'):
-                    return api_error('Cannot complete Documentation milestone before chapter submits post-event documentation and attendance.', 400)
+            # VALIDATION 3: Step 4 / Step 5 (Concluded) cannot be finished unless Chapter submitted report via Report tab and National validated it
+            if step_order in (4, 5) and step_status == 'completed':
+                if req.get('documentation_status') != 'approved':
+                    return api_error('Cannot finish the timeline: When the event is concluded, the chapter must report using the Report tab, and the report must be validated and approved by National Admin before the timeline can conclude.', 400)
 
             # Update step record
             sql_update_step = """
@@ -833,7 +833,7 @@ def approve_event_documentation(request_id):
 
     with get_db() as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT id, status, documentation_status, documentation_proof_path FROM poster_requests WHERE id = %s", (request_id,))
+            cur.execute("SELECT id, status, event_id, chapter_id, documentation_status, documentation_proof_path FROM poster_requests WHERE id = %s", (request_id,))
             req = cur.fetchone()
             if not req:
                 return api_error('Poster request not found.', 404)
@@ -851,6 +851,10 @@ def approve_event_documentation(request_id):
                     updated_at = NOW()
                 WHERE id = %s
             """, (reviewer_id, request_id))
+
+            if req.get('event_id'):
+                cur.execute("UPDATE events SET status = 'completed', updated_at = NOW() WHERE id = %s", (req['event_id'],))
+                cur.execute("UPDATE event_reports SET status = 'approved', reviewed_by = %s, reviewed_at = NOW() WHERE event_id = %s", (reviewer_id, req['event_id']))
 
             # Ensure previous steps 1, 2, 3 are marked completed
             cur.execute("""

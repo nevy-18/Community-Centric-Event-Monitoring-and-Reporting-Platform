@@ -943,17 +943,18 @@
                         auditCard.style.display = 'block';
 
                         if (docStatus === 'approved') {
-                            auditStatusBadge.textContent = 'Audited & Approved';
+                            auditStatusBadge.textContent = 'Report Validated & Concluded';
                             auditStatusBadge.style.background = '#dcfce7';
                             auditStatusBadge.style.color = '#15803d';
                             auditActionBtn.style.display = 'none';
                         } else if (docStatus === 'submitted') {
-                            auditStatusBadge.textContent = 'Awaiting National Review';
+                            auditStatusBadge.textContent = 'Report Submitted — Needs Validation';
                             auditStatusBadge.style.background = '#fef3c7';
                             auditStatusBadge.style.color = '#92400e';
                             auditActionBtn.style.display = 'block';
+                            auditActionBtn.innerHTML = '<i class="ph-bold ph-seal-check"></i> Validate Report & Conclude Timeline';
                         } else {
-                            auditStatusBadge.textContent = 'Waiting for Chapter Submission';
+                            auditStatusBadge.textContent = 'Awaiting Chapter Report';
                             auditStatusBadge.style.background = '#f1f5f9';
                             auditStatusBadge.style.color = '#64748b';
                             auditActionBtn.style.display = 'none';
@@ -1187,9 +1188,9 @@
                         alert('Cannot complete Stage 2 (Posted on Page) without uploading proof screenshot or providing social media link/notes.');
                         return;
                     }
-                } else if (stageOrder === '4') {
-                    if (activeRequest.documentation_status !== 'submitted' && !activeRequest.documentation_proof_path) {
-                        alert('Cannot complete Stage 4 (Documentation & Report): The Chapter must first submit post-event attendance and documentation proof. Review and approve it above once received.');
+                } else if (stageOrder === '4' || stageOrder === '5') {
+                    if (activeRequest.documentation_status !== 'approved') {
+                        alert('Cannot conclude timeline: When the event is concluded, the Chapter must report using the Report tab, and the report must be validated and approved by National Admin before the timeline can conclude. Please use "Validate Report & Conclude Timeline" above once the report is submitted.');
                         return;
                     }
                 }

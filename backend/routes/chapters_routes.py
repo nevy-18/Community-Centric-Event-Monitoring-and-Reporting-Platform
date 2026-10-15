@@ -107,8 +107,22 @@ def get_chapter_workspace(chapter_id):
             """, (chapter_id,))
             posters = cur.fetchall()
 
-            # 4. Metrics
+            # 4. Announcements for this chapter
+            cur.execute("""
+                SELECT a.*, u.full_name AS author_name
+                FROM announcements a
+                LEFT JOIN users u ON u.id = a.created_by
+                WHERE a.is_published = 1
+                  AND (a.target_audience IN ('everyone', 'chapter_admins') OR a.target_chapter_id = %s)
+                ORDER BY a.published_at DESC
+                LIMIT 5
+            """, (chapter_id,))
+            announcements = cur.fetchall()
+
+            # 5. Metrics
             active_events = sum(1 for e in events if e['status'] in ('approved', 'published', 'ongoing'))
+            pending_proposals = sum(1 for e in events if e['status'] in ('pending_approval', 'draft'))
+            submitted_reports = sum(1 for e in events if e.get('report_id'))
             pending_reports = sum(1 for e in events if e['status'] in ('approved', 'published', 'completed') and not e.get('report_id'))
             posters_in_progress = sum(1 for p in posters if p['status'] in ('submitted', 'under_review', 'in_progress'))
             
@@ -119,24 +133,37 @@ def get_chapter_workspace(chapter_id):
 
     # Enrich events
     enriched_events = []
+    due_soon_count = 0
+    overdue_count = 0
     for ev in events:
         d = dict(ev)
-        d['due_badge'] = compute_due_badge(d.get('due_date'))
+        due_info = compute_due_badge(d.get('due_date'))
+        d['due_badge'] = due_info
         d['approval_timer'] = compute_approval_timer(d.get('approved_at'))
+        if due_info:
+            if 'overdue' in due_info.get('cls', ''):
+                overdue_count += 1
+            elif 'due-soon' in due_info.get('cls', ''):
+                due_soon_count += 1
         enriched_events.append(d)
 
     return api_response({
         'chapter': serialize_row(chapter),
         'metrics': {
             'active_events': active_events,
+            'pending_proposals': pending_proposals,
             'pending_reports': pending_reports,
+            'submitted_reports': submitted_reports,
+            'due_soon_reports': due_soon_count,
+            'overdue_reports': overdue_count,
             'posters_in_progress': posters_in_progress,
             'turnout_achievement_pct': turnout_pct,
             'total_target_turnout': target_sum,
             'total_actual_turnout': actual_sum
         },
         'events': serialize_rows(enriched_events),
-        'poster_requests': serialize_rows(posters)
+        'poster_requests': serialize_rows(posters),
+        'announcements': serialize_rows(announcements)
     })
 
 @chapters_bp.route('/<int:chapter_id>/unreported-events', methods=['GET'])

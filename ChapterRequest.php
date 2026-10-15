@@ -354,6 +354,19 @@
 
                         <!-- SECTION B: Documentation & Report (Stage 4) -->
                         <div id="section-chapter-docs" style="display: none;">
+                            <!-- Mandatory Report Tab Submission Notice -->
+                            <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 800; color: #166534; font-size: 0.85rem;">
+                                    <i class="ph-bold ph-file-text" style="font-size: 1.15rem; color: #16a34a;"></i> Event Concluded: Official Reporting Required
+                                </div>
+                                <p style="font-size: 0.78rem; color: #15803d; margin: 0.35rem 0 0.65rem; line-height: 1.45;">
+                                    When the event is concluded, the chapter <strong>must submit the report using the Report tab</strong>. The timeline cannot finish not unless the report was submitted by your chapter and validated by the National Admin.
+                                </p>
+                                <a id="btn-chapter-report-tab" href="ChapterReport.php" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.5rem 0.85rem; font-size: 0.825rem; text-decoration: none; font-weight: 700;">
+                                    <i class="ph-bold ph-file-arrow-up"></i> Submit Official Report via Report Tab &rarr;
+                                </a>
+                            </div>
+
                             <!-- Mark Event Conducted Quick Button -->
                             <div id="box-mark-conducted" style="margin-bottom: 0.85rem; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
                                 <div style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
@@ -368,21 +381,23 @@
                             </div>
 
                             <!-- Submitted Status Summary if already sent -->
-                            <div id="box-doc-submitted-status" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; color: #1e40af; font-weight: 700; font-size: 0.85rem;">
-                                    <i class="ph-fill ph-clock"></i> Documentation Submitted & Under Review
+                            <div id="box-doc-submitted-status" style="display: none; background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; color: #1e40af; font-weight: 800; font-size: 0.85rem;">
+                                    <i class="ph-fill ph-clock"></i> Report Submitted — Awaiting National Admin Validation
                                 </div>
-                                <div style="font-size: 0.78rem; color: #3b82f6; margin-top: 0.35rem; line-height: 1.4;">
+                                <div style="font-size: 0.78rem; color: #2563eb; margin-top: 0.35rem; line-height: 1.45;">
                                     Attendees Reported: <strong id="lbl-submitted-attendees">0</strong> delegates<br>
                                     Proof Attached: <span id="lbl-submitted-proof">Yes</span><br>
-                                    Awaiting National Admin audit and final approval.
+                                    <span style="display: inline-block; margin-top: 0.35rem; font-weight: 600; color: #1e3a8a;">
+                                        Timeline status: The event timeline cannot finish until National Admin reviews and validates your submitted report.
+                                    </span>
                                 </div>
                             </div>
 
                             <!-- Submission Form -->
                             <form id="chapter-submit-docs-form" onsubmit="submitChapterDocumentation(event)">
                                 <div style="font-size: 0.825rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
-                                    Submit Post-Event Documentation & Attendees
+                                    Or Quick-Submit Attendance Figures & Photo Proof Here
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.6rem;">
                                     <div>

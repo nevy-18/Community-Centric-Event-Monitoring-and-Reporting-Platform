@@ -219,6 +219,39 @@ def submit_report():
             # Update event status to completed
             cur.execute("UPDATE events SET status = 'completed', updated_at = NOW() WHERE id = %s", (event_id,))
 
+            # Synchronize linked poster request timeline: Chapter reported using the Report tab!
+            cur.execute("""
+                UPDATE poster_requests
+                SET documentation_status = 'submitted',
+                    is_event_conducted = 1,
+                    attendees_count = %s,
+                    first_timers_count = %s,
+                    report_summary = %s,
+                    documentation_submitted_at = NOW(),
+                    current_step = 4,
+                    updated_at = NOW()
+                WHERE event_id = %s OR (chapter_id = %s AND event_title = %s)
+            """, (total_participants, first_timers, report_summary, event_id, event_chapter_id, ev['title']))
+
+            cur.execute("""
+                UPDATE poster_request_steps prs
+                JOIN poster_requests pr ON pr.id = prs.poster_request_id
+                SET prs.status = 'in_progress',
+                    prs.notes = 'Official event report submitted via Report tab. Awaiting National Admin validation.'
+                WHERE (pr.event_id = %s OR (pr.chapter_id = %s AND pr.event_title = %s))
+                  AND prs.step_order = 4
+            """, (event_id, event_chapter_id, ev['title']))
+
+            cur.execute("""
+                INSERT INTO poster_request_updates
+                (poster_request_id, updated_by, update_type, message, created_at)
+                SELECT id, %s, 'step_updated', 'Official event report submitted via Report tab. Awaiting National Admin validation before timeline can conclude.', NOW()
+                FROM poster_requests
+                WHERE event_id = %s OR (chapter_id = %s AND event_title = %s)
+            """, (submitted_by, event_id, event_chapter_id, ev['title']))
+
+            conn.commit()
+
     return api_response({
         'report_id': rep_id
     }, 'Event report and attendance roster submitted and signed successfully!', 201)

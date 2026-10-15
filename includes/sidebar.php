@@ -10,8 +10,8 @@
   <div class="sidebar-header">
     <img src="assets/images/LOGO.jpg" alt="YTR Logo" class="sidebar-logo">
     <div class="sidebar-title">
-      <h1 class="font-roboto">Youth on The Rock</h1>
-      <p>Changing A nation by Changing a Generation</p>
+      <h1 class="font-roboto" style="font-size: 1.1rem; line-height: 1.2; margin: 0 0 2px 0;">Youth on The Rock</h1>
+      <p style="color: #38bdf8; font-weight: 600; font-size: 0.75rem; margin: 0; line-height: 1.2;">National Portal</p>
     </div>
   </div>
 
@@ -38,10 +38,10 @@
 
   <div class="sidebar-footer">
     <div class="admin-badge">
-      <img src="assets/images/LOGO.jpg" alt="YTR" class="icon">
+      <img src="assets/images/LOGO.jpg" alt="YTR" class="icon" style="object-fit: contain; padding: 2px;">
       <div class="sidebar-title">
-        <h1 class="font-roboto">YTR NATIONAL</h1>
-        <p style="color: #f59e0b;">System Admin</p>
+        <h1 class="font-roboto" style="font-size: 0.85rem; color: #ffffff; margin: 0; line-height: 1.2;">YTR NATIONAL</h1>
+        <p style="color: #f59e0b; font-size: 0.75rem; margin: 0; line-height: 1.2;">System Admin</p>
       </div>
     </div>
     <a href="login.php" class="sign-out">

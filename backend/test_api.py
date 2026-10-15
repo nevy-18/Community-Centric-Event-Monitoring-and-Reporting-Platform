@@ -347,13 +347,15 @@ class TestYTRBackendAPI(unittest.TestCase):
         self.assertEqual(res_stg2.status_code, 400)
         self.assertIn('proof screenshot', res_stg2.get_json().get('message', '').lower())
 
-        # Test 3: Stage 4 requires submitted documentation
+        # Test 3: Stage 4/5 requires report submitted via Report tab and validated by National
         res_stg4 = self.client.post(f'/api/poster-requests/{v_id}/timeline-step', json={
             'step_order': 4,
             'step_status': 'completed'
         })
         self.assertEqual(res_stg4.status_code, 400)
-        self.assertIn('documentation', res_stg4.get_json().get('message', '').lower())
+        self.assertIn('report', res_stg4.get_json().get('message', '').lower())
+        self.assertIn('report tab', res_stg4.get_json().get('message', '').lower())
+        self.assertIn('validated', res_stg4.get_json().get('message', '').lower())
 
         print("[PASS] Strict stage deliverables enforcement validations passed.")
 

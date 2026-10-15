@@ -55,7 +55,26 @@ def seed_database():
                     ON DUPLICATE KEY UPDATE full_name = VALUES(full_name), account_status = VALUES(account_status)
                 """, (ch_id, name, email, pw, role, status))
 
-            print("[PASS] Successfully seeded chapters and initial users!")
+            # 3. Seed Announcements
+            cur.execute("SELECT id FROM users WHERE email = 'admin@ytr.org'")
+            admin_user = cur.fetchone()
+            admin_id = admin_user['id'] if admin_user else 1
+
+            announcements_data = [
+                (admin_id, 'everyone', None, 'Tremendous Momentum: Youth Camp 2026', 'Join us for the ultimate spiritual gathering of the year featuring live worship, breakout sessions, and youth empowerment at SJB Learning Center, Calamba.', 1, '2026-05-21 09:00:00'),
+                (admin_id, 'everyone', None, '29th YTR Anniversary Celebration', 'Celebrating 29 years of youth transformation and spiritual community impact across every chapter branch nationwide.', 1, '2026-09-26 14:00:00'),
+                (admin_id, 'chapter_admins', None, 'National Youth Leadership Summit', 'An executive summit for chapter administrators and coordinators covering mission governance and budget liquidation.', 1, '2026-12-19 08:30:00'),
+                (admin_id, 'specific_chapter', laguna_id, 'Greatest of All Time: Regional Fellowship', 'High-energy praise, worship revival, and inter-campus fellowship bringing Laguna students together.', 1, '2026-09-28 16:00:00')
+            ]
+
+            for creator_id, audience, target_ch, title, body, is_pub, pub_at in announcements_data:
+                cur.execute("""
+                    INSERT INTO announcements (created_by, target_audience, target_chapter_id, title, body, is_published, published_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE body = VALUES(body)
+                """, (creator_id, audience, target_ch, title, body, is_pub, pub_at))
+
+            print("[PASS] Successfully seeded chapters, initial users, and announcements!")
 
 if __name__ == '__main__':
     seed_database()
