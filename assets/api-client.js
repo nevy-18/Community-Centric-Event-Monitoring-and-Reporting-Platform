@@ -163,10 +163,11 @@ const YTR_API = {
     getTimeline(id) {
       return YTR_API.request(`/poster-requests/${id}/timeline`);
     },
-    verifyApprove(id, data = {}) {
+    verifyApprove(id, dataOrFormData = {}) {
+      const isFormData = typeof FormData !== 'undefined' && dataOrFormData instanceof FormData;
       return YTR_API.request(`/poster-requests/${id}/verify-approve`, {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: isFormData ? dataOrFormData : JSON.stringify(dataOrFormData)
       });
     },
     updateTimelineStep(id, dataOrFormData) {

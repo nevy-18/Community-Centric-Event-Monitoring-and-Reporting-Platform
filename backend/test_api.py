@@ -207,22 +207,24 @@ class TestYTRBackendAPI(unittest.TestCase):
         req_id = res_create.get_json()['data']['request_id']
         TestYTRBackendAPI.workflow_req_id = req_id
 
-        # 2. National Admin verifies checklist and approves
+        # 2. National Admin verifies checklist, approves, and provides the necessary poster
         payload = {
             'checklist': ['date_time', 'venue', 'participants', 'chapter_name', 'visuals', 'caption_link'],
-            'review_note': 'Pre-approval checklist verified by National Media lead.'
+            'review_note': 'Pre-approval checklist verified and official poster released by National Creative.',
+            'final_poster_path': 'assets/uploads/posters/official_summit_poster.png'
         }
         res_approve = self.client.post(f'/api/poster-requests/{req_id}/verify-approve', json=payload)
         self.assertEqual(res_approve.status_code, 200)
 
-        # 3. Verify timeline reflects in_progress and step 1 completed
+        # 3. Verify timeline reflects in_progress, step 1 completed, and official poster attached
         res_tl = self.client.get(f'/api/poster-requests/{req_id}/timeline')
         data = res_tl.get_json().get('data', {})
         self.assertEqual(data['request']['status'], 'in_progress')
+        self.assertEqual(data['request']['final_poster_path'], 'assets/uploads/posters/official_summit_poster.png')
         steps = {s['step_order']: s['status'] for s in data['steps']}
         self.assertEqual(steps[1], 'completed')
         self.assertEqual(steps[2], 'in_progress')
-        print("[PASS] Fresh poster request creation and verification approval workflow passed.")
+        print("[PASS] Fresh poster request creation, approval, and official poster release workflow passed.")
 
     def test_20_poster_timeline_step_update_and_proof(self):
         req_id = TestYTRBackendAPI.workflow_req_id

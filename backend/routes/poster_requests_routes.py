@@ -435,10 +435,37 @@ def get_poster_timeline(request_id):
 
 @poster_requests_bp.route('/<int:request_id>/verify-approve', methods=['POST'])
 def verify_approve_poster_request(request_id):
-    data = request.get_json(silent=True) or {}
-    checklist = data.get('checklist', [])
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+    else:
+        data = request.form.to_dict()
+
+    checklist_raw = data.get('checklist', [])
+    if isinstance(checklist_raw, str):
+        try:
+            checklist = json.loads(checklist_raw)
+        except Exception:
+            checklist = [c.strip() for c in checklist_raw.split(',') if c.strip()]
+    else:
+        checklist = checklist_raw
+
     review_note = data.get('review_note', 'Verified & Approved by National Admin')
-    reviewer_id = data.get('reviewed_by', 1)
+    reviewer_id = int(data.get('reviewed_by', 1))
+
+    # Check for uploaded official poster file provided upon approval
+    official_poster_path = None
+    if 'official_poster' in request.files or 'proof_file' in request.files:
+        file = request.files.get('official_poster') or request.files.get('proof_file')
+        if file and file.filename:
+            fname = secure_filename(file.filename)
+            unique_fname = f"official_poster_{request_id}_{int(time.time())}_{fname}"
+            target_dir = os.path.join('assets', 'uploads', 'posters')
+            os.makedirs(target_dir, exist_ok=True)
+            save_path = os.path.join(target_dir, unique_fname)
+            file.save(save_path)
+            official_poster_path = f"assets/uploads/posters/{unique_fname}"
+    elif data.get('final_poster_path'):
+        official_poster_path = data.get('final_poster_path')
 
     with get_db() as conn:
         with conn.cursor() as cur:
@@ -457,19 +484,25 @@ def verify_approve_poster_request(request_id):
                     checklist_verified = %s,
                     reviewed_by = %s,
                     review_note = %s,
+                    final_poster_path = COALESCE(%s, final_poster_path),
                     updated_at = NOW()
                 WHERE id = %s
-            """, (checklist_json, reviewer_id, review_note, request_id))
+            """, (checklist_json, reviewer_id, review_note, official_poster_path, request_id))
 
             # Mark step 1 completed, step 2 in_progress
+            step1_note = review_note
+            if official_poster_path:
+                step1_note += " (Official poster provided by National Admin)"
+
             cur.execute("""
                 UPDATE poster_request_steps
                 SET status = 'completed',
                     completed_at = NOW(),
                     notes = %s,
+                    proof_file_path = COALESCE(%s, proof_file_path),
                     updated_by = %s
                 WHERE poster_request_id = %s AND step_order = 1
-            """, (review_note, reviewer_id, request_id))
+            """, (step1_note, official_poster_path, reviewer_id, request_id))
 
             cur.execute("""
                 UPDATE poster_request_steps
@@ -477,17 +510,19 @@ def verify_approve_poster_request(request_id):
                 WHERE poster_request_id = %s AND step_order = 2 AND status = 'pending'
             """, (request_id,))
 
+            update_msg = 'Pre-approval checklist verified and official poster provided.' if official_poster_path else 'Pre-approval checklist verified. Request approved into design production.'
             cur.execute("""
                 INSERT INTO poster_request_updates
-                (poster_request_id, updated_by, update_type, message, created_at)
-                VALUES (%s, %s, 'status_changed', 'Pre-approval checklist verified. Request approved and moved to design production.', NOW())
-            """, (request_id, reviewer_id))
+                (poster_request_id, updated_by, update_type, message, proof_file_path, created_at)
+                VALUES (%s, %s, %s, %s, %s, NOW())
+            """, (request_id, reviewer_id, 'proof_uploaded' if official_poster_path else 'status_changed', update_msg, official_poster_path))
 
             conn.commit()
 
     return api_response({
-        'message': 'Poster request verified and approved. Moved to Accepted pipeline.',
-        'status': 'in_progress'
+        'message': 'Poster request verified and approved. Official poster provided.',
+        'status': 'in_progress',
+        'final_poster_path': official_poster_path
     })
 
 @poster_requests_bp.route('/<int:request_id>/timeline-step', methods=['POST'])

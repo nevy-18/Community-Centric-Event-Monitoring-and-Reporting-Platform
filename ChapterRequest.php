@@ -548,8 +548,8 @@
                             </p>
                         </div>
                         <div class="card-footer dual-btn">
-                            <button class="btn btn-outline" onclick="triggerChapterDownload('${escapeHtml(p.event_title)}', '${escapeHtml(posterImg)}')">
-                                <i class="ph ph-download-simple"></i> Download
+                            <button class="btn ${p.final_poster_path ? 'btn-primary' : 'btn-outline'}" onclick="triggerChapterDownload('${escapeHtml(p.event_title)}', '${escapeHtml(posterImg)}')">
+                                <i class="ph ph-download-simple"></i> ${p.final_poster_path ? 'Download Official Poster' : 'Download'}
                             </button>
                             <button class="btn btn-primary" onclick="openChapterTimelineModal(${p.id})">
                                 View Timeline & Assets
@@ -723,6 +723,23 @@
 
                     // Update Next Step Notice Box & Dynamic Sections
                     updateChapterNextStepBox(req, res.data.steps || []);
+
+                    // Update download button state
+                    const isOfficialReady = !!req.final_poster_path;
+                    const btnDownload = document.getElementById('btn-chapter-download-poster');
+                    if (btnDownload) {
+                        if (isOfficialReady) {
+                            btnDownload.innerHTML = '<i class="ph ph-download-simple"></i> Download Official Poster';
+                            btnDownload.className = 'btn btn-primary';
+                            btnDownload.style.background = '#16a34a';
+                            btnDownload.style.borderColor = '#15803d';
+                        } else {
+                            btnDownload.innerHTML = '<i class="ph ph-clock"></i> Poster In Production';
+                            btnDownload.className = 'btn btn-outline';
+                            btnDownload.style.background = '';
+                            btnDownload.style.borderColor = '';
+                        }
+                    }
 
                     // Render released proofs
                     renderChapterProofs(res.data.updates || []);

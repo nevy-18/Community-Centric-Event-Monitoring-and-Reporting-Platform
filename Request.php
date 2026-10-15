@@ -276,6 +276,25 @@
                                 <i class="ph-fill ph-check-circle"></i> All 6 Requirements Confirmed
                             </span>
                         </div>
+
+                        <!-- Provide Official Poster Graphic Upload Area -->
+                        <div style="margin-top: 1.25rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem;">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">
+                                <i class="ph-bold ph-image" style="color: #2563eb;"></i> Provide Official Poster Graphic
+                            </label>
+                            <p style="font-size: 0.725rem; color: #64748b; margin-bottom: 0.6rem;">
+                                Upload the finalized official poster designed by National Creative. The Chapter will receive and download this collateral immediately upon approval.
+                            </p>
+                            <div class="proof-dropzone" style="padding: 1rem;" onclick="document.getElementById('verif-poster-file').click()">
+                                <i class="ph ph-cloud-arrow-up" style="font-size: 1.75rem; color: #2563eb;"></i>
+                                <p style="margin: 0.25rem 0 0; font-size: 0.825rem; font-weight: 700; color: #1e293b;">Click to upload official poster</p>
+                                <p style="margin: 0; font-size: 0.7rem; color: #64748b;">PNG, JPG, WEBP up to 50MB</p>
+                                <input type="file" id="verif-poster-file" accept="image/*" onchange="handleVerifPosterChange(this)">
+                            </div>
+                            <div id="verif-file-display" style="display: none; margin-top: 0.45rem; font-size: 0.78rem; color: #16a34a; font-weight: 600;">
+                                <i class="ph-fill ph-file-check"></i> <span id="verif-file-name"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -284,14 +303,14 @@
                     <div style="display: flex; align-items: center; gap: 0.65rem;">
                         <i class="ph-fill ph-info" style="font-size: 1.35rem; color: #2563eb;"></i>
                         <span style="font-size: 0.85rem; font-weight: 500;">
-                            Once approved, the request will move to the next stage and the chapter will be notified.
+                            Approving releases the official poster to the chapter and moves the pipeline to Stage 2: Posted on Page.
                         </span>
                     </div>
                     <div style="display: flex; gap: 0.75rem;">
                         <button type="button" class="btn btn-outline" onclick="closeVerificationModal()">Cancel</button>
                         <button type="button" class="btn btn-outline-danger" onclick="rejectCurrentInQueue()">Reject Request</button>
                         <button type="button" class="btn btn-primary" id="verif-approve-btn" onclick="submitVerifyApprove()" style="background: #16a34a; border-color: #15803d;">
-                            <i class="ph-fill ph-check-circle"></i> Approve & Open Assets
+                            <i class="ph-fill ph-check-circle"></i> Approve & Provide Poster
                         </button>
                     </div>
                 </div>
@@ -732,8 +751,22 @@
             document.getElementById('chk-visuals').checked = true;
             document.getElementById('chk-caption').checked = !!(item.caption || item.registration_link);
 
+            // Reset official poster input
+            const fileInput = document.getElementById('verif-poster-file');
+            if (fileInput) fileInput.value = '';
+            const fileDisplay = document.getElementById('verif-file-display');
+            if (fileDisplay) fileDisplay.style.display = 'none';
+
             updateChecklistCount();
             document.getElementById('verification-modal').style.display = 'flex';
+        }
+
+        function handleVerifPosterChange(input) {
+            if (input.files && input.files[0]) {
+                const f = input.files[0];
+                document.getElementById('verif-file-name').textContent = `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`;
+                document.getElementById('verif-file-display').style.display = 'block';
+            }
         }
 
         function closeVerificationModal() {
@@ -785,11 +818,24 @@
             if (document.getElementById('chk-visuals').checked) checklist.push('visuals');
             if (document.getElementById('chk-caption').checked) checklist.push('caption_link');
 
-            try {
-                const res = await YTR_API.posterRequests.verifyApprove(activeRequest.id, {
+            const posterInput = document.getElementById('verif-poster-file');
+            const hasPoster = posterInput && posterInput.files && posterInput.files[0];
+
+            let payload;
+            if (hasPoster) {
+                payload = new FormData();
+                payload.append('checklist', JSON.stringify(checklist));
+                payload.append('review_note', 'Verified and official poster released by National Admin.');
+                payload.append('official_poster', posterInput.files[0]);
+            } else {
+                payload = {
                     checklist: checklist,
                     review_note: 'Verified and approved by National Admin. Official poster in production.'
-                });
+                };
+            }
+
+            try {
+                const res = await YTR_API.posterRequests.verifyApprove(activeRequest.id, payload);
 
                 if (res.ok) {
                     const approvedId = activeRequest.id;
@@ -811,7 +857,7 @@
                 alert('Network error connecting to API.');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="ph-fill ph-check-circle"></i> Approve & Open Assets';
+                btn.innerHTML = '<i class="ph-fill ph-check-circle"></i> Approve & Provide Poster';
             }
         }
 
