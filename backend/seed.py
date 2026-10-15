@@ -23,6 +23,7 @@ def seed_database():
                 ('YTR-CAV', 'Cavite Chapter', 'Gen One', 'Region IV-A', 'Cavite', 'Tagaytay'),
                 ('YTR-PAM', 'Pampanga Chapter', 'Gen Three', 'Region III', 'Pampanga', 'San Fernando'),
                 ('YTR-BAT', 'Batangas Chapter', 'Gen Two', 'Region IV-A', 'Batangas', 'Batangas City'),
+                ('YTR-UMAK', 'University of Makati Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Makati City'),
             ]
 
             for code, name, gen, reg, prov, city in chapters:

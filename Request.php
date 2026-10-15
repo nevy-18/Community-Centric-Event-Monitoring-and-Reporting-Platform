@@ -47,6 +47,20 @@
                     </button>
                 </div>
 
+                <!-- Post-Event Compliance Urgent Alert Banner -->
+                <div id="national-compliance-alert" class="pending-alert-banner" style="display: none; background: #fff1f2; border: 1px solid #fecdd3; border-left: 5px solid #e11d48; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.85rem;">
+                        <i class="ph-bold ph-warning-octagon" style="font-size: 1.6rem; color: #e11d48;"></i>
+                        <div>
+                            <strong style="color: #9f1239; font-size: 0.95rem;">2-Week Post-Event Compliance Alert</strong>
+                            <p style="margin: 0; color: #be123c; font-size: 0.85rem;" id="compliance-alert-text">Pending post-event documentation reports due or overdue.</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="background: #e11d48; border-color: #be123c; padding: 0.4rem 0.85rem; font-size: 0.825rem;" onclick="filterUrgentEvents()">
+                        View Pending Reports
+                    </button>
+                </div>
+
                 <!-- 1. Metric Cards Row -->
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -357,6 +371,28 @@
                             <p style="margin: 0.2rem 0 0; color: #64748b; font-size: 0.78rem;">Upload deliverables, advance pipeline, and attach proofs</p>
                         </div>
 
+                        <!-- Stage 4: Documentation & Conducted Audit Review Card -->
+                        <div id="ctl-doc-audit-card" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <h5 class="font-roboto" style="margin: 0; font-size: 0.925rem; font-weight: 800; color: #0f172a;">
+                                    <i class="ph-bold ph-clipboard-text" style="color: #2563eb;"></i> Event Documentation Review
+                                </h5>
+                                <span id="audit-status-badge" class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.7rem;">Pending</span>
+                            </div>
+
+                            <div id="audit-timer-notice" style="display: none; font-size: 0.75rem; margin-bottom: 0.6rem; padding: 0.4rem 0.6rem; border-radius: 6px;"></div>
+
+                            <div id="audit-details-container" style="font-size: 0.8rem; line-height: 1.5; color: #334155;">
+                                <!-- Populated dynamically -->
+                            </div>
+
+                            <div id="audit-action-container" style="margin-top: 0.75rem;">
+                                <button type="button" class="btn btn-primary" id="btn-approve-audit" onclick="submitApproveDocumentation()" style="width: 100%; background: #16a34a; border-color: #15803d; font-size: 0.825rem; font-weight: 700;">
+                                    <i class="ph-bold ph-check-circle"></i> Approve Documentation & Conclude Event
+                                </button>
+                            </div>
+                        </div>
+
                         <form id="admin-timeline-form" onsubmit="submitTimelineUpdate(event)">
                             <div style="margin-bottom: 0.85rem;">
                                 <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
@@ -498,16 +534,28 @@
                 return;
             }
 
+            // Check if any event has urgent or overdue 2-week post-event report deadline
+            const urgentOrOverdue = items.filter(p => p.report_timer && (p.report_timer.status === 'urgent' || p.report_timer.status === 'overdue'));
+            const alertBanner = document.getElementById('national-compliance-alert');
+            if (alertBanner) {
+                if (urgentOrOverdue.length > 0) {
+                    alertBanner.style.display = 'flex';
+                    document.getElementById('compliance-alert-text').textContent = `${urgentOrOverdue.length} chapter event(s) have passed with 2-week post-event documentation reports pending or overdue!`;
+                } else {
+                    alertBanner.style.display = 'none';
+                }
+            }
+
             grid.innerHTML = items.map(p => {
                 const dueBadgeHtml = p.due_badge 
                     ? `<span class="${p.due_badge.cls}" style="margin-left: 0.4rem;"><i class="ph ph-clock"></i> ${p.due_badge.label}</span>` 
                     : '';
-                const timerBadgeHtml = p.approval_timer 
-                    ? `<span class="${p.approval_timer.cls}" style="margin-left: 0.4rem;"><i class="ph ph-timer"></i> ${p.approval_timer.label}</span>` 
-                    : '';
+                const timerBadgeHtml = p.report_timer 
+                    ? `<span class="${p.report_timer.badge_cls}" style="margin-left: 0.4rem;"><i class="ph-bold ph-timer"></i> ${p.report_timer.label}</span>` 
+                    : (p.approval_timer ? `<span class="${p.approval_timer.cls}" style="margin-left: 0.4rem;"><i class="ph ph-timer"></i> ${p.approval_timer.label}</span>` : '');
 
                 const isCompleted = p.status === 'completed';
-                const statusLabel = isCompleted ? 'Event Accomplished' : 'Production In-Progress';
+                const statusLabel = isCompleted ? 'Event Accomplished' : (p.current_step ? `Stage ${p.current_step} Active` : 'Production In-Progress');
                 const statusCls = isCompleted ? 'green' : 'blue';
 
                 const posterImg = p.final_poster_path || p.reference_poster_path || 'assets/images/background.jpg';
@@ -517,7 +565,7 @@
                         <div class="card-hero" style="position: relative;">
                             <img src="${escapeHtml(posterImg)}" alt="${escapeHtml(p.event_title)}" onerror="this.src='assets/images/background.jpg'">
                             <div style="position: absolute; top: 12px; left: 12px; display: flex; flex-wrap: wrap; gap: 4px;">
-                                <span class="status-badge ${statusCls}"><i class="ph ph-check-circle"></i> ${statusLabel}</span>
+                                <span class="status-badge ${statusCls}"><i class="ph ${isCompleted ? 'ph-check-circle' : 'ph-clock'}"></i> ${statusLabel}</span>
                                 ${timerBadgeHtml}
                                 ${dueBadgeHtml}
                             </div>
@@ -829,6 +877,80 @@
                     // Center Column: Render 5 Steps
                     renderPipelineSteps(res.data.steps || []);
 
+                    // Right Column: Documentation Audit Card Logic
+                    const auditCard = document.getElementById('ctl-doc-audit-card');
+                    const auditTimer = document.getElementById('audit-timer-notice');
+                    const auditDetails = document.getElementById('audit-details-container');
+                    const auditStatusBadge = document.getElementById('audit-status-badge');
+                    const auditActionBtn = document.getElementById('btn-approve-audit');
+
+                    if (req.report_timer) {
+                        auditTimer.style.display = 'block';
+                        auditTimer.className = req.report_timer.badge_cls;
+                        auditTimer.innerHTML = `<i class="ph-bold ph-timer"></i> ${escapeHtml(req.report_timer.message || req.report_timer.label)}`;
+                    } else {
+                        auditTimer.style.display = 'none';
+                    }
+
+                    const docStatus = req.documentation_status || 'none';
+                    if (docStatus === 'submitted' || docStatus === 'approved' || req.current_step >= 4 || req.is_event_conducted) {
+                        auditCard.style.display = 'block';
+
+                        if (docStatus === 'approved') {
+                            auditStatusBadge.textContent = 'Audited & Approved';
+                            auditStatusBadge.style.background = '#dcfce7';
+                            auditStatusBadge.style.color = '#15803d';
+                            auditActionBtn.style.display = 'none';
+                        } else if (docStatus === 'submitted') {
+                            auditStatusBadge.textContent = 'Awaiting National Review';
+                            auditStatusBadge.style.background = '#fef3c7';
+                            auditStatusBadge.style.color = '#92400e';
+                            auditActionBtn.style.display = 'block';
+                        } else {
+                            auditStatusBadge.textContent = 'Waiting for Chapter Submission';
+                            auditStatusBadge.style.background = '#f1f5f9';
+                            auditStatusBadge.style.color = '#64748b';
+                            auditActionBtn.style.display = 'none';
+                        }
+
+                        let proofDownloadHtml = '<span style="color: #94a3b8; font-style: italic;">No attachment uploaded</span>';
+                        if (req.documentation_proof_path) {
+                            const fname = req.documentation_proof_path.split('/').pop();
+                            proofDownloadHtml = `
+                                <a href="${escapeHtml(req.documentation_proof_path)}" target="_blank" class="step-attachment-pill" style="margin-top: 0.25rem;">
+                                    <i class="ph-bold ph-file-arrow-down"></i> ${escapeHtml(fname)}
+                                </a>
+                            `;
+                        }
+
+                        auditDetails.innerHTML = `
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; margin-bottom: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                                    <strong>Conducted Status:</strong>
+                                    <span>${req.is_event_conducted ? '<span style="color:#16a34a; font-weight:700;"><i class="ph-bold ph-check"></i> Conducted (' + (req.event_conducted_at || 'Yes') + ')</span>' : '<span style="color:#64748b;">Not confirmed yet</span>'}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                                    <strong>Total Attendees:</strong>
+                                    <span style="font-weight:700; color: #0f172a;">${req.attendees_count !== null && req.attendees_count !== undefined ? req.attendees_count : '--'}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                                    <strong>First-Timers:</strong>
+                                    <span style="font-weight:600; color: #475569;">${req.first_timers_count !== null && req.first_timers_count !== undefined ? req.first_timers_count : '--'}</span>
+                                </div>
+                                <div style="margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px dashed #e2e8f0;">
+                                    <strong>Summary & Highlights:</strong>
+                                    <p style="margin: 0.2rem 0 0; color: #475569; font-size: 0.775rem;">${escapeHtml(req.report_summary || 'No summary submitted yet.')}</p>
+                                </div>
+                                <div style="margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px dashed #e2e8f0;">
+                                    <strong>Photos / Attendance Sheet:</strong>
+                                    <div>${proofDownloadHtml}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        auditCard.style.display = 'none';
+                    }
+
                     // Right Column: Render Recent Proofs & reset form
                     renderRecentProofs(res.data.updates || []);
                     document.getElementById('admin-timeline-form').reset();
@@ -959,19 +1081,76 @@
             document.getElementById('ctl-is-final-poster').checked = (stg === '1');
         }
 
+        function filterUrgentEvents() {
+            switchTab('accepted', document.getElementById('tab-btn-accepted'));
+            const urgentItems = acceptedCache.filter(p => p.report_timer && (p.report_timer.status === 'urgent' || p.report_timer.status === 'overdue'));
+            renderAcceptedGrid(urgentItems);
+        }
+
+        async function submitApproveDocumentation() {
+            if (!activeRequest) return;
+            const btn = document.getElementById('btn-approve-audit');
+            const note = prompt('Enter audit approval notes or remarks:', 'Event documentation and attendance verified. Event concluded successfully.');
+            if (note === null) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Approving...';
+
+            try {
+                const res = await YTR_API.posterRequests.approveDocumentation(activeRequest.id, note);
+                if (res.ok) {
+                    alert('Event documentation approved! Milestone 4 & 5 marked as completed and event concluded.');
+                    await openTimelineModal(activeRequest.id);
+                    await loadMetrics();
+                    await loadPosterData('accepted');
+                    await loadPosterData('queue');
+                } else {
+                    alert('Approval failed: ' + (res.message || 'Error'));
+                }
+            } catch (err) {
+                console.error('Documentation approval error:', err);
+                alert('Network error communicating with API.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph-bold ph-check-circle"></i> Approve Documentation & Conclude Event';
+            }
+        }
+
         async function submitTimelineUpdate(e) {
             e.preventDefault();
             if (!activeRequest) return;
 
             const btn = document.getElementById('ctl-submit-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
-
             const stageOrder = document.getElementById('ctl-stage-select').value;
             const stageStatus = document.getElementById('ctl-status-select').value;
             const notes = document.getElementById('ctl-notes').value.trim();
             const isFinalPoster = document.getElementById('ctl-is-final-poster').checked;
             const fileInput = document.getElementById('ctl-proof-file');
+
+            // Client-side Stage Completion Checks
+            if (stageStatus === 'completed') {
+                if (stageOrder === '1') {
+                    const hasPoster = (fileInput.files && fileInput.files[0]) || activeRequest.final_poster_path;
+                    if (!hasPoster) {
+                        alert('Cannot complete Stage 1 (Poster Request) without uploading the official poster graphic file.');
+                        return;
+                    }
+                } else if (stageOrder === '2') {
+                    const hasProof = (fileInput.files && fileInput.files[0]) || notes;
+                    if (!hasProof) {
+                        alert('Cannot complete Stage 2 (Posted on Page) without uploading proof screenshot or providing social media link/notes.');
+                        return;
+                    }
+                } else if (stageOrder === '4') {
+                    if (activeRequest.documentation_status !== 'submitted' && !activeRequest.documentation_proof_path) {
+                        alert('Cannot complete Stage 4 (Documentation & Report): The Chapter must first submit post-event attendance and documentation proof. Review and approve it above once received.');
+                        return;
+                    }
+                }
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
 
             const formData = new FormData();
             formData.append('step_order', stageOrder);

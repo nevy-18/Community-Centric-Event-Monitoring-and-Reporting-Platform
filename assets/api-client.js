@@ -176,6 +176,31 @@ const YTR_API = {
         body: isFormData ? dataOrFormData : JSON.stringify(dataOrFormData)
       });
     },
+    markConducted(id, conductedDate = '') {
+      return YTR_API.request(`/poster-requests/${id}/mark-conducted`, {
+        method: 'POST',
+        body: JSON.stringify({ conducted_date: conductedDate })
+      });
+    },
+    submitDocumentation(id, dataOrFormData) {
+      const isFormData = typeof FormData !== 'undefined' && dataOrFormData instanceof FormData;
+      return YTR_API.request(`/poster-requests/${id}/submit-documentation`, {
+        method: 'POST',
+        body: isFormData ? dataOrFormData : JSON.stringify(dataOrFormData)
+      });
+    },
+    approveDocumentation(id, review_note = '') {
+      return YTR_API.request(`/poster-requests/${id}/approve-documentation`, {
+        method: 'POST',
+        body: JSON.stringify({ review_note })
+      });
+    },
+    skipPromoVideo(id) {
+      return YTR_API.request(`/poster-requests/${id}/skip-promo-video`, {
+        method: 'POST',
+        body: JSON.stringify({})
+      });
+    },
     approve(id, review_note = '') {
       return YTR_API.request(`/poster-requests/${id}/approve`, {
         method: 'POST',

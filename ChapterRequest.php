@@ -35,6 +35,20 @@
                     </div>
                 </div>
 
+                <!-- 2-Week Compliance Warning Alert Banner -->
+                <div id="chapter-compliance-alert" class="pending-alert-banner" style="display: none; background: #fffbeb; border: 1px solid #fde68a; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.85rem;">
+                        <i class="ph-fill ph-bell-ringing" style="font-size: 1.6rem; color: #b45309;"></i>
+                        <div>
+                            <strong style="color: #92400e; font-size: 0.95rem;">Post-Event Documentation Deadline Notice</strong>
+                            <p style="margin: 0; color: #b45309; font-size: 0.85rem;" id="compliance-alert-text">You have events requiring accomplishment reports within the 2-week compliance window.</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="background: #d97706; border-color: #b45309; font-size: 0.8rem; padding: 0.4rem 0.85rem;" onclick="switchTab('accepted', document.getElementById('tab-btn-accepted'))">
+                        Review Events
+                    </button>
+                </div>
+
                 <!-- 1. Metric Cards Row -->
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -277,6 +291,19 @@
                             <p style="margin: 0.2rem 0 0; color: #64748b; font-size: 0.78rem;">Submit your milestone deliverables as requested by National Media</p>
                         </div>
 
+                        <!-- 2-Week Post-Event Compliance Countdown Timer -->
+                        <div id="chapter-timer-card" style="display: none; padding: 0.85rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 0.85rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.04em;">
+                                    <i class="ph-bold ph-timer"></i> Post-Event 2-Week Timer
+                                </span>
+                                <span id="chapter-timer-badge" class="badge timer">14d left</span>
+                            </div>
+                            <p id="chapter-timer-message" style="margin: 0; font-size: 0.78rem; line-height: 1.4; color: #334155;">
+                                2-week reporting countdown active.
+                            </p>
+                        </div>
+
                         <!-- Dynamic Next Step Notice Box -->
                         <div id="chapter-action-box" class="chapter-next-step-box">
                             <div style="display: flex; gap: 0.6rem; align-items: flex-start;">
@@ -292,30 +319,114 @@
                             </div>
                         </div>
 
-                        <!-- Chapter Promotional Video Submission Form -->
-                        <form id="chapter-submit-video-form" onsubmit="submitChapterVideoProof(event)">
-                            <div style="font-size: 0.825rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
-                                Submit Promotional Video Deliverable
+                        <!-- SECTION A: Promotional Video (Stage 3) - Explicitly marked OPTIONAL -->
+                        <div id="section-chapter-promo" style="display: none;">
+                            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 0.6rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; color: #92400e;">
+                                <strong><i class="ph ph-info"></i> Notice:</strong> Promotional video is <strong>optional</strong> and not required to advance to post-event documentation.
                             </div>
-                            <div class="proof-dropzone" style="padding: 0.75rem;" onclick="document.getElementById('ch-video-file').click()">
-                                <i class="ph ph-video-camera" style="font-size: 1.5rem; color: #2563eb;"></i>
-                                <p style="margin: 0.2rem 0 0; font-size: 0.78rem; font-weight: 700;">Upload MP4 Teaser / Clip</p>
-                                <p style="margin: 0; font-size: 0.7rem; color: #64748b;">Max 50MB</p>
-                                <input type="file" id="ch-video-file" accept="video/mp4,video/*" onchange="handleChapterVideoSelected(this)">
-                            </div>
-                            <div id="ch-video-display" style="display:none; margin-top: 0.35rem; font-size: 0.75rem; color: #16a34a; font-weight: 600;">
-                                <i class="ph-fill ph-file-check"></i> <span id="ch-video-name"></span>
+                            <form id="chapter-submit-video-form" onsubmit="submitChapterVideoProof(event)">
+                                <div style="font-size: 0.825rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
+                                    Upload Promotional Video (Optional)
+                                </div>
+                                <div class="proof-dropzone" style="padding: 0.75rem;" onclick="document.getElementById('ch-video-file').click()">
+                                    <i class="ph ph-video-camera" style="font-size: 1.5rem; color: #2563eb;"></i>
+                                    <p style="margin: 0.2rem 0 0; font-size: 0.78rem; font-weight: 700;">Upload MP4 Teaser / Clip</p>
+                                    <p style="margin: 0; font-size: 0.7rem; color: #64748b;">Max 50MB</p>
+                                    <input type="file" id="ch-video-file" accept="video/mp4,video/*" onchange="handleChapterVideoSelected(this)">
+                                </div>
+                                <div id="ch-video-display" style="display:none; margin-top: 0.35rem; font-size: 0.75rem; color: #16a34a; font-weight: 600;">
+                                    <i class="ph-fill ph-file-check"></i> <span id="ch-video-name"></span>
+                                </div>
+
+                                <div style="margin: 0.6rem 0;">
+                                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.25rem;">Or Cloud Video Link (YouTube / Drive / FB):</label>
+                                    <input type="url" id="ch-video-url" placeholder="https://..." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem;">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" id="btn-submit-video" style="width: 100%; font-size: 0.8rem; padding: 0.5rem;">
+                                    <i class="ph ph-paper-plane-tilt"></i> Submit Promotional Video
+                                </button>
+                                <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem; font-size: 0.78rem; padding: 0.45rem;" onclick="skipChapterPromoVideo()">
+                                    <i class="ph ph-fast-forward"></i> Proceed to Post-Event (Skip Video)
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- SECTION B: Documentation & Report (Stage 4) -->
+                        <div id="section-chapter-docs" style="display: none;">
+                            <!-- Mark Event Conducted Quick Button -->
+                            <div id="box-mark-conducted" style="margin-bottom: 0.85rem; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <div style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
+                                    Has this event been conducted?
+                                </div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="date" id="doc-conducted-date" style="padding: 0.4rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; flex: 1;">
+                                    <button type="button" class="btn btn-outline" style="font-size: 0.78rem; padding: 0.4rem 0.6rem;" onclick="triggerMarkConducted()">
+                                        <i class="ph ph-check"></i> Mark Conducted
+                                    </button>
+                                </div>
                             </div>
 
-                            <div style="margin: 0.6rem 0;">
-                                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.25rem;">Or Video Cloud Link (Google Drive / YouTube / FB):</label>
-                                <input type="url" id="ch-video-url" placeholder="https://..." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem;">
+                            <!-- Submitted Status Summary if already sent -->
+                            <div id="box-doc-submitted-status" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.85rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; color: #1e40af; font-weight: 700; font-size: 0.85rem;">
+                                    <i class="ph-fill ph-clock"></i> Documentation Submitted & Under Review
+                                </div>
+                                <div style="font-size: 0.78rem; color: #3b82f6; margin-top: 0.35rem; line-height: 1.4;">
+                                    Attendees Reported: <strong id="lbl-submitted-attendees">0</strong> delegates<br>
+                                    Proof Attached: <span id="lbl-submitted-proof">Yes</span><br>
+                                    Awaiting National Admin audit and final approval.
+                                </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" id="btn-submit-video" style="width: 100%; font-size: 0.8rem; padding: 0.5rem;">
-                                <i class="ph ph-paper-plane-tilt"></i> Submit Promotional Video
-                            </button>
-                        </form>
+                            <!-- Submission Form -->
+                            <form id="chapter-submit-docs-form" onsubmit="submitChapterDocumentation(event)">
+                                <div style="font-size: 0.825rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
+                                    Submit Post-Event Documentation & Attendees
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.6rem;">
+                                    <div>
+                                        <label style="display: block; font-size: 0.725rem; font-weight: 700; color: #475569; margin-bottom: 0.2rem;">Total Attendees *</label>
+                                        <input type="number" id="doc-attendees" required min="1" placeholder="e.g. 150" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem;">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-size: 0.725rem; font-weight: 700; color: #475569; margin-bottom: 0.2rem;">First-Timers</label>
+                                        <input type="number" id="doc-first-timers" min="0" placeholder="e.g. 35" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem;">
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 0.6rem;">
+                                    <label style="display: block; font-size: 0.725rem; font-weight: 700; color: #475569; margin-bottom: 0.2rem;">Event Summary / Key Highlights *</label>
+                                    <textarea id="doc-summary" required rows="2" placeholder="Brief accomplishment notes, testimonies, or program outcomes..." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem;"></textarea>
+                                </div>
+
+                                <div style="margin-bottom: 0.85rem;">
+                                    <label style="display: block; font-size: 0.725rem; font-weight: 700; color: #475569; margin-bottom: 0.2rem;">Upload Event Photos / Attendance Sheet *</label>
+                                    <div class="proof-dropzone" style="padding: 0.75rem;" onclick="document.getElementById('doc-proof-file').click()">
+                                        <i class="ph ph-images" style="font-size: 1.5rem; color: #16a34a;"></i>
+                                        <p style="margin: 0.2rem 0 0; font-size: 0.78rem; font-weight: 700;">Upload Photos / PDF Document</p>
+                                        <p style="margin: 0; font-size: 0.7rem; color: #64748b;">JPG, PNG, PDF up to 50MB</p>
+                                        <input type="file" id="doc-proof-file" accept="image/*,application/pdf" onchange="handleDocFileSelected(this)">
+                                    </div>
+                                    <div id="doc-file-display" style="display:none; margin-top: 0.35rem; font-size: 0.75rem; color: #16a34a; font-weight: 600;">
+                                        <i class="ph-fill ph-file-check"></i> <span id="doc-file-name"></span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" id="btn-submit-docs" style="width: 100%; background: #16a34a; border-color: #15803d; font-size: 0.8rem; padding: 0.55rem;">
+                                    <i class="ph ph-paper-plane-tilt"></i> Submit Post-Event Documentation
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- SECTION C: Concluded Notice (Stage 5) -->
+                        <div id="section-chapter-concluded" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; text-align: center;">
+                            <i class="ph-fill ph-check-circle" style="font-size: 2.25rem; color: #16a34a;"></i>
+                            <h5 style="margin: 0.5rem 0 0.25rem; color: #14532d; font-weight: 800;">Event Concluded & Accomplished</h5>
+                            <p style="margin: 0; font-size: 0.78rem; color: #166534; line-height: 1.4;">
+                                All event collateral, attendee audits, and accomplishment reports have been verified and archived.
+                            </p>
+                        </div>
 
                         <!-- Attached Deliverables List -->
                         <div style="border-top: 1px solid #f1f5f9; padding-top: 0.85rem; margin-top: 0.85rem;">
@@ -396,18 +507,33 @@
                 return;
             }
 
+            // Check if any event has urgent or overdue 2-week report deadline
+            const urgentOrOverdue = items.filter(p => p.report_timer && (p.report_timer.status === 'urgent' || p.report_timer.status === 'overdue'));
+            const alertBanner = document.getElementById('chapter-compliance-alert');
+            if (urgentOrOverdue.length > 0) {
+                alertBanner.style.display = 'flex';
+                document.getElementById('compliance-alert-text').textContent = `You have ${urgentOrOverdue.length} event(s) approaching or past the 2-week post-event accomplishment report deadline!`;
+            } else {
+                alertBanner.style.display = 'none';
+            }
+
             grid.innerHTML = items.map(p => {
                 const isReady = p.status === 'completed';
-                const statusLabel = isReady ? 'Ready for Promotion' : 'In Production';
+                const statusLabel = isReady ? 'Event Accomplished' : `Stage ${p.current_step || 1} Active`;
                 const statusCls = isReady ? 'green' : 'blue';
                 const posterImg = p.final_poster_path || p.reference_poster_path || 'assets/images/background.jpg';
+
+                const timerBadgeHtml = p.report_timer
+                    ? `<span class="${p.report_timer.badge_cls}" style="margin-left: 0.4rem;"><i class="ph-bold ph-timer"></i> ${p.report_timer.label}</span>`
+                    : '';
 
                 return `
                     <div class="poster-card type-accepted">
                         <div class="card-hero" style="position: relative;">
                             <img src="${escapeHtml(posterImg)}" alt="${escapeHtml(p.event_title)}" onerror="this.src='assets/images/background.jpg'">
-                            <div style="position: absolute; top: 12px; left: 12px;">
-                                <span class="status-badge ${statusCls}"><i class="ph ${isReady ? 'ph-check-circle' : 'ph-paint-brush'}"></i> ${statusLabel}</span>
+                            <div style="position: absolute; top: 12px; left: 12px; display: flex; flex-wrap: wrap; gap: 4px;">
+                                <span class="status-badge ${statusCls}"><i class="ph ${isReady ? 'ph-check-circle' : 'ph-clock'}"></i> ${statusLabel}</span>
+                                ${timerBadgeHtml}
                             </div>
                         </div>
                         <div class="card-body">
@@ -595,7 +721,7 @@
                     // Render steps
                     renderChapterPipeline(res.data.steps || []);
 
-                    // Update Next Step Notice Box
+                    // Update Next Step Notice Box & Dynamic Sections
                     updateChapterNextStepBox(req, res.data.steps || []);
 
                     // Render released proofs
@@ -616,7 +742,7 @@
             const stepDescriptions = {
                 1: 'Communications, Marketing & Creative Team drafts and finalized official graphics.',
                 2: 'Official publication on social media page with live engagement link.',
-                3: 'Promotional teaser video clip produced and distributed.',
+                3: 'Promotional teaser video clip produced and distributed (Optional).',
                 4: 'Post-activity attendance, photo documentation, and accomplishment report.',
                 5: 'Final event audit approved and collateral archived.'
             };
@@ -666,19 +792,161 @@
             const headlineEl = document.getElementById('chapter-step-headline');
             const instructionsEl = document.getElementById('chapter-step-instructions');
             const cur = req.current_step || 1;
+            const isDone = req.status === 'completed';
 
-            if (req.status === 'submitted' || req.status === 'under_review') {
-                headlineEl.textContent = 'Awaiting National Review & Verification';
-                instructionsEl.textContent = 'National Admin is currently reviewing your submitted event requirements and mockups.';
-            } else if (cur === 2 || cur === 3) {
-                headlineEl.textContent = '🚀 Official Poster Released! Next Action: Promotional Video';
-                instructionsEl.textContent = 'The official poster has been approved and published. Please upload or link your chapter promotional video clip below.';
-            } else if (cur === 4) {
-                headlineEl.textContent = '📸 Event Execution: Submit Post-Event Documentation';
-                instructionsEl.textContent = 'Conduct your event smoothly. Once concluded, navigate to the Chapter Reports tab to submit attendee figures, documentation, and the final accomplishment report.';
-            } else if (cur === 5 || req.status === 'completed') {
+            const secPromo = document.getElementById('section-chapter-promo');
+            const secDocs = document.getElementById('section-chapter-docs');
+            const secConcluded = document.getElementById('section-chapter-concluded');
+            const timerCard = document.getElementById('chapter-timer-card');
+
+            // Hide sections by default
+            secPromo.style.display = 'none';
+            secDocs.style.display = 'none';
+            secConcluded.style.display = 'none';
+            timerCard.style.display = 'none';
+
+            // 2-Week Countdown Timer
+            if (req.report_timer) {
+                timerCard.style.display = 'block';
+                const t = req.report_timer;
+                const badge = document.getElementById('chapter-timer-badge');
+                badge.className = t.badge_cls || 'badge timer';
+                badge.textContent = t.label;
+                document.getElementById('chapter-timer-message').innerHTML = t.message;
+
+                if (t.status === 'overdue') {
+                    timerCard.style.background = '#fef2f2';
+                    timerCard.style.borderColor = '#fca5a5';
+                } else if (t.status === 'urgent') {
+                    timerCard.style.background = '#fffbeb';
+                    timerCard.style.borderColor = '#fcd34d';
+                } else {
+                    timerCard.style.background = '#f8fafc';
+                    timerCard.style.borderColor = '#cbd5e1';
+                }
+            }
+
+            if (isDone || cur === 5) {
                 headlineEl.textContent = '🎉 All Event Milestones Accomplished';
-                instructionsEl.textContent = 'All collateral and post-event reports have been received, verified, and successfully archived!';
+                instructionsEl.textContent = 'All deliverables, attendee figures, and post-event documentation have been verified and archived.';
+                secConcluded.style.display = 'block';
+            } else if (cur === 4) {
+                headlineEl.textContent = '📸 Post-Event Documentation & Report Stage';
+                instructionsEl.textContent = 'Conduct your event, gather attendance figures and photos, and submit your accomplishment report below within 2 weeks.';
+                secDocs.style.display = 'block';
+
+                const isSubmitted = req.documentation_status === 'submitted' || !!req.documentation_proof_path;
+                const boxSubmitted = document.getElementById('box-doc-submitted-status');
+                const boxConducted = document.getElementById('box-mark-conducted');
+                const formDocs = document.getElementById('chapter-submit-docs-form');
+
+                if (isSubmitted) {
+                    boxSubmitted.style.display = 'block';
+                    document.getElementById('lbl-submitted-attendees').textContent = req.attendees_count || 'Reported';
+                    document.getElementById('lbl-submitted-proof').textContent = req.documentation_proof_path ? req.documentation_proof_path.split('/').pop() : 'Attached';
+                    formDocs.style.display = 'none';
+                    boxConducted.style.display = 'none';
+                } else {
+                    boxSubmitted.style.display = 'none';
+                    formDocs.style.display = 'block';
+                    boxConducted.style.display = req.is_event_conducted ? 'none' : 'block';
+                    if (req.event_date) {
+                        document.getElementById('doc-conducted-date').value = req.event_date;
+                    }
+                }
+            } else if (cur === 3) {
+                headlineEl.textContent = '🚀 Official Poster Released! Stage 3: Promotional Video';
+                instructionsEl.textContent = 'The official poster has been published. Promotional video is optional—submit a teaser clip or skip directly to the post-event stage.';
+                secPromo.style.display = 'block';
+            } else {
+                headlineEl.textContent = '🎨 Awaiting National Media Production & Publication';
+                instructionsEl.textContent = 'National Media is currently drafting your official poster and preparing page publication.';
+            }
+        }
+
+        async function skipChapterPromoVideo() {
+            if (!activeChapterRequest) return;
+            if (!confirm('Promotional video is optional. Do you want to skip and proceed directly to Stage 4 (Post-Event Documentation & Report)?')) return;
+
+            try {
+                const res = await YTR_API.posterRequests.skipPromoVideo(activeChapterRequest.id);
+                if (res.ok) {
+                    alert('Advanced to Stage 4: Documentation & Report.');
+                    await openChapterTimelineModal(activeChapterRequest.id);
+                    await loadPosterData('accepted');
+                } else {
+                    alert('Failed to advance: ' + (res.message || 'Error'));
+                }
+            } catch (err) {
+                console.error('Error skipping promo video:', err);
+            }
+        }
+
+        async function triggerMarkConducted() {
+            if (!activeChapterRequest) return;
+            const conductedDate = document.getElementById('doc-conducted-date').value || '';
+            try {
+                const res = await YTR_API.posterRequests.markConducted(activeChapterRequest.id, conductedDate);
+                if (res.ok) {
+                    alert('Event marked as conducted! 2-week reporting countdown timer started.');
+                    await openChapterTimelineModal(activeChapterRequest.id);
+                    await loadPosterData('accepted');
+                } else {
+                    alert('Failed: ' + (res.message || 'Error'));
+                }
+            } catch (err) {
+                console.error('Mark conducted error:', err);
+            }
+        }
+
+        function handleDocFileSelected(input) {
+            if (input.files && input.files[0]) {
+                const f = input.files[0];
+                document.getElementById('doc-file-name').textContent = `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`;
+                document.getElementById('doc-file-display').style.display = 'block';
+            }
+        }
+
+        async function submitChapterDocumentation(e) {
+            e.preventDefault();
+            if (!activeChapterRequest) return;
+
+            const btn = document.getElementById('btn-submit-docs');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
+
+            const attendees = document.getElementById('doc-attendees').value;
+            const firstTimers = document.getElementById('doc-first-timers').value || 0;
+            const summary = document.getElementById('doc-summary').value.trim();
+            const conductedDate = document.getElementById('doc-conducted-date').value || activeChapterRequest.event_date || '';
+            const fileInput = document.getElementById('doc-proof-file');
+
+            const formData = new FormData();
+            formData.append('attendees_count', attendees);
+            formData.append('first_timers_count', firstTimers);
+            formData.append('report_summary', summary);
+            formData.append('conducted_date', conductedDate);
+            formData.append('updated_by', chapterId);
+
+            if (fileInput.files && fileInput.files[0]) {
+                formData.append('proof_file', fileInput.files[0]);
+            }
+
+            try {
+                const res = await YTR_API.posterRequests.submitDocumentation(activeChapterRequest.id, formData);
+                if (res.ok) {
+                    alert('Post-event documentation submitted successfully! National Admin will review and verify your attendance.');
+                    await openChapterTimelineModal(activeChapterRequest.id);
+                    await loadPosterData('accepted');
+                } else {
+                    alert('Submission error: ' + (res.message || 'Error'));
+                }
+            } catch (err) {
+                console.error('Submit documentation error:', err);
+                alert('Network error submitting documentation.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Submit Post-Event Documentation';
             }
         }
 

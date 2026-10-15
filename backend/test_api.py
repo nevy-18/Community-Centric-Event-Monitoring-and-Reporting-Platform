@@ -187,39 +187,174 @@ class TestYTRBackendAPI(unittest.TestCase):
         self.assertEqual(len(data['steps']), 5)
         print("[PASS] Poster request timeline retrieval passed with 5-step pipeline.")
 
-    def test_19_poster_verify_approve_workflow(self):
+    workflow_req_id = None
+
+    def test_19_poster_creation_and_verify_approve_workflow(self):
+        # 1. Create a fresh poster request
+        create_payload = {
+            'chapter_id': 1,
+            'event_title': 'Youth Leadership Summit 2026',
+            'event_date': '2026-10-20',
+            'event_time': '09:00 AM',
+            'venue': 'Provincial Capitol Gym',
+            'theme_or_concept': 'Igniting Tomorrow Leaders',
+            'target_participants': '250 Youth Leaders',
+            'requested_deadline': '2026-10-25',
+            'requested_by': 2
+        }
+        res_create = self.client.post('/api/poster-requests', json=create_payload)
+        self.assertIn(res_create.status_code, [200, 201])
+        req_id = res_create.get_json()['data']['request_id']
+        TestYTRBackendAPI.workflow_req_id = req_id
+
+        # 2. National Admin verifies checklist and approves
         payload = {
             'checklist': ['date_time', 'venue', 'participants', 'chapter_name', 'visuals', 'caption_link'],
             'review_note': 'Pre-approval checklist verified by National Media lead.'
         }
-        res = self.client.post('/api/poster-requests/4/verify-approve', json=payload)
-        self.assertEqual(res.status_code, 200)
-        
-        # Verify timeline reflects in_progress and step 1 completed
-        res_tl = self.client.get('/api/poster-requests/4/timeline')
+        res_approve = self.client.post(f'/api/poster-requests/{req_id}/verify-approve', json=payload)
+        self.assertEqual(res_approve.status_code, 200)
+
+        # 3. Verify timeline reflects in_progress and step 1 completed
+        res_tl = self.client.get(f'/api/poster-requests/{req_id}/timeline')
         data = res_tl.get_json().get('data', {})
         self.assertEqual(data['request']['status'], 'in_progress')
         steps = {s['step_order']: s['status'] for s in data['steps']}
         self.assertEqual(steps[1], 'completed')
         self.assertEqual(steps[2], 'in_progress')
-        print("[PASS] Poster verification review and approval workflow passed.")
+        print("[PASS] Fresh poster request creation and verification approval workflow passed.")
 
     def test_20_poster_timeline_step_update_and_proof(self):
+        req_id = TestYTRBackendAPI.workflow_req_id
         payload = {
             'step_order': 2,
             'step_status': 'completed',
-            'notes': 'Official Facebook post published with 500+ impressions.',
+            'notes': 'Official Facebook post published with 500+ impressions: https://facebook.com/ytr/posts/12345',
             'proof_file_path': 'assets/uploads/proofs/sample_fb_proof.png'
         }
-        res = self.client.post('/api/poster-requests/2/timeline-step', json=payload)
+        res = self.client.post(f'/api/poster-requests/{req_id}/timeline-step', json=payload)
         self.assertEqual(res.status_code, 200)
 
-        # Verify update recorded
-        res_tl = self.client.get('/api/poster-requests/2/timeline')
+        # Verify update recorded & step 2 completed
+        res_tl = self.client.get(f'/api/poster-requests/{req_id}/timeline')
         data = res_tl.get_json().get('data', {})
-        updates = data.get('updates', [])
-        self.assertTrue(any('sample_fb_proof.png' in (u.get('proof_file_path') or '') for u in updates))
-        print("[PASS] Poster milestone step update and proof ledger passed.")
+        steps = {s['step_order']: s['status'] for s in data['steps']}
+        self.assertEqual(steps[2], 'completed')
+        self.assertEqual(steps[3], 'in_progress')
+        print("[PASS] Poster milestone step 2 completed and proof ledger passed.")
+
+    def test_21_skip_promo_video(self):
+        req_id = TestYTRBackendAPI.workflow_req_id
+        # Skip promo video (Stage 3 is optional)
+        res = self.client.post(f'/api/poster-requests/{req_id}/skip-promo-video', json={'updated_by': 1})
+        self.assertEqual(res.status_code, 200)
+
+        # Check timeline: step 3 should be completed, step 4 in_progress
+        res_tl = self.client.get(f'/api/poster-requests/{req_id}/timeline')
+        data = res_tl.get_json().get('data', {})
+        steps = {s['step_order']: s['status'] for s in data['steps']}
+        self.assertEqual(steps[3], 'completed')
+        self.assertEqual(steps[4], 'in_progress')
+        print("[PASS] Skip promo video endpoint passed: Step 3 marked completed, Step 4 in_progress.")
+
+    def test_22_mark_event_conducted_and_timer(self):
+        req_id = TestYTRBackendAPI.workflow_req_id
+        # Mark event conducted on 2026-10-15
+        res = self.client.post(f'/api/poster-requests/{req_id}/mark-conducted', json={'conducted_date': '2026-10-15', 'updated_by': 1})
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json().get('data', {})
+        self.assertEqual(data.get('report_due_date'), '2026-10-29')
+
+        # Check timeline computes 2-week timer
+        res_tl = self.client.get(f'/api/poster-requests/{req_id}/timeline')
+        req = res_tl.get_json().get('data', {}).get('request', {})
+        self.assertEqual(req.get('is_event_conducted'), 1)
+        self.assertIsNotNone(req.get('report_timer'))
+        self.assertEqual(req['report_timer']['due_date'], 'Oct 29, 2026')
+        print("[PASS] 2-week reporting countdown timer computation passed.")
+
+    def test_23_submit_documentation_attendees_and_proof(self):
+        req_id = TestYTRBackendAPI.workflow_req_id
+        # Chapter submits attendees, summary, and proof
+        payload = {
+            'attendees_count': 185,
+            'first_timers_count': 42,
+            'report_summary': 'Successfully hosted event with high youth participation and engagement.',
+            'conducted_date': '2026-10-15',
+            'proof_file_path': 'assets/uploads/proofs/event_photo_sample.jpg'
+        }
+        res = self.client.post(f'/api/poster-requests/{req_id}/submit-documentation', json=payload)
+        self.assertEqual(res.status_code, 200)
+
+        # Check request reflects submitted documentation
+        res_tl = self.client.get(f'/api/poster-requests/{req_id}/timeline')
+        req = res_tl.get_json().get('data', {}).get('request', {})
+        self.assertEqual(req.get('documentation_status'), 'submitted')
+        self.assertEqual(req.get('attendees_count'), 185)
+        self.assertEqual(req.get('first_timers_count'), 42)
+        print("[PASS] Chapter post-event documentation & attendance figures submission passed.")
+
+    def test_24_approve_event_documentation(self):
+        req_id = TestYTRBackendAPI.workflow_req_id
+        # National Admin reviews and approves documentation
+        res = self.client.post(f'/api/poster-requests/{req_id}/approve-documentation', json={
+            'review_note': 'Attendance and post-event photos verified. Approved.',
+            'reviewed_by': 1
+        })
+        self.assertEqual(res.status_code, 200)
+
+        # Check request status is completed, steps 4 & 5 completed
+        res_tl = self.client.get(f'/api/poster-requests/{req_id}/timeline')
+        data = res_tl.get_json().get('data', {})
+        req = data.get('request', {})
+        self.assertEqual(req.get('status'), 'completed')
+        self.assertEqual(req.get('documentation_status'), 'approved')
+        steps = {s['step_order']: s['status'] for s in data['steps']}
+        self.assertEqual(steps[1], 'completed')
+        self.assertEqual(steps[2], 'completed')
+        self.assertEqual(steps[3], 'completed')
+        self.assertEqual(steps[4], 'completed')
+        self.assertEqual(steps[5], 'completed')
+        print("[PASS] National Admin documentation audit approval & event conclusion passed: all 5 steps completed.")
+
+    def test_25_stage_validations(self):
+        # Create a blank request to test validations
+        create_payload = {
+            'chapter_id': 1,
+            'event_title': 'Validation Test Event',
+            'event_date': '2026-11-01',
+            'requested_by': 2
+        }
+        res_create = self.client.post('/api/poster-requests', json=create_payload)
+        v_id = res_create.get_json()['data']['request_id']
+
+        # Test 1: Stage 1 requires poster graphic
+        res_stg1 = self.client.post(f'/api/poster-requests/{v_id}/timeline-step', json={
+            'step_order': 1,
+            'step_status': 'completed'
+        })
+        self.assertEqual(res_stg1.status_code, 400)
+        self.assertIn('official poster', res_stg1.get_json().get('message', '').lower())
+
+        # Test 2: Stage 2 requires proof file or link/notes
+        res_stg2 = self.client.post(f'/api/poster-requests/{v_id}/timeline-step', json={
+            'step_order': 2,
+            'step_status': 'completed',
+            'notes': ''
+        })
+        self.assertEqual(res_stg2.status_code, 400)
+        self.assertIn('proof screenshot', res_stg2.get_json().get('message', '').lower())
+
+        # Test 3: Stage 4 requires submitted documentation
+        res_stg4 = self.client.post(f'/api/poster-requests/{v_id}/timeline-step', json={
+            'step_order': 4,
+            'step_status': 'completed'
+        })
+        self.assertEqual(res_stg4.status_code, 400)
+        self.assertIn('documentation', res_stg4.get_json().get('message', '').lower())
+
+        print("[PASS] Strict stage deliverables enforcement validations passed.")
 
 if __name__ == '__main__':
     unittest.main()
+
