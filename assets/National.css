@@ -30,24 +30,24 @@ body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(
 .layout-sidebar { flex: 0 0 380px; display: flex; flex-direction: column; gap: 1rem; }
 
 /* --- NATIONAL SIDEBAR --- */
-.sidebar { width: 270px; background: var(--primary); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease; z-index: 50; box-shadow: 4px 0 16px rgba(0,0,0,0.12); }
+.sidebar { width: 270px; background: #1e293b; color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease; z-index: 50; box-shadow: 4px 0 16px rgba(0,0,0,0.12); }
 .sidebar-header { padding: 1.5rem 1.25rem 1.25rem; display: flex; align-items: center; gap: 0.85rem; position: relative; }
 .sidebar-logo { width: 50px; height: 50px; border-radius: 12px; object-fit: contain; background: #ffffff; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); flex-shrink: 0; }
 .sidebar-title { display: flex; flex-direction: column; justify-content: center; }
 .sidebar-title h1 { font-size: 1.2rem; font-weight: 800; line-height: 1.15; color: #ffffff; letter-spacing: -0.02em; font-family: 'Roboto', sans-serif; }
-.sidebar-title p { font-size: 0.65rem; color: rgba(255,255,255,0.78); margin-top: 4px; line-height: 1.3; font-weight: 400; }
+.sidebar-title p { font-size: 0.7rem; color: #38bdf8; margin-top: 4px; line-height: 1.3; font-weight: 600; }
 
 .nav-menu { flex: 1; margin-top: 1.5rem; padding: 0 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; }
 .nav-link { display: flex; align-items: center; gap: 1.15rem; padding: 0.85rem 1.15rem; border-radius: 1.75rem; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all 0.2s ease; }
 .nav-link i { font-size: 1.35rem; color: rgba(255,255,255,0.8); transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
 .nav-link:hover { background: rgba(255,255,255,0.1); color: #ffffff; }
 .nav-link:hover i { color: #ffffff; }
-.nav-link.active { background: rgba(255,255,255,0.18); color: #ffffff; border-left: none; padding-left: 1.15rem; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+.nav-link.active { background: #2563eb; color: #ffffff; border-left: none; padding-left: 1.15rem; font-weight: 600; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 .nav-link.active i { color: #ffffff; }
 
 .sidebar-footer { padding: 1.25rem 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
-.admin-badge { display: flex; align-items: center; gap: 0.75rem; background: rgba(255,255,255,0.08); padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.12); }
-.admin-badge .icon { width: 34px; height: 34px; background: var(--white); color: var(--primary); border-radius: 0.35rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.admin-badge { display: flex; align-items: center; gap: 0.75rem; background: rgba(30,58,138,0.5); padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(59,130,246,0.3); }
+.admin-badge .icon { width: 34px; height: 34px; background: #1e40af; color: #93c5fd; border-radius: 0.35rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .sign-out { display: flex; align-items: center; gap: 0.75rem; color: var(--white); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s; padding-left: 0.75rem; }
 .sign-out:hover { color: #fda4af; }
 .sign-out .icon { width: 32px; height: 32px; background: rgba(244,63,94,0.2); color: #f43f5e; border-radius: 0.35rem; display: flex; align-items: center; justify-content: center; font-size: 1.125rem; transition: background 0.2s, color 0.2s; }
