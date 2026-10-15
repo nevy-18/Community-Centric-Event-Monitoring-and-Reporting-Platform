@@ -272,6 +272,20 @@ tr:hover td { background-color: #f9fafb; }
 .event-bullets li { margin-bottom: 0.25rem; }
 .event-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-clamp: 3; overflow: hidden; margin: 0; }
 
+/* --- ANNOUNCEMENTS --- */
+.announcement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; padding-bottom: 2.5rem; }
+.announcement-card { background: var(--white); border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid var(--border); padding: 1rem; display: flex; flex-direction: column; height: 100%; transition: transform 0.2s, box-shadow 0.2s; }
+.announcement-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+.announcement-poster { background: #f3f4f6; border-radius: 0.5rem; overflow: hidden; aspect-ratio: 4 / 5; width: 100%; display: flex; align-items: center; justify-content: center; }
+.announcement-poster img { width: 100%; height: 100%; object-fit: cover; }
+.announcement-card h3 { margin-top: 1rem; font-size: 0.95rem; font-weight: 700; text-transform: none; color: var(--primary); }
+.announcement-meta { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); }
+.announcement-meta-item { display: flex; align-items: center; gap: 0.5rem; }
+.announcement-meta-item i { color: #9ca3af; font-size: 0.875rem; }
+.announcement-excerpt { margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; flex: 1; }
+.announcement-view-btn { margin-top: 1.25rem; width: 100%; padding: 0.5rem; background: #eff6ff; color: #2563eb; border: none; border-radius: 0.5rem; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.announcement-view-btn:hover { background: #dbeafe; }
+
 /* --- MOBILE RESPONSIVENESS --- */
 .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
 .sidebar-close { display: none; background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; position: absolute; right: 1rem; top: 1rem; }
