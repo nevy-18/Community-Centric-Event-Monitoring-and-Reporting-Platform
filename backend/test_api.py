@@ -163,5 +163,19 @@ class TestYTRBackendAPI(unittest.TestCase):
         self.assertEqual(data.get('status'), 'success')
         print("[PASS] Authorized Chapter Admin successfully submitted report (HTTP 200/201).")
 
+    def test_17_proposal_review_accept_and_reject(self):
+        # 1. Review proposal as approved
+        res_approve = self.client.post('/api/proposals/1/review', json={'status': 'approved', 'review_note': 'Officially cleared by National Secretariat.'})
+        self.assertEqual(res_approve.status_code, 200)
+        data_app = res_approve.get_json()
+        self.assertEqual(data_app.get('status'), 'success')
+
+        # 2. Verify single proposal endpoint reflects status
+        res_get = self.client.get('/api/proposals/1')
+        self.assertEqual(res_get.status_code, 200)
+        p = res_get.get_json().get('data', {})
+        self.assertEqual(p.get('status'), 'approved')
+        print("[PASS] National admin proposal evaluation & status update passed.")
+
 if __name__ == '__main__':
     unittest.main()

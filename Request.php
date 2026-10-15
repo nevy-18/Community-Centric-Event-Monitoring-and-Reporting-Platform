@@ -27,9 +27,9 @@
                         <p style="color: var(--text-muted); margin-top: 0.25rem;">Review, endorse, and manage promotional media requests and visual collateral across all chapters.</p>
                     </div>
                     <div class="header-actions">
-                        <button class="btn btn-primary" onclick="openNewPosterModal()">
-                            <i class="ph ph-plus-circle"></i> Request Event Poster
-                        </button>
+                        <span class="portal-indicator national" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.8rem; font-weight: 700; padding: 0.45rem 0.9rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i class="ph-fill ph-shield-check"></i> National Review & Approval Portal
+                        </span>
                     </div>
                 </div>
 
@@ -123,66 +123,7 @@
         </div>
     </div>
 
-    <!-- MODAL: REQUEST NEW POSTER -->
-    <div id="new-poster-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: #ffffff; border-radius: 12px; max-width: 620px; width: 90%; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
-                <h3 class="font-roboto" style="margin: 0; color: #0f172a; font-size: 1.35rem; font-weight: 700;">
-                    <i class="ph ph-image-square" style="color: var(--primary);"></i> Request New Event Poster
-                </h3>
-                <button type="button" onclick="closeNewPosterModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #64748b;">
-                    <i class="ph ph-x"></i>
-                </button>
-            </div>
-            <form id="new-poster-form" onsubmit="submitNewPoster(event)">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Chapter *</label>
-                        <select id="np-chapter-id" required style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
-                            <option value="">Select Chapter...</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Target Event Date *</label>
-                        <input type="date" id="np-event-date" required style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
-                    </div>
-                </div>
 
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Title *</label>
-                    <input type="text" id="np-event-title" required placeholder="e.g. Youth Camp 2026: Unshakeable Faith" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
-                </div>
-
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Venue / Location *</label>
-                    <input type="text" id="np-venue" required placeholder="e.g. LSPU Los Baños Campus" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
-                </div>
-
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Theme / Visual Concept *</label>
-                    <input type="text" id="np-theme" required placeholder="e.g. Modern geometric, spiritual revival, high-energy sports" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
-                </div>
-
-                <div style="margin-bottom: 1.25rem;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Poster Release Deadline (Due Date) *</label>
-                    <input type="date" id="np-deadline" required style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
-                    <small style="color: #64748b; font-size: 0.8rem;">Ensure at least 5-7 days before event date for review and revisions.</small>
-                </div>
-
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Additional Notes / Speaker Names / Required Logos</label>
-                    <textarea id="np-notes" rows="3" placeholder="Specify any tagline, scripture references, or guest minister names..." style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;"></textarea>
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-                    <button type="button" class="btn btn-outline" onclick="closeNewPosterModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="np-submit-btn">
-                        <i class="ph ph-paper-plane-tilt"></i> Submit Poster Request
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- MODAL: VIEW POSTER DETAILS -->
     <div id="view-poster-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1000; align-items: center; justify-content: center;">
@@ -212,7 +153,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadMetrics();
-            loadChaptersDropdown();
             loadPosterData('accepted');
             loadPosterData('queue');
         });
@@ -241,23 +181,6 @@
             }
         }
 
-        async function loadChaptersDropdown() {
-            try {
-                const res = await YTR_API.chapters.getAll();
-                if (res.ok && res.data) {
-                    const sel = document.getElementById('np-chapter-id');
-                    sel.innerHTML = '<option value="">Select Chapter...</option>';
-                    res.data.forEach(c => {
-                        const opt = document.createElement('option');
-                        opt.value = c.id;
-                        opt.textContent = `${c.chapter_name} (${c.chapter_code})`;
-                        sel.appendChild(opt);
-                    });
-                }
-            } catch (err) {
-                console.error('Failed to load chapters:', err);
-            }
-        }
 
         async function loadPosterData(tab) {
             try {
@@ -475,51 +398,6 @@
             }
         }
 
-        function openNewPosterModal() {
-            document.getElementById('new-poster-modal').style.display = 'flex';
-        }
-
-        function closeNewPosterModal() {
-            document.getElementById('new-poster-modal').style.display = 'none';
-        }
-
-        async function submitNewPoster(e) {
-            e.preventDefault();
-            const btn = document.getElementById('np-submit-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
-
-            const payload = {
-                chapter_id: parseInt(document.getElementById('np-chapter-id').value),
-                event_title: document.getElementById('np-event-title').value.trim(),
-                event_date: document.getElementById('np-event-date').value,
-                venue: document.getElementById('np-venue').value.trim(),
-                theme_or_concept: document.getElementById('np-theme').value.trim(),
-                requested_deadline: document.getElementById('np-deadline').value,
-                additional_notes: document.getElementById('np-notes').value.trim()
-            };
-
-            try {
-                const res = await YTR_API.posterRequests.create(payload);
-                if (res.ok) {
-                    alert('Poster request submitted successfully to the national review queue!');
-                    document.getElementById('new-poster-form').reset();
-                    closeNewPosterModal();
-                    loadMetrics();
-                    loadPosterData('accepted');
-                    loadPosterData('queue');
-                    switchToQueueTab();
-                } else {
-                    alert('Failed to submit: ' + (res.message || 'Unknown error'));
-                }
-            } catch (err) {
-                console.error('Submission error:', err);
-                alert('Network error submitting to Python API.');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Submit Poster Request';
-            }
-        }
 
         function viewPosterDetails(id, tab) {
             const list = tab === 'accepted' ? acceptedCache : queueCache;

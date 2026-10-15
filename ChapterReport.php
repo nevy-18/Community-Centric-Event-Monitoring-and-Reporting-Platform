@@ -123,7 +123,7 @@
                   <th>Attendance Breakdown</th>
                   <th>Turnout Threshold</th>
                   <th>Budget Spent</th>
-                  <th>E-Signature Stamp</th>
+                  <th>Submission Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -254,26 +254,13 @@
           </div>
         </div>
 
-        <!-- E-Signature Section -->
+        <!-- Submitter Information Section (E-signature disabled for now) -->
         <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-            <label style="font-size: 0.9rem; font-weight: 700; color: #0f172a; margin: 0;">
-              <i class="ph ph-signature"></i> Chapter Admin Digital E-Signature *
-            </label>
-            <button type="button" class="btn btn-outline" onclick="clearSignatureCanvas()" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-              <i class="ph ph-eraser"></i> Clear Signature
-            </button>
-          </div>
-          <p style="margin: 0 0 0.5rem; color: #64748b; font-size: 0.8rem;">Please draw your official signature inside the box using mouse or finger touch.</p>
-          
-          <div style="background: #ffffff; border: 2px dashed #94a3b8; border-radius: 6px; height: 130px; position: relative;">
-            <canvas id="chapter-sig-canvas" width="680" height="130" style="width: 100%; height: 100%; cursor: crosshair; display: block;"></canvas>
-          </div>
-
-          <div style="margin-top: 0.75rem;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Signer Printed Full Name *</label>
-            <input type="text" id="rep-signer-name" required placeholder="e.g. Joan Dela Cruz (Chapter Admin)" style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem;">
-          </div>
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">
+            <i class="ph ph-user-check"></i> Submitting Chapter Coordinator / Administrator Full Name *
+          </label>
+          <input type="text" id="rep-signer-name" required placeholder="e.g. Joan Dela Cruz (Chapter Admin)" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Official endorsement by authorized chapter personnel.</small>
         </div>
 
         <!-- Form Actions -->
@@ -577,9 +564,7 @@
           ? `<span class="badge threshold-met"><i class="ph ph-check-circle"></i> ${thresholdPct}% Met</span>`
           : `<span class="badge threshold-warn"><i class="ph ph-warning"></i> ${thresholdPct}% Under</span>`;
 
-        const sigHtml = r.e_signature 
-          ? `<img src="${r.e_signature}" class="signature-preview-img" alt="Digital Sig"><br><small style="color: #64748b;">${escapeHtml(r.signed_by_name || 'Signed')}</small>`
-          : `<span class="badge" style="background: #f1f5f9; color: #64748b;">Pending E-Sign</span>`;
+        const sigHtml = `<span class="badge" style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;"><i class="ph ph-check-circle"></i> Filed</span><br><small style="color: #64748b;">${escapeHtml(r.signed_by_name || 'Chapter Admin')}</small>`;
 
         return `
           <tr>
@@ -619,9 +604,6 @@
           signerInput.value = currentUser.full_name;
         }
       }
-      setTimeout(() => {
-        clearSignatureCanvas();
-      }, 100);
     }
 
     function closeSubmitReportModal() {
@@ -632,10 +614,7 @@
       e.preventDefault();
       const btn = document.getElementById('rep-submit-btn');
       btn.disabled = true;
-      btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Endorsing & Submitting...';
-
-      // Export E-Signature from canvas
-      const sigData = canvas ? canvas.toDataURL('image/png') : '';
+      btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting Report...';
 
       // Build attendee roster array
       const rosterRows = document.querySelectorAll('#roster-container .roster-grid-row');
@@ -662,14 +641,14 @@
         challenges: document.getElementById('rep-challenges').value.trim(),
         recommendations: document.getElementById('rep-recommendations').value.trim(),
         attendee_roster: JSON.stringify(rosterList),
-        e_signature: sigData,
+        e_signature: '',
         signed_by_name: document.getElementById('rep-signer-name').value.trim()
       };
 
       try {
         const res = await YTR_API.reports.submit(payload);
         if (res.ok) {
-          alert('Report and attendee roster submitted and digitally signed successfully! National Admin has been notified.');
+          alert('Report and attendee roster submitted successfully! National Admin has been notified.');
           document.getElementById('chapter-report-form').reset();
           closeSubmitReportModal();
           loadChapterReports();
@@ -789,15 +768,14 @@
 
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
           <div>
-            <div style="font-size: 0.8rem; color: #64748b;">Authenticated Digital Submission Stamp</div>
-            <div style="font-size: 0.75rem; color: #94a3b8;">YTR Verified Digital Audit Ledger · ${r.signed_at || 'Verified'}</div>
+            <div style="font-size: 0.8rem; color: #64748b;">Authenticated Chapter Submission</div>
+            <div style="font-size: 0.75rem; color: #94a3b8;">YTR Verified Audit Record · ${r.signed_at || r.submitted_at || 'Verified'}</div>
           </div>
           <div style="text-align: center;">
-            ${r.e_signature ? `<img src="${r.e_signature}" style="max-height: 80px; max-width: 200px; display: block; margin: 0 auto 0.5rem;" alt="E-Signature">` : '<div style="height: 60px;"></div>'}
-            <div style="border-top: 1.5px solid #0f172a; width: 220px; padding-top: 0.35rem; font-weight: 700; font-size: 0.9rem;">
+            <div style="border-top: 2px solid #0f172a; width: 220px; padding-top: 0.4rem; font-weight: 700; font-size: 0.9rem;">
               ${escapeHtml(r.signed_by_name || 'Chapter Administrator')}
             </div>
-            <div style="font-size: 0.8rem; color: #64748b;">Chapter Administrator / Signer</div>
+            <div style="font-size: 0.8rem; color: #64748b;">Chapter Administrator / Submitter</div>
           </div>
         </div>
       `;

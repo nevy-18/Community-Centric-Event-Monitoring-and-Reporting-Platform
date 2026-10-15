@@ -181,7 +181,7 @@
                       <th style="text-align: center;">Turnout vs Target</th>
                       <th style="text-align: center;">1st Timers</th>
                       <th style="text-align: center;">Members</th>
-                      <th style="text-align: center;">E-Signature</th>
+                      <th style="text-align: center;">Submission Status</th>
                       <th style="text-align: center;">Action</th>
                     </tr>
                   </thead>
@@ -266,19 +266,13 @@
                     </div>
                   </div>
 
-                  <!-- E-Signature Verification Block -->
+                  <!-- Submitter Verification Block -->
                   <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-signature"></i> E-Signature Verification</label>
-                    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; display: flex; align-items: center; gap: 0.85rem;">
-                      <div id="signatureImgWrapper">
-                        <img id="detailSignatureImg" src="" alt="Digital Signature" class="signature-preview-img" style="display: none;">
-                        <span id="noSignatureText" style="font-size: 0.75rem; color: #94a3b8; font-style: italic;">No e-signature recorded</span>
-                      </div>
-                      <div>
-                        <p id="detailSignedByName" style="font-size: 0.75rem; font-weight: bold; color: #0f172a; margin: 0;">-</p>
-                        <p id="detailSignedDate" style="font-size: 0.65rem; color: #64748b; margin: 2px 0 0;">-</p>
-                        <span class="badge approved font-roboto" style="font-size: 0.6rem; margin-top: 4px;"><i class="ph ph-shield-check"></i> Verified Signature</span>
-                      </div>
+                    <label class="font-roboto"><i class="ph-fill ph-user-check"></i> Submitting Chapter Coordinator</label>
+                    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem;">
+                      <p id="detailSignedByName" style="font-size: 0.85rem; font-weight: bold; color: #0f172a; margin: 0;">-</p>
+                      <p id="detailSignedDate" style="font-size: 0.7rem; color: #64748b; margin: 2px 0 0;">-</p>
+                      <span id="detailVerificationBadge" class="badge approved font-roboto" style="font-size: 0.65rem; margin-top: 6px; display: inline-flex;"><i class="ph ph-shield-check"></i> Verified Chapter Dossier</span>
                     </div>
                   </div>
 
@@ -299,99 +293,7 @@
     </div>
   </div>
 
-  <!-- MODAL: SUBMIT REPORT & ATTENDEES -->
-  <div id="reportModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-            <i class="ph ph-file-plus"></i>
-          </div>
-          <div>
-            <h3 class="font-roboto" style="font-size: 1.1rem; color: #0f172a; font-weight: 800;">Submit Event Report & Attendance Roster</h3>
-            <p style="font-size: 0.75rem; color: #64748b; margin: 0;">File event turnout, attendee breakdown, and digital e-signature.</p>
-          </div>
-        </div>
-        <button onclick="closeReportModal()" style="background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;"><i class="ph ph-x"></i></button>
-      </div>
 
-      <div class="modal-body">
-        <form id="eventReportForm" onsubmit="handleReportFormSubmit(event)">
-          <div class="form-group">
-            <label class="form-label font-roboto">Select Event to Report <span style="color: #f43f5e;">*</span></label>
-            <select id="formReportEventId" class="form-select font-roboto" required>
-              <option value="" disabled selected>Loading eligible events...</option>
-            </select>
-          </div>
-
-          <!-- Attendance Turnout Breakdown (4 Fields) -->
-          <div class="form-group">
-            <label class="form-label font-roboto">Attendance Turnout Breakdown <span style="color: #f43f5e;">*</span></label>
-            <div class="form-grid-4">
-              <div>
-                <label style="font-size: 0.7rem; color: #64748b;">Total Attendees</label>
-                <input type="number" id="formReportTotal" class="form-input font-roboto" placeholder="e.g. 142" min="1" required onchange="calculateTurnoutBreakdown()">
-              </div>
-              <div>
-                <label style="font-size: 0.7rem; color: #16a34a;">1st Timers</label>
-                <input type="number" id="formReportFirstTimers" class="form-input font-roboto" placeholder="e.g. 38" min="0" required>
-              </div>
-              <div>
-                <label style="font-size: 0.7rem; color: #2563eb;">Members</label>
-                <input type="number" id="formReportMembers" class="form-input font-roboto" placeholder="e.g. 84" min="0" required>
-              </div>
-              <div>
-                <label style="font-size: 0.7rem; color: #9333ea;">Youth Leaders</label>
-                <input type="number" id="formReportLeaders" class="form-input font-roboto" placeholder="e.g. 20" min="0" required>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label font-roboto">Budget Utilized (PHP)</label>
-              <input type="number" id="formReportBudget" class="form-input font-roboto" placeholder="e.g. 18500" min="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label font-roboto">Signer Full Name <span style="color: #f43f5e;">*</span></label>
-              <input type="text" id="formReportSignerName" class="form-input font-roboto" placeholder="e.g. Joan Dela Cruz (Chapter Admin)" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label font-roboto">Attendee Roster Submission (Names, Contacts, Church/Campus)</label>
-            <textarea id="formReportRoster" class="form-textarea font-roboto" rows="3" placeholder="1. Maria Santos - 0917-123-4567 - Laguna Campus - First Timer&#10;2. Mark Reyes - 0918-987-6543 - Member&#10;3. Daniel Gomez - 0922-555-4321 - Youth Leader"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label font-roboto">Executive Summary & Highlights <span style="color: #f43f5e;">*</span></label>
-            <textarea id="formReportSummary" class="form-textarea font-roboto" rows="2" placeholder="Summary of ministry activities, program flow, and spiritual breakthroughs..." required></textarea>
-          </div>
-
-          <!-- Digital E-Signature Pad Section -->
-          <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <label class="form-label font-roboto" style="margin-bottom: 0;">Digital E-Signature <span style="color: #f43f5e;">*</span></label>
-              <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="clearSignatureCanvas()">
-                <i class="ph ph-eraser"></i> Clear Pad
-              </button>
-            </div>
-            <div class="signature-box">
-              <canvas id="signatureCanvas" class="signature-canvas"></canvas>
-              <p style="font-size: 0.65rem; color: #94a3b8; margin-top: 4px;">Sign with your mouse, stylus, or finger inside the box</p>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-            <button type="button" class="btn btn-outline font-roboto" onclick="closeReportModal()">Cancel</button>
-            <button type="submit" id="btnSubmitReport" class="btn btn-primary font-roboto">
-              <i class="ph ph-signature"></i> E-Sign & Submit Report
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 
   <!-- PRINT PREVIEW MODAL -->
   <div id="printModal" class="modal-overlay">
@@ -478,10 +380,9 @@
               <p>Youth on the Rock National Secretariat Records</p>
             </div>
             <div style="text-align: center; width: 220px;">
-              <img id="printSignatureImage" src="" alt="Signer E-Signature" style="max-height: 65px; margin-bottom: 4px; display: inline-block;">
-              <div style="border-top: 1px solid #0f172a; width: 100%; margin: 2px auto 4px;"></div>
-              <p id="printSignerName" style="font-size: 0.75rem; font-weight: bold; margin: 0; color: #0f172a;">Signer Name</p>
-              <p id="printSignerTimestamp" style="font-size: 0.65rem; color: #64748b; margin: 0;">Digitally Signed</p>
+              <div style="border-top: 2px solid #0f172a; width: 100%; margin: 1.5rem auto 4px;"></div>
+              <p id="printSignerName" style="font-size: 0.8rem; font-weight: bold; margin: 0; color: #0f172a;">Signer Name</p>
+              <p id="printSignerTimestamp" style="font-size: 0.65rem; color: #64748b; margin: 0;">Verified Submission</p>
             </div>
           </div>
         </div>
@@ -502,80 +403,6 @@
     let selectedReportData = null;
     let allReports = [];
 
-    // Signature Pad Canvas Handling
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas ? canvas.getContext('2d') : null;
-    let isDrawing = false;
-    let hasDrawnSignature = false;
-
-    if (canvas && ctx) {
-      function resizeCanvas() {
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = 130;
-        ctx.strokeStyle = '#1a2f63';
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-      }
-
-      window.addEventListener('resize', resizeCanvas);
-
-      function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-        return {
-          x: clientX - rect.left,
-          y: clientY - rect.top
-        };
-      }
-
-      canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        hasDrawnSignature = true;
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-      });
-
-      canvas.addEventListener('mousemove', (e) => {
-        if (!isDrawing) return;
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      });
-
-      window.addEventListener('mouseup', () => { isDrawing = false; });
-
-      // Touch Events for Mobile / Tablet
-      canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        isDrawing = true;
-        hasDrawnSignature = true;
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-      }, { passive: false });
-
-      canvas.addEventListener('touchmove', (e) => {
-        if (!isDrawing) return;
-        e.preventDefault();
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      }, { passive: false });
-
-      canvas.addEventListener('touchend', () => { isDrawing = false; });
-    }
-
-    function clearSignatureCanvas() {
-      if (ctx && canvas) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        hasDrawnSignature = false;
-      }
-    }
-
     // Load Metrics from Python API
     async function loadReportMetrics() {
       const res = await YTR_API.reports.getMetrics();
@@ -583,21 +410,6 @@
         document.getElementById('repMetricActive').textContent = res.data.total_active_events || 0;
         document.getElementById('repMetricCompleted').textContent = res.data.completed_events || 0;
         document.getElementById('repMetricFirstTimers').textContent = res.data.first_timers || 0;
-      }
-    }
-
-    // Load Eligible Events into Modal Select
-    async function loadEligibleEvents() {
-      const res = await YTR_API.proposals.list('all');
-      const select = document.getElementById('formReportEventId');
-      if (res.status === 'success' && Array.isArray(res.data)) {
-        select.innerHTML = '<option value="" disabled selected>Select event to file report for</option>';
-        res.data.forEach(ev => {
-          const opt = document.createElement('option');
-          opt.value = ev.id;
-          opt.textContent = `${ev.title} - ${ev.chapter_name || 'All'} (${ev.status.toUpperCase()})`;
-          select.appendChild(opt);
-        });
       }
     }
 
@@ -621,17 +433,16 @@
           const totalAtt = r.total_participants || 0;
           const targetAtt = r.target_turnout || 100;
           const turnoutPercent = r.turnout_percentage || 0;
-          const hasSignature = !!r.e_signature;
+          const isSubmitted = !!r.submitted_at || !!r.total_participants;
 
           let thresholdBadge = `<span class="badge threshold-met font-roboto">${turnoutPercent}% Met</span>`;
           if (turnoutPercent < 70) {
             thresholdBadge = `<span class="badge threshold-warn font-roboto">${turnoutPercent}% Below</span>`;
           }
 
-          let sigBadge = `<span class="badge approved font-roboto"><i class="ph ph-check"></i> E-Signed</span>`;
-          if (!hasSignature) {
-            sigBadge = `<span class="badge pending font-roboto">Pending Signature</span>`;
-          }
+          let statusBadge = isSubmitted 
+            ? `<span class="badge approved font-roboto"><i class="ph ph-check-circle"></i> Submitted</span>` 
+            : `<span class="badge pending font-roboto">Pending Submission</span>`;
 
           row.innerHTML = `
             <td>
@@ -655,7 +466,7 @@
             </td>
             <td style="text-align: center; font-weight: bold; color: #16a34a;">${r.first_timers || 0}</td>
             <td style="text-align: center; font-weight: bold; color: #2563eb;">${r.existing_members || 0}</td>
-            <td style="text-align: center;">${sigBadge}</td>
+            <td style="text-align: center;">${statusBadge}</td>
             <td style="text-align: center;">
               <button class="btn btn-primary btn-sm font-roboto" style="margin: 0 auto;" onclick='selectReportRecord(${JSON.stringify(r)})'>
                 <i class="ph ph-eye"></i> View
@@ -677,57 +488,41 @@
       document.getElementById('emptyReportState').style.display = 'none';
       document.getElementById('activeReportContent').style.display = 'block';
 
-      document.getElementById('detailEventTitle').textContent = r.event_title;
-      document.getElementById('detailChapterName').textContent = r.chapter_name || 'National Secretariat';
-      document.getElementById('detailDateVenue').textContent = (r.start_datetime ? r.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (r.venue || 'TBD');
+      document.getElementById('detailReportEventTitle').textContent = r.event_title;
+      document.getElementById('detailReportChapter').textContent = r.chapter_name || 'National Secretariat';
+      document.getElementById('detailReportSchedule').textContent = (r.start_datetime ? r.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (r.venue || 'TBD');
       
       const total = r.total_participants || 0;
       const target = r.target_turnout || 100;
       const percent = r.turnout_percentage || 0;
 
-      document.getElementById('detailTotal').textContent = total;
-      document.getElementById('detailFirstTimers').textContent = r.first_timers || 0;
-      document.getElementById('detailMembers').textContent = r.existing_members || 0;
-      document.getElementById('detailLeaders').textContent = r.youth_leaders_count || 0;
-      document.getElementById('detailNotes').textContent = r.report_summary || 'No summary notes submitted.';
+      document.getElementById('detailReportTurnoutFraction').textContent = `${total} / ${target}`;
+      document.getElementById('detailReportTurnoutFill').style.width = `${Math.min(percent, 100)}%`;
+      document.getElementById('detailReportTurnoutBadge').textContent = `${percent}% Performance`;
+      document.getElementById('detailReportBudgetSpent').textContent = `₱${Number(r.budget_spent || 0).toLocaleString()} Spent`;
 
-      // Threshold indicators
-      const badge = document.getElementById('detailTurnoutBadge');
-      const fill = document.getElementById('detailTurnoutProgressBar');
-      const text = document.getElementById('detailTurnoutText');
+      document.getElementById('detailFirstTimersCount').textContent = r.first_timers || 0;
+      document.getElementById('detailMembersCount').textContent = r.existing_members || 0;
+      document.getElementById('detailLeadersCount').textContent = r.youth_leaders_count || 0;
+      document.getElementById('detailReportSummary').textContent = r.report_summary || 'No summary notes submitted yet.';
 
-      badge.textContent = `${percent}% Target Rate`;
-      fill.style.width = `${Math.min(percent, 100)}%`;
-      text.textContent = `${total} participants achieved against ${target} expected attendees threshold.`;
-
-      if (percent >= 100) {
-        badge.className = 'badge threshold-met font-roboto';
-        fill.className = 'threshold-fill met';
-      } else if (percent >= 70) {
-        badge.className = 'badge threshold-warn font-roboto';
-        fill.className = 'threshold-fill warn';
-      } else {
-        badge.className = 'badge rose font-roboto';
-        fill.className = 'threshold-fill low';
-      }
-
-      // Digital Signature preview
-      const sigImg = document.getElementById('detailSignatureImg');
-      const noSigText = document.getElementById('noSignatureText');
+      // Submitter Information
       const signerNameP = document.getElementById('detailSignedByName');
       const signedDateP = document.getElementById('detailSignedDate');
+      const vBadge = document.getElementById('detailVerificationBadge');
 
-      if (r.e_signature) {
-        sigImg.src = r.e_signature;
-        sigImg.style.display = 'block';
-        noSigText.style.display = 'none';
-        signerNameP.textContent = r.signed_by_name || 'Verified Signer';
-        signedDateP.textContent = 'Signed on ' + (r.signed_at || r.submitted_at || 'Recently');
+      if (r.submitted_at || r.total_participants) {
+        signerNameP.textContent = r.signed_by_name || 'Chapter Administrator';
+        signedDateP.textContent = 'Submitted on ' + (r.signed_at || r.submitted_at || 'Recently');
+        vBadge.style.display = 'inline-flex';
+        vBadge.className = 'badge approved font-roboto';
+        vBadge.innerHTML = '<i class="ph ph-shield-check"></i> Verified Chapter Dossier';
       } else {
-        sigImg.style.display = 'none';
-        noSigText.style.display = 'block';
-        signerNameP.textContent = 'Pending Signature';
-        signedDateP.textContent = 'Awaiting coordinator sign-off';
+        signerNameP.textContent = 'Pending Submission';
+        signedDateP.textContent = 'Awaiting chapter submission';
+        vBadge.style.display = 'inline-flex';
+        vBadge.className = 'badge pending font-roboto';
+        vBadge.innerHTML = '<i class="ph ph-clock"></i> Awaiting Dossier';
       }
     }
 
@@ -744,76 +539,6 @@
     function searchReports() {
       clearTimeout(reportSearchTimeout);
       reportSearchTimeout = setTimeout(loadReports, 300);
-    }
-
-    // Modal Controls
-    function openReportModal() {
-      document.getElementById('reportModal').classList.add('open');
-      setTimeout(resizeCanvas, 150);
-    }
-    function closeReportModal() {
-      document.getElementById('reportModal').classList.remove('open');
-    }
-
-    // Calculate turnout breakdown if total is changed
-    function calculateTurnoutBreakdown() {
-      const total = parseInt(document.getElementById('formReportTotal').value) || 0;
-      const ft = document.getElementById('formReportFirstTimers');
-      const mem = document.getElementById('formReportMembers');
-      const ldr = document.getElementById('formReportLeaders');
-
-      if (!ft.value && !mem.value && total > 0) {
-        ft.value = Math.round(total * 0.3);
-        mem.value = Math.round(total * 0.6);
-        ldr.value = total - parseInt(ft.value) - parseInt(mem.value);
-      }
-    }
-
-    // Handle Form Submit with Digital Signature & Attendees Roster
-    async function handleReportFormSubmit(e) {
-      e.preventDefault();
-      const submitBtn = document.getElementById('btnSubmitReport');
-      submitBtn.disabled = true;
-
-      // Check signature
-      if (!hasDrawnSignature) {
-        alert('Please draw your digital e-signature in the box before submitting.');
-        submitBtn.disabled = false;
-        return;
-      }
-
-      const sigDataUrl = canvas.toDataURL('image/png');
-
-      const payload = {
-        event_id: document.getElementById('formReportEventId').value,
-        total_participants: document.getElementById('formReportTotal').value,
-        first_timers: document.getElementById('formReportFirstTimers').value,
-        existing_members: document.getElementById('formReportMembers').value,
-        youth_leaders_count: document.getElementById('formReportLeaders').value,
-        budget_spent: document.getElementById('formReportBudget').value || 0,
-        signed_by_name: document.getElementById('formReportSignerName').value.trim(),
-        attendee_roster: document.getElementById('formReportRoster').value.trim(),
-        report_summary: document.getElementById('formReportSummary').value.trim(),
-        e_signature: sigDataUrl
-      };
-
-      try {
-        const res = await YTR_API.reports.submit(payload);
-        if (res.status === 'success') {
-          alert('Event report, attendee breakdown, and digital e-signature have been submitted successfully!');
-          closeReportModal();
-          e.target.reset();
-          clearSignatureCanvas();
-          loadReportMetrics();
-          loadReports();
-        } else {
-          alert(res.message || 'Error submitting report.');
-        }
-      } catch (err) {
-        alert('Failed to submit report. Please ensure the Python backend is running.');
-      } finally {
-        submitBtn.disabled = false;
-      }
     }
 
     // Print Modal & Document Preview
@@ -835,16 +560,8 @@
       document.getElementById('printThresholdRate').textContent = (r.turnout_percentage || 100) + '% Performance';
 
       document.getElementById('printSummaryText').textContent = r.report_summary || 'Activities successfully conducted with full chapter participation.';
-      document.getElementById('printSignerName').textContent = r.signed_by_name || 'Joan Dela Cruz';
-      document.getElementById('printSignerTimestamp').textContent = 'Digitally Signed on ' + (r.signed_at || new Date().toLocaleDateString());
-
-      const printSig = document.getElementById('printSignatureImage');
-      if (r.e_signature) {
-        printSig.src = r.e_signature;
-        printSig.style.display = 'inline-block';
-      } else {
-        printSig.style.display = 'none';
-      }
+      document.getElementById('printSignerName').textContent = r.signed_by_name || 'Chapter Administrator';
+      document.getElementById('printSignerTimestamp').textContent = 'Verified on ' + (r.signed_at || r.submitted_at || new Date().toLocaleDateString());
 
       document.getElementById('printModal').classList.add('open');
     }
@@ -856,7 +573,6 @@
     // Initialize on DOM load
     window.addEventListener('DOMContentLoaded', () => {
       loadReportMetrics();
-      loadEligibleEvents();
       loadReports();
     });
   </script>

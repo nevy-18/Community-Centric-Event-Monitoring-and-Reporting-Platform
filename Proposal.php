@@ -65,9 +65,9 @@
               <p>Review, evaluate, and monitor upcoming event plans and budget proposals submitted by partner chapters.</p>
             </div>
           </div>
-          <button class="btn btn-primary font-roboto" onclick="openProposalModal()">
-            <i class="ph ph-plus"></i> Submit Event Proposal
-          </button>
+          <span class="portal-indicator national" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.8rem; font-weight: 700; padding: 0.45rem 0.9rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <i class="ph-fill ph-shield-check"></i> National Evaluation & Approval Portal
+          </span>
         </div>
 
         <!-- Metric Cards -->
@@ -287,95 +287,7 @@
     </div>
   </div>
 
-  <!-- MODAL: SUBMIT NEW PROPOSAL -->
-  <div id="proposalModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-            <i class="ph ph-file-plus"></i>
-          </div>
-          <h3 class="font-roboto" style="font-size: 1.1rem; color: var(--primary); font-weight: bold;">Submit Chapter Event Proposal</h3>
-        </div>
-        <button onclick="closeProposalModal()" style="background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;"><i class="ph ph-x"></i></button>
-      </div>
 
-      <div class="modal-body">
-        <form id="newProposalModalForm" onsubmit="handleModalProposalSubmit(event)">
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label font-roboto">Event Title <span style="color: #f43f5e;">*</span></label>
-              <input type="text" id="formPropTitle" class="form-input font-roboto" placeholder="e.g. Regional Youth Leadership Camp" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label font-roboto">Host Chapter <span style="color: #f43f5e;">*</span></label>
-              <select id="formPropChapter" class="form-select font-roboto" required>
-                <option value="" disabled selected>Select Chapter</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label font-roboto">Event Category <span style="color: #f43f5e;">*</span></label>
-              <select id="formPropCategory" class="form-select font-roboto" required>
-                <option value="chapter">Youth Camp & Fellowship</option>
-                <option value="national">Leadership Conference</option>
-                <option value="community">Community Outreach</option>
-                <option value="other">Other Activity</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label font-roboto">Expected Turnout</label>
-              <input type="number" id="formPropTurnout" class="form-input font-roboto" placeholder="e.g. 150" min="1">
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label font-roboto">Proposed Start Date <span style="color: #f43f5e;">*</span></label>
-              <input type="date" id="formPropStartDate" class="form-input font-roboto" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label font-roboto">Proposed End Date</label>
-              <input type="date" id="formPropEndDate" class="form-input font-roboto">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label font-roboto">Proposed Venue / Address <span style="color: #f43f5e;">*</span></label>
-            <input type="text" id="formPropVenue" class="form-input font-roboto" placeholder="e.g. YTR Assembly Center, Los Baños" required>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label font-roboto">Estimated Budget (PHP)</label>
-              <input type="number" id="formPropBudget" class="form-input font-roboto" placeholder="e.g. 20000" min="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label font-roboto">Milestone Due Date (Lead Time Deadline)</label>
-              <input type="date" id="formPropDueDate" class="form-input font-roboto">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label font-roboto">Contact Coordinator</label>
-            <input type="text" id="formPropCoordinator" class="form-input font-roboto" placeholder="e.g. Rayvhen P. Muñoz">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label font-roboto">Objectives & Description <span style="color: #f43f5e;">*</span></label>
-            <textarea id="formPropDescription" class="form-textarea font-roboto" rows="3" placeholder="State the goals and expected outcomes of the event..." required></textarea>
-          </div>
-
-          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
-            <button type="button" class="btn btn-outline font-roboto" onclick="closeProposalModal()">Cancel</button>
-            <button type="submit" id="btnSubmitProposal" class="btn btn-primary font-roboto"><i class="ph ph-paper-plane-tilt"></i> Submit Proposal</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 
   <script src="assets/api-client.js"></script>
   <!-- Interactive JavaScript Logic -->
@@ -565,6 +477,74 @@
         budgetBadge.className = 'badge threshold-met font-roboto';
         budgetBadge.textContent = `₱${budgetAmt.toLocaleString()} / ₱${budgetCap.toLocaleString()} Cap (Passed)`;
       }
+
+      // Dynamic Action & Tracking Panel:
+      // If Pending: Show Accept & Reject (Revise) buttons
+      // If Accepted: Only show status update and timeline tracking (no accept/reject buttons)
+      // If Revision: Show revision feedback notice
+      const actionBox = document.getElementById('proposalActionButtons');
+      if (actionBox) {
+        if (isPending) {
+          actionBox.innerHTML = `
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; margin-top: 0.75rem;">
+              <label class="font-roboto" style="display: block; font-size: 0.75rem; font-weight: 700; color: #334155; margin-bottom: 0.5rem; text-transform: uppercase;">
+                <i class="ph ph-gavel"></i> National Evaluation Action
+              </label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <button class="btn btn-outline-danger font-roboto" style="display: flex; align-items: center; justify-content: center; gap: 0.35rem; font-size: 0.8rem;" onclick="handleReviewProposal('draft')">
+                  <i class="ph ph-x"></i> Reject / Revise
+                </button>
+                <button class="btn btn-primary font-roboto" style="display: flex; align-items: center; justify-content: center; gap: 0.35rem; font-size: 0.8rem; background: #16a34a; border-color: #15803d;" onclick="handleReviewProposal('approved')">
+                  <i class="ph ph-check"></i> Accept & Approve
+                </button>
+              </div>
+            </div>
+          `;
+        } else if (isApproved) {
+          actionBox.innerHTML = `
+            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 0.85rem; margin-top: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                <div style="width: 22px; height: 22px; border-radius: 50%; background: #16a34a; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;">
+                  <i class="ph ph-check"></i>
+                </div>
+                <strong style="color: #166534; font-size: 0.85rem;">Proposal Accepted & Endorsed</strong>
+              </div>
+              <p style="font-size: 0.75rem; color: #15803d; margin: 0 0 0.5rem; line-height: 1.4;">
+                This proposal is officially accepted. You can monitor progress and status updates below:
+              </p>
+              <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.5rem 0.65rem; font-size: 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: #64748b;">Current Status:</span>
+                  <strong style="color: #0f172a; text-transform: uppercase;">${p.status}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: #64748b;">Approval Timer:</span>
+                  <strong style="color: #166534;">${p.approval_timer || 'Recently Approved'}</strong>
+                </div>
+                ${p.review_note ? `<div style="border-top: 1px dashed #e2e8f0; padding-top: 0.35rem; color: #334155;"><strong>Endorsement Note:</strong> ${escapeHtml(p.review_note)}</div>` : ''}
+              </div>
+              <div style="margin-top: 0.6rem;">
+                <a href="Request.php" class="btn btn-outline btn-sm font-roboto" style="display: flex; align-items: center; justify-content: center; gap: 0.35rem; width: 100%; text-decoration: none; font-size: 0.75rem;">
+                  <i class="ph ph-image-square"></i> Check Poster Collateral in Requests
+                </a>
+              </div>
+            </div>
+          `;
+        } else {
+          actionBox.innerHTML = `
+            <div style="background: #fff7ed; border: 1px solid #fdba74; border-radius: 8px; padding: 0.85rem; margin-top: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                <i class="ph-fill ph-warning-circle" style="color: #c2410c; font-size: 1.15rem;"></i>
+                <strong style="color: #9a3412; font-size: 0.85rem;">Revision Requested</strong>
+              </div>
+              <p style="font-size: 0.75rem; color: #9a3412; margin: 0 0 0.5rem; line-height: 1.4;">
+                Feedback has been returned to the chapter coordinator. Awaiting updated proposal resubmission.
+              </p>
+              ${p.review_note ? `<div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 6px; padding: 0.5rem; font-size: 0.75rem; color: #7c2d12;"><strong>Revision Notes:</strong> ${escapeHtml(p.review_note)}</div>` : ''}
+            </div>
+          `;
+        }
+      }
     }
 
     // Filter proposals by status tab
@@ -597,85 +577,47 @@
 
       let note = '';
       if (status === 'draft') {
-        note = prompt('Please specify the revision notes for the chapter coordinator:');
+        note = prompt('Please specify the revision notes / reasons for rejection to the chapter coordinator:');
         if (note === null) return;
+      } else if (status === 'approved') {
+        const confirmApprove = confirm('Are you sure you want to ACCEPT and APPROVE this event proposal?');
+        if (!confirmApprove) return;
+        const inputNote = prompt('Optional endorsement note or instructions (press OK to proceed):', 'Approved for poster creation and chapter schedule.');
+        if (inputNote !== null) {
+          note = inputNote;
+        }
       }
-
-      const res = await YTR_API.proposals.review(activeProposalId, status, note);
-      if (res.status === 'success') {
-        alert(status === 'approved' ? 'Proposal approved successfully! Approval timer and poster creation activated.' : 'Revision request sent to chapter.');
-        loadProposalMetrics();
-        loadProposals();
-      } else {
-        alert(res.message || 'Error updating proposal.');
-      }
-    }
-
-    // Modal controls
-    function openProposalModal() {
-      document.getElementById('proposalModal').classList.add('open');
-    }
-    function closeProposalModal() {
-      document.getElementById('proposalModal').classList.remove('open');
-    }
-
-    // Submit New Proposal to Python API
-    async function handleModalProposalSubmit(e) {
-      e.preventDefault();
-      const submitBtn = document.getElementById('btnSubmitProposal');
-      submitBtn.disabled = true;
-
-      const payload = {
-        title: document.getElementById('formPropTitle').value.trim(),
-        chapter_id: document.getElementById('formPropChapter').value,
-        event_type: document.getElementById('formPropCategory').value,
-        start_date: document.getElementById('formPropStartDate').value,
-        end_date: document.getElementById('formPropEndDate').value,
-        venue: document.getElementById('formPropVenue').value.trim(),
-        target_turnout: document.getElementById('formPropTurnout').value || 100,
-        budget_amount: document.getElementById('formPropBudget').value || 0,
-        due_date: document.getElementById('formPropDueDate').value || document.getElementById('formPropStartDate').value,
-        description: document.getElementById('formPropDescription').value.trim()
-      };
 
       try {
-        const res = await YTR_API.proposals.create(payload);
+        const res = await YTR_API.proposals.review(activeProposalId, status, note);
         if (res.status === 'success') {
-          alert('Event proposal has been submitted successfully with threshold milestones!');
-          closeProposalModal();
-          e.target.reset();
+          alert(status === 'approved' ? 'Proposal officially accepted! Poster creation request created and approval timer started.' : 'Revision request sent to chapter coordinator.');
           loadProposalMetrics();
           loadProposals();
         } else {
-          alert(res.message || 'Error submitting event proposal.');
+          alert(res.message || 'Error updating proposal.');
         }
       } catch (err) {
-        alert('Could not submit proposal. Make sure the Python backend is running at http://127.0.0.1:5000.');
-      } finally {
-        submitBtn.disabled = false;
+        console.error('Proposal review error:', err);
+        alert('Network error communicating with the Python API.');
       }
     }
 
-    // Wire action buttons in sidebar
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize on DOM load
     window.addEventListener('DOMContentLoaded', () => {
       loadProposalMetrics();
       loadChapters();
       loadProposals();
-
-      // Hook up sidebar approve / revision buttons
-      const actionBox = document.getElementById('proposalActionButtons');
-      if (actionBox) {
-        actionBox.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-            <button class="btn btn-outline-danger font-roboto" onclick="handleReviewProposal('draft')">
-              <i class="ph ph-pencil-simple"></i> Request Revision
-            </button>
-            <button class="btn btn-primary font-roboto" onclick="handleReviewProposal('approved')">
-              <i class="ph ph-check"></i> Approve
-            </button>
-          </div>
-        `;
-      }
     });
   </script>
 </body>
