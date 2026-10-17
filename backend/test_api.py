@@ -199,7 +199,8 @@ class TestYTRBackendAPI(unittest.TestCase):
             'venue': 'Provincial Capitol Gym',
             'theme_or_concept': 'Igniting Tomorrow Leaders',
             'target_participants': '250 Youth Leaders',
-            'requested_deadline': '2026-10-25',
+            'requested_deadline': '2026-10-18',
+            'caption': 'Official publicity caption and announcement blurb.',
             'requested_by': 2
         }
         res_create = self.client.post('/api/poster-requests', json=create_payload)
@@ -325,9 +326,16 @@ class TestYTRBackendAPI(unittest.TestCase):
             'chapter_id': 1,
             'event_title': 'Validation Test Event',
             'event_date': '2026-11-01',
+            'event_time': '02:00 PM',
+            'venue': 'Community Center',
+            'theme_or_concept': 'Youth Unity',
+            'target_participants': '100 Participants',
+            'requested_deadline': '2026-10-28',
+            'caption': 'Join our youth unity rally!',
             'requested_by': 2
         }
         res_create = self.client.post('/api/poster-requests', json=create_payload)
+        self.assertIn(res_create.status_code, [200, 201])
         v_id = res_create.get_json()['data']['request_id']
 
         # Test 1: Stage 1 requires poster graphic
@@ -460,6 +468,96 @@ class TestYTRBackendAPI(unittest.TestCase):
         res_flush_exec = self.client.post('/api/system/flush', json={'mode': 'demo', 'confirmation': 'FLUSH'}, headers={'X-User-Email': 'admin@ytr.org'})
         self.assertEqual(res_flush_exec.status_code, 200)
         print("[PASS] Executive authorization for backup and reset/flush passed.")
+
+    def test_31_poster_request_empty_field_validations(self):
+        # 1. Empty body returns 400
+        res_empty = self.client.post('/api/poster-requests', json={})
+        self.assertEqual(res_empty.status_code, 400)
+        self.assertIn('missing or empty required fields', res_empty.get_json().get('message', '').lower())
+
+        # 2. Whitespace-only title returns 400
+        res_ws_title = self.client.post('/api/poster-requests', json={
+            'chapter_id': 1,
+            'event_title': '    ',
+            'event_date': '2026-11-10',
+            'event_time': '10:00 AM',
+            'venue': 'Gym',
+            'theme_or_concept': 'Leadership',
+            'target_participants': '100',
+            'requested_deadline': '2026-11-05',
+            'caption': 'Sample caption'
+        })
+        self.assertEqual(res_ws_title.status_code, 400)
+        self.assertIn('event_title', res_ws_title.get_json().get('message', ''))
+
+        # 3. Missing caption returns 400
+        res_no_cap = self.client.post('/api/poster-requests', json={
+            'chapter_id': 1,
+            'event_title': 'Sample Event',
+            'event_date': '2026-11-10',
+            'event_time': '10:00 AM',
+            'venue': 'Gym',
+            'theme_or_concept': 'Leadership',
+            'target_participants': '100',
+            'requested_deadline': '2026-11-05'
+        })
+        self.assertEqual(res_no_cap.status_code, 400)
+        self.assertIn('caption', res_no_cap.get_json().get('message', ''))
+
+        # 4. Deadline after event date returns 400
+        res_bad_dl = self.client.post('/api/poster-requests', json={
+            'chapter_id': 1,
+            'event_title': 'Sample Event',
+            'event_date': '2026-11-10',
+            'event_time': '10:00 AM',
+            'venue': 'Gym',
+            'theme_or_concept': 'Leadership',
+            'target_participants': '100',
+            'requested_deadline': '2026-11-15',
+            'caption': 'Sample caption'
+        })
+        self.assertEqual(res_bad_dl.status_code, 400)
+        self.assertIn('deadline cannot be after', res_bad_dl.get_json().get('message', '').lower())
+
+        # 5. Create a valid request to test post-creation endpoints
+        res_valid = self.client.post('/api/poster-requests', json={
+            'chapter_id': 1,
+            'event_title': 'Strict Validation Demo Event',
+            'event_date': '2026-11-10',
+            'event_time': '10:00 AM',
+            'venue': 'Main Auditorium',
+            'theme_or_concept': 'Excellence and Integrity',
+            'target_participants': '120 Leaders',
+            'requested_deadline': '2026-11-05',
+            'caption': 'Join us for this impactful gathering.'
+        })
+        self.assertIn(res_valid.status_code, [200, 201])
+        req_id = res_valid.get_json()['data']['request_id']
+
+        # 6. Approving without an official poster graphic returns 400
+        res_no_poster_approve = self.client.post(f'/api/poster-requests/{req_id}/verify-approve', json={
+            'checklist': ['date_time', 'venue']
+        })
+        self.assertEqual(res_no_poster_approve.status_code, 400)
+        self.assertIn('official poster', res_no_poster_approve.get_json().get('message', '').lower())
+
+        # 7. Submitting documentation with 0 attendees returns 400
+        res_zero_att = self.client.post(f'/api/poster-requests/{req_id}/submit-documentation', json={
+            'attendees_count': 0,
+            'report_summary': 'Conducted successfully.'
+        })
+        self.assertEqual(res_zero_att.status_code, 400)
+        self.assertIn('attendance figures', res_zero_att.get_json().get('message', '').lower())
+
+        # 8. Submitting documentation with empty summary returns 400
+        res_empty_summary = self.client.post(f'/api/poster-requests/{req_id}/submit-documentation', json={
+            'attendees_count': 100,
+            'report_summary': '   '
+        })
+        self.assertEqual(res_empty_summary.status_code, 400)
+        self.assertIn('event summary', res_empty_summary.get_json().get('message', '').lower())
+
+        print("[PASS] Comprehensive empty field submission and validation tests passed.")
 
 if __name__ == '__main__':
     unittest.main()

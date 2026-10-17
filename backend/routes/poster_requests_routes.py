@@ -342,20 +342,43 @@ def create_poster_request():
         data = request.form.to_dict()
 
     chapter_id = data.get('chapter_id')
-    event_title = data.get('event_title')
-    event_date = data.get('event_date')
-    event_time = data.get('event_time', '')
-    venue = data.get('venue', '')
-    theme = data.get('theme_or_concept', '')
-    target_participants = data.get('target_participants', '')
-    registration_link = data.get('registration_link', '')
-    caption = data.get('caption', '')
-    deadline = data.get('requested_deadline')
+    event_title = str(data.get('event_title') or '').strip()
+    event_date = str(data.get('event_date') or '').strip()
+    event_time = str(data.get('event_time') or '').strip()
+    venue = str(data.get('venue') or '').strip()
+    theme = str(data.get('theme_or_concept') or '').strip()
+    target_participants = str(data.get('target_participants') or '').strip()
+    registration_link = str(data.get('registration_link') or '').strip()
+    caption = str(data.get('caption') or '').strip()
+    deadline = str(data.get('requested_deadline') or '').strip()
     requested_by = data.get('requested_by', 1)
-    notes = data.get('additional_notes', '')
+    notes = str(data.get('additional_notes') or '').strip()
 
-    if not chapter_id or not event_title or not event_date:
-        return api_error('chapter_id, event_title, and event_date are required.', 400)
+    missing = []
+    if not chapter_id:
+        missing.append('chapter_id')
+    if not event_title:
+        missing.append('event_title')
+    if not event_date:
+        missing.append('event_date')
+    if not event_time:
+        missing.append('event_time')
+    if not venue:
+        missing.append('venue')
+    if not theme:
+        missing.append('theme_or_concept')
+    if not target_participants:
+        missing.append('target_participants')
+    if not deadline:
+        missing.append('requested_deadline')
+    if not caption:
+        missing.append('caption')
+
+    if missing:
+        return api_error(f"Missing or empty required fields: {', '.join(missing)}", 400)
+
+    if deadline and event_date and deadline > event_date:
+        return api_error('Poster release deadline cannot be after the event date.', 400)
 
     reference_poster_path = 'assets/images/background.jpg'
     if 'reference_poster' in request.files:
@@ -465,7 +488,10 @@ def verify_approve_poster_request(request_id):
             file.save(save_path)
             official_poster_path = f"assets/uploads/posters/{unique_fname}"
     elif data.get('final_poster_path'):
-        official_poster_path = data.get('final_poster_path')
+        official_poster_path = str(data.get('final_poster_path') or '').strip()
+
+    if not official_poster_path:
+        return api_error('Please upload or provide the official poster graphic before approving this request.', 400)
 
     with get_db() as conn:
         with conn.cursor() as cur:
@@ -741,9 +767,17 @@ def submit_event_documentation(request_id):
     else:
         data = request.form.to_dict()
 
-    attendees_count = int(data.get('attendees_count', 0))
-    first_timers_count = int(data.get('first_timers_count', 0))
-    report_summary = data.get('report_summary', '').strip()
+    try:
+        attendees_count = int(data.get('attendees_count', 0))
+    except (ValueError, TypeError):
+        attendees_count = 0
+
+    try:
+        first_timers_count = int(data.get('first_timers_count', 0))
+    except (ValueError, TypeError):
+        first_timers_count = 0
+
+    report_summary = str(data.get('report_summary', '') or '').strip()
     conducted_date_str = data.get('conducted_date')
     updater_id = int(data.get('updated_by', 1))
 
@@ -772,10 +806,10 @@ def submit_event_documentation(request_id):
         proof_file_path = data.get('proof_file_path')
 
     if not attendees_count or attendees_count <= 0:
-        return api_error('Please specify valid total attendance figures.', 400)
+        return api_error('Please specify valid total attendance figures (greater than zero).', 400)
 
-    if not proof_file_path and not report_summary:
-        return api_error('Please provide event documentation photos/proof or a summary of the conducted event.', 400)
+    if not report_summary:
+        return api_error('Please provide an event summary or key highlights of the conducted event.', 400)
 
     with get_db() as conn:
         with conn.cursor() as cur:

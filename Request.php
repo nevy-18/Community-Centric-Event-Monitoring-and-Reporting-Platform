@@ -769,11 +769,16 @@
             document.getElementById('chk-visuals').checked = true;
             document.getElementById('chk-caption').checked = !!(item.caption || item.registration_link);
 
-            // Reset official poster input
+            // Reset official poster input and dropzone styling
             const fileInput = document.getElementById('verif-poster-file');
             if (fileInput) fileInput.value = '';
             const fileDisplay = document.getElementById('verif-file-display');
             if (fileDisplay) fileDisplay.style.display = 'none';
+            const dropzone = fileInput ? (fileInput.closest('.proof-dropzone') || fileInput.parentElement) : null;
+            if (dropzone) {
+                dropzone.style.borderColor = '#cbd5e1';
+                dropzone.style.backgroundColor = '';
+            }
 
             updateChecklistCount();
             document.getElementById('verification-modal').style.display = 'flex';
@@ -784,6 +789,11 @@
                 const f = input.files[0];
                 document.getElementById('verif-file-name').textContent = `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`;
                 document.getElementById('verif-file-display').style.display = 'block';
+                const dropzone = input.closest('.proof-dropzone') || input.parentElement;
+                if (dropzone) {
+                    dropzone.style.borderColor = '#cbd5e1';
+                    dropzone.style.backgroundColor = '';
+                }
             }
         }
 
@@ -824,6 +834,20 @@
 
         async function submitVerifyApprove() {
             if (!activeRequest) return;
+
+            const posterInput = document.getElementById('verif-poster-file');
+            const hasPoster = posterInput && posterInput.files && posterInput.files[0];
+
+            if (!hasPoster) {
+                const dropzone = posterInput ? (posterInput.closest('.proof-dropzone') || posterInput.parentElement) : null;
+                if (dropzone) {
+                    dropzone.style.borderColor = '#ef4444';
+                    dropzone.style.backgroundColor = '#fef2f2';
+                }
+                alert('Please upload the official poster graphic before approving this request.');
+                return;
+            }
+
             const btn = document.getElementById('verif-approve-btn');
             btn.disabled = true;
             btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Approving...';
@@ -836,21 +860,10 @@
             if (document.getElementById('chk-visuals').checked) checklist.push('visuals');
             if (document.getElementById('chk-caption').checked) checklist.push('caption_link');
 
-            const posterInput = document.getElementById('verif-poster-file');
-            const hasPoster = posterInput && posterInput.files && posterInput.files[0];
-
-            let payload;
-            if (hasPoster) {
-                payload = new FormData();
-                payload.append('checklist', JSON.stringify(checklist));
-                payload.append('review_note', 'Verified and official poster released by National Admin.');
-                payload.append('official_poster', posterInput.files[0]);
-            } else {
-                payload = {
-                    checklist: checklist,
-                    review_note: 'Verified and approved by National Admin. Official poster in production.'
-                };
-            }
+            const payload = new FormData();
+            payload.append('checklist', JSON.stringify(checklist));
+            payload.append('review_note', 'Verified and official poster released by National Admin.');
+            payload.append('official_poster', posterInput.files[0]);
 
             try {
                 const res = await YTR_API.posterRequests.verifyApprove(activeRequest.id, payload);

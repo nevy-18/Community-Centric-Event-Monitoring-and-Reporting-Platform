@@ -185,8 +185,8 @@
                 </div>
 
                 <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Publicity Caption & Blurb</label>
-                    <textarea id="np-caption" rows="2" placeholder="Official announcement blurb to be published alongside the poster..." style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem;"></textarea>
+                    <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Publicity Caption & Blurb *</label>
+                    <textarea id="np-caption" required rows="2" placeholder="Official announcement blurb to be published alongside the poster..." style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem;"></textarea>
                 </div>
 
                 <div style="margin-bottom: 1.25rem;">
@@ -657,12 +657,25 @@
             }
         }
 
+        function clearPosterFormValidation() {
+            const fieldIds = ['np-event-title', 'np-event-date', 'np-event-time', 'np-venue', 'np-participants', 'np-theme', 'np-deadline', 'np-caption'];
+            fieldIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.borderColor = '#cbd5e1';
+                    el.style.backgroundColor = '';
+                }
+            });
+        }
+
         function openNewPosterModal() {
+            clearPosterFormValidation();
             document.getElementById('new-poster-modal').style.display = 'flex';
         }
 
         function closeNewPosterModal() {
             document.getElementById('new-poster-modal').style.display = 'none';
+            clearPosterFormValidation();
         }
 
         function handleNewPosterFile(input) {
@@ -675,22 +688,85 @@
 
         async function submitNewPoster(e) {
             e.preventDefault();
+            const form = document.getElementById('new-poster-form');
+            if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const title = document.getElementById('np-event-title').value.trim();
+            const date = document.getElementById('np-event-date').value.trim();
+            const time = document.getElementById('np-event-time').value.trim();
+            const venue = document.getElementById('np-venue').value.trim();
+            const participants = document.getElementById('np-participants').value.trim();
+            const theme = document.getElementById('np-theme').value.trim();
+            const regLink = document.getElementById('np-reglink').value.trim();
+            const deadline = document.getElementById('np-deadline').value.trim();
+            const caption = document.getElementById('np-caption').value.trim();
+            const notes = document.getElementById('np-notes').value.trim();
+
+            const requiredFields = [
+                { id: 'np-event-title', val: title, name: 'Event Title' },
+                { id: 'np-event-date', val: date, name: 'Target Event Date' },
+                { id: 'np-event-time', val: time, name: 'Event Time & Duration' },
+                { id: 'np-venue', val: venue, name: 'Venue / Platform' },
+                { id: 'np-participants', val: participants, name: 'Target Attendees Quota' },
+                { id: 'np-theme', val: theme, name: 'Subtitle / Theme / Concept' },
+                { id: 'np-deadline', val: deadline, name: 'Poster Release Deadline' },
+                { id: 'np-caption', val: caption, name: 'Publicity Caption & Blurb' }
+            ];
+
+            let firstInvalidEl = null;
+            let missingNames = [];
+
+            requiredFields.forEach(f => {
+                const el = document.getElementById(f.id);
+                if (!f.val) {
+                    if (el) {
+                        el.style.borderColor = '#ef4444';
+                        el.style.backgroundColor = '#fef2f2';
+                    }
+                    missingNames.push(f.name);
+                    if (!firstInvalidEl) firstInvalidEl = el;
+                } else if (el) {
+                    el.style.borderColor = '#cbd5e1';
+                    el.style.backgroundColor = '';
+                }
+            });
+
+            if (missingNames.length > 0) {
+                alert('Please fill in all required fields before submitting:\n• ' + missingNames.join('\n• '));
+                if (firstInvalidEl) firstInvalidEl.focus();
+                return;
+            }
+
+            if (deadline && date && deadline > date) {
+                alert('Poster release deadline cannot be after the target event date.');
+                const dlEl = document.getElementById('np-deadline');
+                if (dlEl) {
+                    dlEl.style.borderColor = '#ef4444';
+                    dlEl.style.backgroundColor = '#fef2f2';
+                    dlEl.focus();
+                }
+                return;
+            }
+
             const btn = document.getElementById('np-submit-btn');
             btn.disabled = true;
             btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
 
             const formData = new FormData();
             formData.append('chapter_id', chapterId);
-            formData.append('event_title', document.getElementById('np-event-title').value.trim());
-            formData.append('event_date', document.getElementById('np-event-date').value);
-            formData.append('event_time', document.getElementById('np-event-time').value.trim());
-            formData.append('venue', document.getElementById('np-venue').value.trim());
-            formData.append('target_participants', document.getElementById('np-participants').value.trim());
-            formData.append('theme_or_concept', document.getElementById('np-theme').value.trim());
-            formData.append('registration_link', document.getElementById('np-reglink').value.trim());
-            formData.append('requested_deadline', document.getElementById('np-deadline').value);
-            formData.append('caption', document.getElementById('np-caption').value.trim());
-            formData.append('additional_notes', document.getElementById('np-notes').value.trim());
+            formData.append('event_title', title);
+            formData.append('event_date', date);
+            formData.append('event_time', time);
+            formData.append('venue', venue);
+            formData.append('target_participants', participants);
+            formData.append('theme_or_concept', theme);
+            formData.append('registration_link', regLink);
+            formData.append('requested_deadline', deadline);
+            formData.append('caption', caption);
+            formData.append('additional_notes', notes);
 
             const fileInput = document.getElementById('np-reference-poster');
             if (fileInput.files && fileInput.files[0]) {
@@ -702,6 +778,7 @@
                 if (res.ok) {
                     alert('Poster request submitted successfully to National Media Team!');
                     document.getElementById('new-poster-form').reset();
+                    clearPosterFormValidation();
                     document.getElementById('np-file-display').style.display = 'none';
                     closeNewPosterModal();
                     await loadPosterData('accepted');
@@ -961,15 +1038,47 @@
             e.preventDefault();
             if (!activeChapterRequest) return;
 
+            const attendeesInput = document.getElementById('doc-attendees');
+            const summaryInput = document.getElementById('doc-summary');
+            const attendees = parseInt(attendeesInput.value, 10);
+            const firstTimers = parseInt(document.getElementById('doc-first-timers').value, 10) || 0;
+            const summary = summaryInput.value.trim();
+            const conductedDate = document.getElementById('doc-conducted-date').value || activeChapterRequest.event_date || '';
+            const fileInput = document.getElementById('doc-proof-file');
+
+            let hasError = false;
+            let errorMsgs = [];
+
+            if (isNaN(attendees) || attendees <= 0) {
+                attendeesInput.style.borderColor = '#ef4444';
+                attendeesInput.style.backgroundColor = '#fef2f2';
+                errorMsgs.push('Total Attendees must be greater than zero.');
+                hasError = true;
+            } else {
+                attendeesInput.style.borderColor = '#cbd5e1';
+                attendeesInput.style.backgroundColor = '';
+            }
+
+            if (!summary) {
+                summaryInput.style.borderColor = '#ef4444';
+                summaryInput.style.backgroundColor = '#fef2f2';
+                errorMsgs.push('Event Summary / Key Highlights cannot be empty.');
+                hasError = true;
+            } else {
+                summaryInput.style.borderColor = '#cbd5e1';
+                summaryInput.style.backgroundColor = '';
+            }
+
+            if (hasError) {
+                alert('Please complete the required documentation fields:\n• ' + errorMsgs.join('\n• '));
+                if (isNaN(attendees) || attendees <= 0) attendeesInput.focus();
+                else summaryInput.focus();
+                return;
+            }
+
             const btn = document.getElementById('btn-submit-docs');
             btn.disabled = true;
             btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
-
-            const attendees = document.getElementById('doc-attendees').value;
-            const firstTimers = document.getElementById('doc-first-timers').value || 0;
-            const summary = document.getElementById('doc-summary').value.trim();
-            const conductedDate = document.getElementById('doc-conducted-date').value || activeChapterRequest.event_date || '';
-            const fileInput = document.getElementById('doc-proof-file');
 
             const formData = new FormData();
             formData.append('attendees_count', attendees);
@@ -1045,12 +1154,25 @@
             e.preventDefault();
             if (!activeChapterRequest) return;
 
+            const videoUrl = document.getElementById('ch-video-url').value.trim();
+            const fileInput = document.getElementById('ch-video-file');
+            const hasVideoFile = fileInput.files && fileInput.files[0];
+
+            if (!hasVideoFile && !videoUrl) {
+                alert('Please upload a promotional video file or provide a video URL before submitting.\n\nNote: Promotional video is optional. If your chapter does not have a teaser video, click "Proceed to Post-Event (Skip Video)".');
+                document.getElementById('ch-video-url').focus();
+                return;
+            }
+
+            if (videoUrl && !/^https?:\/\//i.test(videoUrl)) {
+                alert('Please enter a valid video URL starting with http:// or https://');
+                document.getElementById('ch-video-url').focus();
+                return;
+            }
+
             const btn = document.getElementById('btn-submit-video');
             btn.disabled = true;
             btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
-
-            const videoUrl = document.getElementById('ch-video-url').value.trim();
-            const fileInput = document.getElementById('ch-video-file');
 
             const formData = new FormData();
             formData.append('step_order', 3);
@@ -1058,7 +1180,7 @@
             formData.append('notes', videoUrl ? `Promotional video link: ${videoUrl}` : 'Promotional video teaser uploaded by chapter.');
             formData.append('updated_by', chapterId);
 
-            if (fileInput.files && fileInput.files[0]) {
+            if (hasVideoFile) {
                 formData.append('proof_file', fileInput.files[0]);
             }
 
