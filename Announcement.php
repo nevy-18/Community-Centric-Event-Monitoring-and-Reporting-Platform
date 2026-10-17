@@ -71,6 +71,39 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
       cursor: pointer;
     }
     .modal-close-btn:hover { color: #0f172a; }
+
+    .modal-xl {
+      background: #ffffff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 980px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+
+    .announcement-edit-btn {
+      padding: 0.5rem 0.85rem;
+      background: #ffffff;
+      color: #1e40af;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .announcement-edit-btn:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
   </style>
 </head>
 <body>
@@ -187,83 +220,451 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
     </div>
   </div>
 
-  <!-- MODAL: VIEW ANNOUNCEMENT DETAILS (AVAILABLE TO ALL USERS) -->
+  <!-- MODAL: VIEW ANNOUNCEMENT DETAILS (ACCORDING TO FIGMA MOCKUP) -->
   <div id="viewAnnouncementModal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 620px;">
-      <div class="modal-header">
-        <h3 class="font-roboto">
-          <i class="ph ph-calendar-check" style="color: #2563eb;"></i> Announcement Details
-        </h3>
-        <button type="button" class="modal-close-btn" onclick="closeViewAnnouncementModal()"><i class="ph ph-x"></i></button>
+    <div class="modal-xl">
+      <!-- Modal Header -->
+      <div class="modal-header-banner">
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #eff6ff; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 1.55rem; flex-shrink: 0;">
+            <i class="ph-bold ph-calendar-blank"></i>
+          </div>
+          <div>
+            <h3 class="font-roboto" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #1e40af;">
+              Event Poster Details
+            </h3>
+            <p style="margin: 0.2rem 0 0; font-size: 0.825rem; color: #64748b;">view the complete Information and progress of this chapter event</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+          <button type="button" class="btn btn-primary font-roboto" id="btnModalEditAnnouncement" onclick="openEditCurrentAnnouncement()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: none; align-items: center; gap: 0.4rem; border-radius: 6px;">
+            <i class="ph ph-note-pencil"></i> Edit Announcement
+          </button>
+          <button type="button" class="modal-close-btn" onclick="closeViewAnnouncementModal()" aria-label="Close modal" style="background: none; border: none; font-size: 1.35rem; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <i class="ph ph-x"></i>
+          </button>
+        </div>
       </div>
-      <div id="viewAnnouncementBody" style="line-height: 1.6; font-size: 0.9rem;">
-        <!-- Populated via JS -->
-      </div>
-      <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-        <button type="button" class="btn btn-primary font-roboto" onclick="closeViewAnnouncementModal()">Close</button>
+
+      <!-- Modal Body (3 Columns) -->
+      <div class="modal-body-scroll">
+        <div class="event-details-grid">
+          <!-- Column 1: Event Poster & Brief Card -->
+          <div class="event-details-left-card">
+            <div class="event-details-poster-wrap">
+              <img id="view-ann-poster-img" src="assets/images/background.jpg" alt="Event Poster" onerror="this.src='assets/images/background.jpg'">
+            </div>
+            <div>
+              <h4 id="view-ann-left-title" class="font-roboto" style="font-size: 0.95rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.02em;">
+                TREMENDOUS MOMENTUM
+              </h4>
+              <div style="font-size: 0.78rem; color: #475569; display: flex; flex-direction: column; gap: 0.4rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="ph ph-calendar" style="color: #2563eb; font-size: 1rem;"></i>
+                  <span id="view-ann-left-date">May 21, 2026</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="ph ph-map-pin" style="color: #2563eb; font-size: 1rem;"></i>
+                  <span id="view-ann-left-venue">SJB Learning Center Canlalay</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="ph ph-users" style="color: #2563eb; font-size: 1rem;"></i>
+                  <span id="view-ann-left-participants">100 Target Participants</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="ph ph-users-three" style="color: #2563eb; font-size: 1rem;"></i>
+                  <span id="view-ann-left-chapter">Laguna Chapter</span>
+                </div>
+              </div>
+              <p id="view-ann-left-desc" style="font-size: 0.75rem; color: #64748b; line-height: 1.45; margin: 0.65rem 0 0;">
+                Join us for the ultimate showcase of the year. The "Greatest of All Time" of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.
+              </p>
+            </div>
+            <button type="button" class="btn-view-poster-light" onclick="openZoomImage(document.getElementById('view-ann-poster-img').src)">
+              <i class="ph ph-eye"></i> View Poster
+            </button>
+          </div>
+
+          <!-- Column 2: Event Details Center Card -->
+          <div class="event-details-center-card">
+            <h4 class="font-roboto" style="margin: 0 0 0.85rem; font-size: 1.15rem; font-weight: 800; color: #1e40af; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 0.6rem;">
+              Event Details
+            </h4>
+
+            <!-- About the Event -->
+            <div style="margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 700; color: #1e40af; margin-bottom: 0.4rem;">
+                <i class="ph ph-article" style="color: #2563eb; font-size: 1.15rem;"></i> About the Event
+              </div>
+              <p id="view-ann-about-text" style="font-size: 0.8rem; color: #475569; line-height: 1.55; margin: 0;">
+                Join us for the ultimate showcase of the year. The "Greatest of All Time" of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.
+              </p>
+            </div>
+
+            <!-- Metric Stat Cards -->
+            <div class="ev-stat-cards-grid">
+              <div class="ev-stat-card">
+                <div class="ev-stat-icon">
+                  <i class="ph-fill ph-users"></i>
+                </div>
+                <div>
+                  <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">Total Registered</div>
+                  <div id="view-ann-stat-registered" style="font-size: 1.4rem; font-weight: 800; color: #1e40af; line-height: 1.1;">60</div>
+                  <div style="font-size: 0.7rem; color: #94a3b8;">Participants</div>
+                </div>
+              </div>
+              <div class="ev-stat-card">
+                <div class="ev-stat-icon">
+                  <i class="ph-fill ph-calendar"></i>
+                </div>
+                <div>
+                  <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">Event Date</div>
+                  <div id="view-ann-stat-date" style="font-size: 1.05rem; font-weight: 800; color: #1e40af; line-height: 1.2;">Sept 28, 2026</div>
+                  <div id="view-ann-stat-day" style="font-size: 0.7rem; color: #64748b;">Monday</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #f1f5f9; margin: 1rem 0;"></div>
+
+            <!-- Chapter Section -->
+            <div style="margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 700; color: #1e40af; margin-bottom: 0.5rem;">
+                <i class="ph ph-users-three" style="color: #2563eb; font-size: 1.15rem;"></i> Chapter
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #cbd5e1; display: flex; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; flex-shrink: 0;">
+                  <img src="assets/images/logo.png" alt="Logo" style="width: 28px; height: 28px; object-fit: contain;" onerror="this.onerror=null; this.src='assets/images/youth.jpg';">
+                </div>
+                <div>
+                  <div id="view-ann-chapter-name" style="font-size: 0.95rem; font-weight: 800; color: #1e3a8a;">YTR NATIONAL</div>
+                  <div style="font-size: 0.72rem; color: #64748b;">Youth on the Rock</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #f1f5f9; margin: 1rem 0;"></div>
+
+            <!-- Location / Platform Section -->
+            <div style="margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 700; color: #1e40af; margin-bottom: 0.4rem;">
+                <i class="ph ph-map-pin" style="color: #2563eb; font-size: 1.15rem;"></i> Location / Platform
+              </div>
+              <div id="view-ann-loc-venue" style="font-weight: 700; color: #0f172a; font-size: 0.875rem; margin-bottom: 0.15rem;">SJB Learning Center Canlalay</div>
+              <div id="view-ann-loc-city" style="font-size: 0.75rem; color: #64748b;">Biñan, Laguna</div>
+            </div>
+
+            <div style="border-top: 1px solid #f1f5f9; margin: 1rem 0;"></div>
+
+            <!-- Contact Section -->
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 700; color: #1e40af; margin-bottom: 0.4rem;">
+                <i class="ph ph-chat-circle-dots" style="color: #2563eb; font-size: 1.15rem;"></i> Contact
+              </div>
+              <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 0.85rem;">
+                <div id="view-ann-contact-msg" style="font-size: 0.75rem; color: #1e40af; font-weight: 500; margin-bottom: 0.35rem;">
+                  For inquiries, you may Contact the Chapter Officer or the <span id="view-ann-contact-team" style="font-weight: 700;">YTR - Laguna Team</span>
+                </div>
+                <div style="font-size: 0.75rem; color: #1e3a8a; font-weight: 600;">
+                  <span id="view-ann-contact-person">Secretary: Rayvhen P. Muñoz</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3: Logistics & Team Right Card -->
+          <div class="event-details-right-card">
+            <div>
+              <h4 class="font-roboto" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #1e40af;">
+                Logistics & Team
+              </h4>
+              <p style="margin: 0.2rem 0 0; font-size: 0.75rem; color: #64748b; line-height: 1.4;">
+                See key details about the event team, venue, and schedule.
+              </p>
+            </div>
+
+            <!-- Card 1: Core Team Leads -->
+            <div class="ev-info-card">
+              <h5 style="margin: 0 0 0.6rem; color: #1e3a8a; font-size: 0.875rem; font-weight: 800;">Core Team Leads</h5>
+              <div id="view-ann-team-leads" style="font-size: 0.75rem; color: #334155; line-height: 1.7;">
+                <div>Project Manager: <span id="view-ann-team-pm" style="font-weight: 600;">Alex R.</span></div>
+                <div>Creative Lead: <span id="view-ann-team-creative" style="font-weight: 600;">Maria P.</span></div>
+                <div>Technical Director: <span id="view-ann-team-tech" style="font-weight: 600;">John K.</span></div>
+              </div>
+            </div>
+
+            <!-- Card 2: Venue Specifics -->
+            <div class="ev-info-card">
+              <h5 style="margin: 0 0 0.6rem; color: #1e3a8a; font-size: 0.875rem; font-weight: 800;">Venue Specifics</h5>
+              <div id="view-ann-venue-specifics" style="font-size: 0.75rem; color: #334155; line-height: 1.7;">
+                <div>Room: <span id="view-ann-spec-room" style="font-weight: 600;">Auditorium A (2nd Floor)</span></div>
+                <div>Parking: <span id="view-ann-spec-parking" style="font-weight: 600;">Lot B, Level-1</span></div>
+                <div>Wi-Fi: <span id="view-ann-spec-wifi" style="font-weight: 600;">YTR-Guest / goat2026</span></div>
+              </div>
+            </div>
+
+            <!-- Card 3: Registration Links -->
+            <div class="ev-info-card">
+              <h5 style="margin: 0 0 0.6rem; color: #1e3a8a; font-size: 0.875rem; font-weight: 800;">Registration Links</h5>
+              <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.25rem;">GForms:</div>
+              <a id="view-ann-reg-link" href="https://forms.gle/YcZudZkgefs1dEEn7" target="_blank" style="font-size: 0.72rem; color: #2563eb; word-break: break-all; text-decoration: underline; font-weight: 600;">
+                https://forms.gle/YcZudZkgefs1dEEn7
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- MODAL: EDIT ANNOUNCEMENT (NATIONAL ADMIN ONLY) -->
+  <div id="editAnnouncementModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 class="font-roboto">
+          <i class="ph ph-note-pencil" style="color: #2563eb;"></i> Edit Announcement & Event Details
+        </h3>
+        <button type="button" class="modal-close-btn" onclick="closeEditAnnouncementModal()"><i class="ph ph-x"></i></button>
+      </div>
+      <form id="editAnnouncementForm" onsubmit="handleEditAnnouncementSubmit(event)">
+        <input type="hidden" id="edit-ann-id">
+
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event / Announcement Title *</label>
+          <input type="text" id="edit-ann-title" class="form-input font-roboto" required style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Category *</label>
+            <select id="edit-ann-category" class="form-select font-roboto" required style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+              <option value="national">National Event</option>
+              <option value="chapter">Chapter Gathering</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Date *</label>
+            <input type="text" id="edit-ann-date" class="form-input font-roboto" required placeholder="e.g. Sept 28, 2026 or 2026-09-28" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Venue / Platform *</label>
+            <input type="text" id="edit-ann-venue" class="form-input font-roboto" required placeholder="e.g. SJB Learning Center Canlalay" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">City / Location Specifics</label>
+            <input type="text" id="edit-ann-city" class="form-input font-roboto" placeholder="e.g. Biñan, Laguna" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Host Chapter / Region</label>
+            <input type="text" id="edit-ann-chapter" class="form-input font-roboto" placeholder="e.g. Laguna Chapter or YTR NATIONAL" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Poster Image (URL or Path)</label>
+            <input type="text" id="edit-ann-image" class="form-input font-roboto" placeholder="e.g. assets/images/tremendous_momentum.png" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Target Expected Attendees</label>
+            <input type="number" id="edit-ann-participants" class="form-input font-roboto" min="1" placeholder="e.g. 100" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Total Registered Participants</label>
+            <input type="number" id="edit-ann-registered" class="form-input font-roboto" min="0" placeholder="e.g. 60" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Announcement Summary & Highlights *</label>
+          <textarea id="edit-ann-description" class="form-textarea font-roboto" rows="3" required style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;"></textarea>
+        </div>
+
+        <!-- Section: Logistics & Team Specifics -->
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 0.85rem; margin-bottom: 1rem;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #1e40af; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="ph ph-gear"></i> Logistics, Team & Registration Specifics
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem;">
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Project Manager</label>
+              <input type="text" id="edit-ann-pm" class="form-input font-roboto" placeholder="e.g. Alex R." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Creative Lead</label>
+              <input type="text" id="edit-ann-creative" class="form-input font-roboto" placeholder="e.g. Maria P." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Technical Director</label>
+              <input type="text" id="edit-ann-tech" class="form-input font-roboto" placeholder="e.g. John K." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem;">
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Room Specifics</label>
+              <input type="text" id="edit-ann-room" class="form-input font-roboto" placeholder="e.g. Auditorium A (2nd Floor)" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Parking Specifics</label>
+              <input type="text" id="edit-ann-parking" class="form-input font-roboto" placeholder="e.g. Lot B, Level-1" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Wi-Fi Details</label>
+              <input type="text" id="edit-ann-wifi" class="form-input font-roboto" placeholder="e.g. YTR-Guest / goat2026" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem;">
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Registration Form Link (GForms / Site)</label>
+              <input type="url" id="edit-ann-reglink" class="form-input font-roboto" placeholder="https://forms.gle/..." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Contact Officer / Secretary</label>
+              <input type="text" id="edit-ann-contact-person" class="form-input font-roboto" placeholder="e.g. Secretary: Rayvhen P. Muñoz" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-outline font-roboto" onclick="deleteCurrentAnnouncement()" style="color: #dc2626; border-color: #fecaca; background: #fff1f2;">
+            <i class="ph ph-trash"></i> Delete
+          </button>
+          <div style="display: flex; gap: 0.75rem;">
+            <button type="button" class="btn btn-outline font-roboto" onclick="closeEditAnnouncementModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary font-roboto" id="btnUpdateAnnouncement">
+              <i class="ph ph-check-circle"></i> Save Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ZOOM IMAGE MODAL -->
+  <div id="zoom-modal" class="modal-overlay" style="display: none; z-index: 1100;" onclick="closeZoomModal()">
+    <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+      <img id="zoom-img" src="" alt="Full Resolution Poster" style="max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+      <button type="button" style="position: absolute; top: -15px; right: -15px; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+        <i class="ph ph-x"></i>
+      </button>
+    </div>
+  </div>
+
   <script>
-    // Initial Announcement Data
+    // Initial Announcement Data (matching mockup specifications)
     const defaultAnnouncements = [
       {
         id: 1,
         title: "Tremendous Momentum: Youth Camp 2026",
         category: "national",
         date: "May 21, 2026",
-        venue: "SJB Learning Center, Calamba",
+        time: "9:00 AM - 5:00 PM",
+        venue: "SJB Learning Center Canlalay",
+        city: "Biñan, Laguna",
         target: 100,
+        registered: 60,
         chapter: "Laguna Chapter",
-        image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=500&q=80",
-        excerpt: "Join us for the ultimate showcase of the year. The 'Greatest of All Time' of Youth Tech Revolution will feature live workshops, breakout prayer sessions, and spiritual empowerment.",
-        details: "Tremendous Momentum brings together student leaders and campus ministry coordinators for an intensive three-day spiritual conference. Includes guest worship leaders, itemized break-out clusters, and youth discipleship mentoring."
+        image: "assets/images/tremendous_momentum.png",
+        excerpt: "Join us for the ultimate showcase of the year. The 'Greatest of All Time' of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.",
+        details: "Join us for the ultimate showcase of the year. The 'Greatest of All Time' of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.",
+        pm: "Alex R.",
+        creative_lead: "Maria P.",
+        tech_director: "John K.",
+        room: "Auditorium A (2nd Floor)",
+        parking: "Lot B, Level-1",
+        wifi: "YTR-Guest / goat2026",
+        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
+        contact_team: "YTR - Laguna Team",
+        contact_person: "Secretary: Rayvhen P. Muñoz"
       },
       {
         id: 2,
         title: "29th YTR Anniversary Celebration",
         category: "national",
-        date: "Sept 26, 2026",
-        venue: "SJB Learning Center, Calamba",
+        date: "Sept 28, 2026",
+        time: "8:00 AM - 6:00 PM",
+        venue: "SJB Learning Center Canlalay",
+        city: "Biñan, Laguna",
         target: 250,
+        registered: 180,
         chapter: "National Secretariat",
         image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=80",
         excerpt: "Celebrating nearly three decades of passionate youth transformation, leadership empowerment, and nation-building across every Philippine province.",
-        details: "Commemorating 29 years of faithful community impact. All chapters nationwide are invited to join the main thanksgiving fellowship and awards ceremony honoring outstanding youth leaders."
+        details: "Commemorating 29 years of faithful community impact. All chapters nationwide are invited to join the main thanksgiving fellowship and awards ceremony honoring outstanding youth leaders.",
+        pm: "David C.",
+        creative_lead: "Sarah L.",
+        tech_director: "Michael T.",
+        room: "Main Hall (Ground Floor)",
+        parking: "Lot A & B",
+        wifi: "YTR-Anniversary / ytr2026",
+        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
+        contact_team: "National Secretariat Team",
+        contact_person: "Coordinator: Hannah S. Gomez"
       },
       {
         id: 3,
         title: "National Youth Leadership Summit",
         category: "national",
         date: "Dec 19-20, 2026",
+        time: "9:00 AM - 4:00 PM",
         venue: "SMX Convention Center, Pasay City",
+        city: "Pasay City, Metro Manila",
         target: 400,
+        registered: 320,
         chapter: "National HQ",
         image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=500&q=80",
         excerpt: "An executive gathering of chapter administrators, youth pastoring councils, and ministry executives to strategize vision 2027 and annual mission milestones.",
-        details: "Two-day national leadership conference covering strategic planning, digital event monitoring governance, budget threshold liquidation, and youth mobilization across chapters."
+        details: "Two-day national leadership conference covering strategic planning, digital event monitoring governance, budget threshold liquidation, and youth mobilization across chapters.",
+        pm: "Jonathan E.",
+        creative_lead: "Rachel B.",
+        tech_director: "Kevin M.",
+        room: "Function Room 3 & 4",
+        parking: "SMX Multi-Level Parking",
+        wifi: "SMX-Event / summit2026",
+        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
+        contact_team: "National Leadership Council",
+        contact_person: "Director: Joshua M. Santos"
       },
       {
         id: 4,
         title: "Greatest of All Time: Regional Fellowship",
         category: "chapter",
         date: "Sept 28, 2026",
-        venue: "SJB Learning Center, Calamba",
+        time: "1:00 PM - 5:00 PM",
+        venue: "SJB Learning Center Canlalay",
+        city: "Biñan, Laguna",
         target: 120,
+        registered: 60,
         chapter: "Laguna Chapter",
         image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=500&q=80",
         excerpt: "High-energy praise, worship revival, and inter-campus fellowship bringing university students together for inspiration and community outreach.",
-        details: "Laguna Chapter host gathering featuring guest worship teams, creative arts presentations, and community outreach testimony nights."
+        details: "Laguna Chapter host gathering featuring guest worship teams, creative arts presentations, and community outreach testimony nights.",
+        pm: "Alex R.",
+        creative_lead: "Maria P.",
+        tech_director: "John K.",
+        room: "Auditorium A (2nd Floor)",
+        parking: "Lot B, Level-1",
+        wifi: "YTR-Guest / goat2026",
+        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
+        contact_team: "YTR - Laguna Team",
+        contact_person: "Secretary: Rayvhen P. Muñoz"
       }
     ];
 
     let announcements = [];
     let currentFilter = 'all';
+    let isChapterAdminUser = false;
+    let currentViewingAnnouncementId = null;
 
     // Role Security Check
-    let isChapterAdminUser = false;
-
     function checkUserRole() {
       try {
         const rawUser = localStorage.getItem('ytr_user');
@@ -276,14 +677,11 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
 
         if (userRole === 'chapter_admin') {
           isChapterAdminUser = true;
-          // Ensure cookie is aligned
           document.cookie = "ytr_role=chapter_admin; path=/; max-age=86400";
           
-          // Strictly remove or hide Create Announcement button
           const btn = document.getElementById('btnCreateAnnouncement');
           if (btn) btn.style.display = 'none';
 
-          // Show Read-Only notice for Chapter Admin
           const actionArea = document.getElementById('announcement-header-action');
           if (actionArea && !document.getElementById('chapterAnnouncementNotice')) {
             actionArea.innerHTML = `
@@ -302,7 +700,31 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
       const stored = localStorage.getItem('ytr_announcements');
       if (stored) {
         try {
-          announcements = JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            announcements = parsed.map(item => {
+              const def = defaultAnnouncements.find(d => d.id === item.id) || {};
+              return {
+                ...def,
+                ...item,
+                image: (item.id === 1 && (!item.image || item.image.includes('unsplash'))) ? 'assets/images/tremendous_momentum.png' : (item.image || def.image || 'assets/images/background.jpg'),
+                venue: (item.id === 1 && item.venue && item.venue.includes('Calamba')) ? 'SJB Learning Center Canlalay' : (item.venue || def.venue || 'Venue TBD'),
+                city: item.city || def.city || 'Biñan, Laguna',
+                registered: item.registered !== undefined ? item.registered : (def.registered || 60),
+                pm: item.pm || def.pm || 'Alex R.',
+                creative_lead: item.creative_lead || def.creative_lead || 'Maria P.',
+                tech_director: item.tech_director || def.tech_director || 'John K.',
+                room: item.room || def.room || 'Auditorium A (2nd Floor)',
+                parking: item.parking || def.parking || 'Lot B, Level-1',
+                wifi: item.wifi || def.wifi || 'YTR-Guest / goat2026',
+                reg_link: item.reg_link || def.reg_link || 'https://forms.gle/YcZudZkgefs1dEEn7',
+                contact_team: item.contact_team || def.contact_team || 'YTR - Laguna Team',
+                contact_person: item.contact_person || def.contact_person || 'Secretary: Rayvhen P. Muñoz'
+              };
+            });
+          } else {
+            announcements = [...defaultAnnouncements];
+          }
         } catch (e) {
           announcements = [...defaultAnnouncements];
         }
@@ -331,24 +753,36 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
         return;
       }
 
-      grid.innerHTML = filtered.map(a => `
-        <div class="announcement-card">
-          <div class="announcement-poster">
-            <img src="${escapeHtml(a.image)}" alt="${escapeHtml(a.title)}" onerror="this.src='https://placehold.co/400x500/e2e8f0/64748b?text=YTR+Event'">
-          </div>
-          <h3 class="font-roboto">${escapeHtml(a.title)}</h3>
-          <div class="announcement-meta font-roboto">
-            <div class="announcement-meta-item"><i class="ph ph-calendar-blank"></i> ${escapeHtml(a.date)}</div>
-            <div class="announcement-meta-item"><i class="ph ph-map-pin"></i> ${escapeHtml(a.venue)}</div>
-            <div class="announcement-meta-item"><i class="ph ph-users"></i> ${a.target || 100} Target Participants</div>
-            <div class="announcement-meta-item"><i class="ph ph-flag"></i> ${escapeHtml(a.chapter || 'All Chapters')}</div>
-          </div>
-          <p class="announcement-excerpt font-roboto">${escapeHtml(a.excerpt || a.details || '')}</p>
-          <button class="announcement-view-btn font-roboto" onclick="openViewAnnouncementModal(${a.id})">
-            <i class="ph ph-eye"></i> View Details
+      grid.innerHTML = filtered.map(a => {
+        const canEdit = !isChapterAdminUser;
+        const editBtnHtml = canEdit ? `
+          <button type="button" class="announcement-edit-btn font-roboto" onclick="event.stopPropagation(); openEditAnnouncementModal(${a.id})" title="Edit Announcement">
+            <i class="ph ph-note-pencil"></i> Edit
           </button>
-        </div>
-      `).join('');
+        ` : '';
+
+        return `
+          <div class="announcement-card">
+            <div class="announcement-poster">
+              <img src="${escapeHtml(a.image)}" alt="${escapeHtml(a.title)}" onerror="this.src='assets/images/background.jpg'">
+            </div>
+            <h3 class="font-roboto">${escapeHtml(a.title)}</h3>
+            <div class="announcement-meta font-roboto">
+              <div class="announcement-meta-item"><i class="ph ph-calendar-blank"></i> ${escapeHtml(a.date)}</div>
+              <div class="announcement-meta-item"><i class="ph ph-map-pin"></i> ${escapeHtml(a.venue)}</div>
+              <div class="announcement-meta-item"><i class="ph ph-users"></i> ${a.target || 100} Target Participants</div>
+              <div class="announcement-meta-item"><i class="ph ph-flag"></i> ${escapeHtml(a.chapter || 'All Chapters')}</div>
+            </div>
+            <p class="announcement-excerpt font-roboto">${escapeHtml(a.excerpt || a.details || '')}</p>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+              <button type="button" class="announcement-view-btn font-roboto" style="margin-top: 0; flex: 1;" onclick="openViewAnnouncementModal(${a.id})">
+                <i class="ph ph-eye"></i> View Details
+              </button>
+              ${editBtnHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function filterAnnouncements(category, btn) {
@@ -358,37 +792,234 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
       renderAnnouncements();
     }
 
+    // ==========================================
+    // VIEW ANNOUNCEMENT MODAL (FIGMA MOCKUP ACCORDANCE)
+    // ==========================================
     function openViewAnnouncementModal(id) {
       const a = announcements.find(item => item.id === id);
       if (!a) return;
 
-      const body = document.getElementById('viewAnnouncementBody');
-      body.innerHTML = `
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem;">
-          <h2 style="font-size: 1.25rem; font-weight: 800; color: #1e3a8a; margin: 0 0 0.5rem;">${escapeHtml(a.title)}</h2>
-          <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
-            ${a.category === 'national' ? 'National Event' : 'Chapter Gathering'}
-          </span>
-        </div>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.25rem; font-size: 0.85rem;">
-          <tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong><i class="ph ph-calendar"></i> Event Date:</strong></td><td style="color: #0f172a; font-weight: 600;">${escapeHtml(a.date)}</td></tr>
-          <tr><td style="padding: 6px 0; color: #64748b;"><strong><i class="ph ph-map-pin"></i> Venue / Location:</strong></td><td style="color: #0f172a;">${escapeHtml(a.venue)}</td></tr>
-          <tr><td style="padding: 6px 0; color: #64748b;"><strong><i class="ph ph-buildings"></i> Host Chapter:</strong></td><td style="color: #0f172a;">${escapeHtml(a.chapter || 'All Chapters')}</td></tr>
-          <tr><td style="padding: 6px 0; color: #64748b;"><strong><i class="ph ph-users"></i> Expected Turnout:</strong></td><td style="color: #0f172a; font-weight: 600;">${a.target || 100} Attendees Goal</td></tr>
-        </table>
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem;">
-          <h5 style="margin: 0 0 0.5rem; font-size: 0.8rem; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Announcement Description</h5>
-          <p style="margin: 0; color: #334155; line-height: 1.6; font-size: 0.875rem;">${escapeHtml(a.details || a.excerpt || '')}</p>
-        </div>
-      `;
+      currentViewingAnnouncementId = id;
+
+      // Format Date & Day of Week
+      let fullDateStr = a.date || 'Date TBD';
+      let dayStr = '';
+      if (a.date) {
+        try {
+          const dateForParse = a.date.includes('-') ? (a.date + 'T00:00:00') : (a.date.includes('202') ? a.date : a.date + ' 2026');
+          const d = new Date(dateForParse);
+          if (!isNaN(d.getTime())) {
+            fullDateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            dayStr = d.toLocaleDateString('en-US', { weekday: 'long' });
+          }
+        } catch(e) {}
+      }
+
+      // Column 1: Poster & Left Card
+      const posterSrc = a.image || 'assets/images/background.jpg';
+      const posterImgEl = document.getElementById('view-ann-poster-img');
+      if (posterImgEl) posterImgEl.src = posterSrc;
+
+      const titleEl = document.getElementById('view-ann-left-title');
+      if (titleEl) titleEl.textContent = a.title || 'Event Title';
+
+      const dateEl = document.getElementById('view-ann-left-date');
+      if (dateEl) dateEl.textContent = a.date + (a.time ? ` • ${a.time}` : '');
+
+      const venueEl = document.getElementById('view-ann-left-venue');
+      if (venueEl) venueEl.textContent = a.venue || 'Venue TBD';
+
+      const partEl = document.getElementById('view-ann-left-participants');
+      if (partEl) {
+        const pText = a.target ? String(a.target) : '100';
+        partEl.textContent = pText.toLowerCase().includes('participant') ? pText : `${pText} Target Participants`;
+      }
+
+      const chapEl = document.getElementById('view-ann-left-chapter');
+      if (chapEl) chapEl.textContent = a.chapter || 'Laguna Chapter';
+
+      const leftDescEl = document.getElementById('view-ann-left-desc');
+      if (leftDescEl) leftDescEl.textContent = a.excerpt || a.details || '';
+
+      // Column 2: Center Card Event Details
+      const aboutEl = document.getElementById('view-ann-about-text');
+      if (aboutEl) aboutEl.textContent = a.details || a.excerpt || '';
+
+      const regEl = document.getElementById('view-ann-stat-registered');
+      if (regEl) regEl.textContent = a.registered !== undefined ? a.registered : (a.target || '60');
+
+      const statDateEl = document.getElementById('view-ann-stat-date');
+      if (statDateEl) statDateEl.textContent = fullDateStr || 'Sept 28, 2026';
+
+      const statDayEl = document.getElementById('view-ann-stat-day');
+      if (statDayEl) statDayEl.textContent = dayStr || 'Monday';
+
+      const chapNameEl = document.getElementById('view-ann-chapter-name');
+      if (chapNameEl) chapNameEl.textContent = a.chapter ? a.chapter.toUpperCase() : 'YTR NATIONAL';
+
+      const locVenueEl = document.getElementById('view-ann-loc-venue');
+      if (locVenueEl) locVenueEl.textContent = a.venue || 'SJB Learning Center Canlalay';
+
+      const locCityEl = document.getElementById('view-ann-loc-city');
+      if (locCityEl) {
+        locCityEl.textContent = a.city || (a.venue && a.venue.includes(',') ? a.venue.split(',').slice(1).join(',').trim() : 'Biñan, Laguna');
+      }
+
+      const contactTeamEl = document.getElementById('view-ann-contact-team');
+      if (contactTeamEl) contactTeamEl.textContent = a.contact_team || (a.chapter ? `YTR - ${a.chapter} Team` : 'YTR - Laguna Team');
+
+      const contactPersonEl = document.getElementById('view-ann-contact-person');
+      if (contactPersonEl) contactPersonEl.textContent = a.contact_person || 'Secretary: Rayvhen P. Muñoz';
+
+      // Column 3: Logistics & Team
+      const pmEl = document.getElementById('view-ann-team-pm');
+      if (pmEl) pmEl.textContent = a.pm || 'Alex R.';
+
+      const creativeEl = document.getElementById('view-ann-team-creative');
+      if (creativeEl) creativeEl.textContent = a.creative_lead || 'Maria P.';
+
+      const techEl = document.getElementById('view-ann-team-tech');
+      if (techEl) techEl.textContent = a.tech_director || 'John K.';
+
+      const roomEl = document.getElementById('view-ann-spec-room');
+      if (roomEl) roomEl.textContent = a.room || 'Auditorium A (2nd Floor)';
+
+      const parkingEl = document.getElementById('view-ann-spec-parking');
+      if (parkingEl) parkingEl.textContent = a.parking || 'Lot B, Level-1';
+
+      const wifiEl = document.getElementById('view-ann-spec-wifi');
+      if (wifiEl) wifiEl.textContent = a.wifi || 'YTR-Guest / goat2026';
+
+      const regLinkEl = document.getElementById('view-ann-reg-link');
+      if (regLinkEl) {
+        const link = a.reg_link || 'https://forms.gle/YcZudZkgefs1dEEn7';
+        regLinkEl.href = link;
+        regLinkEl.textContent = link;
+      }
+
+      // Show/Hide Edit Announcement Button based on National Admin status
+      const editBtn = document.getElementById('btnModalEditAnnouncement');
+      if (editBtn) {
+        editBtn.style.display = isChapterAdminUser ? 'none' : 'inline-flex';
+      }
+
       document.getElementById('viewAnnouncementModal').style.display = 'flex';
     }
 
     function closeViewAnnouncementModal() {
       document.getElementById('viewAnnouncementModal').style.display = 'none';
+      currentViewingAnnouncementId = null;
     }
 
-    // National Admin Create Announcement Controls
+    // ==========================================
+    // EDIT ANNOUNCEMENT MODAL & CONTROLS (NATIONAL ADMIN)
+    // ==========================================
+    function openEditCurrentAnnouncement() {
+      if (currentViewingAnnouncementId) {
+        const id = currentViewingAnnouncementId;
+        closeViewAnnouncementModal();
+        openEditAnnouncementModal(id);
+      }
+    }
+
+    function openEditAnnouncementModal(id) {
+      if (isChapterAdminUser) {
+        alert('Permission Denied: Only National Administrators can edit announcements.');
+        return;
+      }
+      const a = announcements.find(item => item.id === id);
+      if (!a) return;
+
+      document.getElementById('edit-ann-id').value = a.id;
+      document.getElementById('edit-ann-title').value = a.title || '';
+      document.getElementById('edit-ann-category').value = a.category || 'national';
+      document.getElementById('edit-ann-date').value = a.date || '';
+      document.getElementById('edit-ann-venue').value = a.venue || '';
+      document.getElementById('edit-ann-city').value = a.city || 'Biñan, Laguna';
+      document.getElementById('edit-ann-chapter').value = a.chapter || '';
+      document.getElementById('edit-ann-participants').value = a.target || 100;
+      document.getElementById('edit-ann-registered').value = a.registered !== undefined ? a.registered : 60;
+      document.getElementById('edit-ann-image').value = a.image || '';
+      document.getElementById('edit-ann-description').value = a.details || a.excerpt || '';
+      document.getElementById('edit-ann-pm').value = a.pm || 'Alex R.';
+      document.getElementById('edit-ann-creative').value = a.creative_lead || 'Maria P.';
+      document.getElementById('edit-ann-tech').value = a.tech_director || 'John K.';
+      document.getElementById('edit-ann-room').value = a.room || 'Auditorium A (2nd Floor)';
+      document.getElementById('edit-ann-parking').value = a.parking || 'Lot B, Level-1';
+      document.getElementById('edit-ann-wifi').value = a.wifi || 'YTR-Guest / goat2026';
+      document.getElementById('edit-ann-reglink').value = a.reg_link || 'https://forms.gle/YcZudZkgefs1dEEn7';
+      document.getElementById('edit-ann-contact-person').value = a.contact_person || 'Secretary: Rayvhen P. Muñoz';
+
+      document.getElementById('editAnnouncementModal').style.display = 'flex';
+    }
+
+    function closeEditAnnouncementModal() {
+      document.getElementById('editAnnouncementModal').style.display = 'none';
+    }
+
+    function handleEditAnnouncementSubmit(e) {
+      e.preventDefault();
+      if (isChapterAdminUser) {
+        alert('Permission Denied: Only National Administrators can edit announcements.');
+        return;
+      }
+
+      const id = Number(document.getElementById('edit-ann-id').value);
+      const idx = announcements.findIndex(item => item.id === id);
+      if (idx === -1) {
+        alert('Announcement not found.');
+        return;
+      }
+
+      const desc = document.getElementById('edit-ann-description').value.trim();
+      const updated = {
+        ...announcements[idx],
+        title: document.getElementById('edit-ann-title').value.trim(),
+        category: document.getElementById('edit-ann-category').value,
+        date: document.getElementById('edit-ann-date').value.trim(),
+        venue: document.getElementById('edit-ann-venue').value.trim(),
+        city: document.getElementById('edit-ann-city').value.trim() || 'Biñan, Laguna',
+        chapter: document.getElementById('edit-ann-chapter').value.trim(),
+        target: parseInt(document.getElementById('edit-ann-participants').value) || 100,
+        registered: parseInt(document.getElementById('edit-ann-registered').value) || 60,
+        image: document.getElementById('edit-ann-image').value.trim() || 'assets/images/background.jpg',
+        excerpt: desc.length > 140 ? desc.substring(0, 140) + '...' : desc,
+        details: desc,
+        pm: document.getElementById('edit-ann-pm').value.trim() || 'Alex R.',
+        creative_lead: document.getElementById('edit-ann-creative').value.trim() || 'Maria P.',
+        tech_director: document.getElementById('edit-ann-tech').value.trim() || 'John K.',
+        room: document.getElementById('edit-ann-room').value.trim() || 'Auditorium A (2nd Floor)',
+        parking: document.getElementById('edit-ann-parking').value.trim() || 'Lot B, Level-1',
+        wifi: document.getElementById('edit-ann-wifi').value.trim() || 'YTR-Guest / goat2026',
+        reg_link: document.getElementById('edit-ann-reglink').value.trim() || 'https://forms.gle/YcZudZkgefs1dEEn7',
+        contact_person: document.getElementById('edit-ann-contact-person').value.trim() || 'Secretary: Rayvhen P. Muñoz'
+      };
+
+      announcements[idx] = updated;
+      localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+      closeEditAnnouncementModal();
+      renderAnnouncements();
+      openViewAnnouncementModal(id);
+      alert('Announcement updated successfully!');
+    }
+
+    function deleteCurrentAnnouncement() {
+      if (isChapterAdminUser) return;
+      const id = Number(document.getElementById('edit-ann-id').value);
+      if (!confirm('Are you sure you want to delete this announcement? This action cannot be undone.')) {
+        return;
+      }
+      announcements = announcements.filter(item => item.id !== id);
+      localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+      closeEditAnnouncementModal();
+      closeViewAnnouncementModal();
+      renderAnnouncements();
+      alert('Announcement deleted.');
+    }
+
+    // ==========================================
+    // CREATE ANNOUNCEMENT (NATIONAL ADMIN)
+    // ==========================================
     function openCreateAnnouncementModal() {
       if (isChapterAdminUser) {
         alert('Permission Denied: Only National Administrators can publish announcements.');
@@ -408,17 +1039,30 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
         return;
       }
 
+      const desc = document.getElementById('ann-description').value.trim();
       const newAnn = {
         id: Date.now(),
         title: document.getElementById('ann-title').value.trim(),
         category: document.getElementById('ann-category').value,
         date: document.getElementById('ann-date').value,
+        time: "9:00 AM - 5:00 PM",
         venue: document.getElementById('ann-venue').value.trim(),
+        city: "Biñan, Laguna",
         chapter: document.getElementById('ann-chapter').value.trim() || 'National HQ',
         target: parseInt(document.getElementById('ann-participants').value) || 100,
-        image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=500&q=80',
-        excerpt: document.getElementById('ann-description').value.trim().substring(0, 140) + '...',
-        details: document.getElementById('ann-description').value.trim()
+        registered: 0,
+        image: 'assets/images/background.jpg',
+        excerpt: desc.substring(0, 140) + '...',
+        details: desc,
+        pm: "Alex R.",
+        creative_lead: "Maria P.",
+        tech_director: "John K.",
+        room: "Auditorium A (2nd Floor)",
+        parking: "Lot B, Level-1",
+        wifi: "YTR-Guest / goat2026",
+        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
+        contact_team: document.getElementById('ann-chapter').value.trim() || 'National Secretariat',
+        contact_person: "Secretary: Rayvhen P. Muñoz"
       };
 
       announcements.unshift(newAnn);
@@ -427,6 +1071,19 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
       document.getElementById('createAnnouncementForm').reset();
       closeCreateAnnouncementModal();
       renderAnnouncements();
+    }
+
+    // ==========================================
+    // ZOOM IMAGE MODAL
+    // ==========================================
+    function openZoomImage(src) {
+      if (!src) return;
+      document.getElementById('zoom-img').src = src;
+      document.getElementById('zoom-modal').style.display = 'flex';
+    }
+
+    function closeZoomModal() {
+      document.getElementById('zoom-modal').style.display = 'none';
     }
 
     function escapeHtml(str) {

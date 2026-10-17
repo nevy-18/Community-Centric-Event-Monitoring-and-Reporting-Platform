@@ -919,3 +919,141 @@ tr:hover td { background-color: #f9fafb; }
     max-height: 130px !important;
   }
 }
+
+/* --- EVENT DETAILS MODAL (MOCKUP ACCORDANCE) --- */
+.event-details-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 280px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.event-details-left-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.event-details-poster-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.event-details-poster-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.event-details-center-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.event-details-right-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.ev-stat-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin: 1rem 0;
+}
+
+.ev-stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.ev-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 1.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ev-info-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem 0.85rem;
+  text-align: center;
+}
+
+.btn-view-poster-light {
+  width: 100%;
+  background: #e0f2fe;
+  color: #0284c7;
+  border: none;
+  font-weight: 700;
+  font-size: 0.825rem;
+  padding: 0.6rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view-poster-light:hover {
+  background: #bae6fd;
+  color: #0369a1;
+}
+
+@media (max-width: 1024px) {
+  .event-details-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .event-details-left-card {
+    grid-column: 1 / 2;
+  }
+  .event-details-center-card {
+    grid-column: 2 / 3;
+  }
+  .event-details-right-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .event-details-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .event-details-left-card,
+  .event-details-center-card,
+  .event-details-right-card {
+    grid-column: auto !important;
+  }
+}
+
