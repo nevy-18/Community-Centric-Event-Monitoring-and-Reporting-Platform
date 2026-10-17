@@ -147,12 +147,11 @@ CREATE TABLE IF NOT EXISTS poster_workflow_templates (
 
 INSERT INTO poster_workflow_templates (step_key, step_order, step_title, description, is_active)
 VALUES
-  ('poster_created', 1, 'Poster created', 'National prepares the event poster.', 1),
-  ('waiting_for_caption', 2, 'Waiting for caption', 'The event caption is requested or being finalized.', 1),
-  ('posted_on_page', 3, 'Posted on page', 'The event poster has been published on the page.', 1),
-  ('promotional_video', 4, 'Promotional video', 'Promotional video preparation or publication.', 1),
-  ('documentation_and_report', 5, 'Documentation and report', 'Event documentation and report are being prepared.', 1),
-  ('event_conducted_and_reported', 6, 'Event conducted and reported', 'The event has taken place and its report has been submitted.', 1)
+  ('poster_created', 1, 'Poster Request & Design', 'National prepares and provides the official event poster.', 1),
+  ('posted_on_page', 2, 'Posted on Page', 'Official poster and caption are published on the social media page.', 1),
+  ('promotional_video', 3, 'Promotional Video', 'Chapter / Media team promotional teaser video submission (Optional).', 1),
+  ('documentation_and_report', 4, 'Documentation and Report', 'Post-event documentation, attendees figures, and report submission via Report tab.', 1),
+  ('event_concluded', 5, 'Event Concluded and Reported', 'National Admin validates event report and concludes timeline.', 1)
 ON DUPLICATE KEY UPDATE
   step_title = VALUES(step_title),
   description = VALUES(description),

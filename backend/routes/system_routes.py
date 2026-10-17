@@ -306,12 +306,11 @@ def flush_system_data():
 
                     # Re-seed Workflow Templates
                     templates = [
-                        (1, 'poster_created', 1, 'Poster created', 'National prepares the event poster.', 1),
-                        (2, 'waiting_for_caption', 2, 'Waiting for caption', 'The event caption is requested or being finalized.', 1),
-                        (3, 'posted_on_page', 3, 'Posted on page', 'The event poster has been published on the page.', 1),
-                        (4, 'promotional_video', 4, 'Promotional video', 'Promotional video preparation or publication.', 1),
-                        (5, 'documentation_and_report', 5, 'Documentation and report', 'Event documentation and report are being prepared.', 1),
-                        (6, 'event_conducted_and_reported', 6, 'Event conducted and reported', 'The event has taken place and its report has been submitted.', 1)
+                        (1, 'poster_created', 1, 'Poster Request & Design', 'National prepares and provides the official event poster.', 1),
+                        (2, 'posted_on_page', 2, 'Posted on Page', 'Official poster and caption are published on the social media page.', 1),
+                        (3, 'promotional_video', 3, 'Promotional Video', 'Chapter / Media team promotional teaser video submission (Optional).', 1),
+                        (4, 'documentation_and_report', 4, 'Documentation and Report', 'Post-event documentation, attendees figures, and report submission via Report tab.', 1),
+                        (5, 'event_concluded', 5, 'Event Concluded and Reported', 'National Admin validates event report and concludes timeline.', 1)
                     ]
                     for tid, skey, sorder, stitle, sdesc, sact in templates:
                         cur.execute("""
@@ -366,17 +365,27 @@ def flush_system_data():
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """, (rid, chid, eid, reqby, etitle, edate, etime, ven, thm, cap, reqdl, stat, fpath, cstep, cond, cond_at, rep_due, doc_stat))
 
-                    # Seed 5 steps for request 1, 2, 4
+                    # Seed 5 steps for requests
                     step_defs = [
-                        ('poster_created', 1, 'Poster created'),
-                        ('waiting_for_caption', 2, 'Waiting for caption'),
-                        ('posted_on_page', 3, 'Posted on page'),
-                        ('promotional_video', 4, 'Promotional video'),
-                        ('event_conducted_and_reported', 5, 'Event conducted & reported')
+                        ('poster_created', 1, 'Poster Request & Design'),
+                        ('posted_on_page', 2, 'Posted on Page'),
+                        ('promotional_video', 3, 'Promotional Video'),
+                        ('documentation_and_report', 4, 'Documentation and Report'),
+                        ('event_concluded', 5, 'Event Concluded and Reported')
                     ]
                     for req_id in [1, 2, 3, 4]:
                         for skey, sorder, stitle in step_defs:
-                            s_stat = 'completed' if req_id == 4 or (req_id == 1 and sorder <= 3) else ('in_progress' if (req_id == 1 and sorder == 4) or (req_id == 2 and sorder == 3) or (req_id == 3 and sorder == 1) else 'pending')
+                            if req_id == 4:
+                                s_stat = 'completed'
+                            elif req_id == 1:
+                                s_stat = 'completed' if sorder <= 3 else ('in_progress' if sorder == 4 else 'pending')
+                            elif req_id == 2:
+                                s_stat = 'completed' if sorder <= 2 else ('in_progress' if sorder == 3 else 'pending')
+                            elif req_id == 3:
+                                s_stat = 'in_progress' if sorder == 1 else 'pending'
+                            else:
+                                s_stat = 'pending'
+
                             cur.execute("""
                                 INSERT INTO poster_request_steps (poster_request_id, step_key, step_order, step_title, status)
                                 VALUES (%s, %s, %s, %s, %s)
