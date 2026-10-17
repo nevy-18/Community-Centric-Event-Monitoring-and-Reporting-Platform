@@ -189,12 +189,13 @@ const loginTab = document.getElementById('loginTab');
     const requestedRole = document.getElementById('requestedRole');
     const chapterField = document.getElementById('chapterField');
     const chapterName = document.getElementById('chapterName');
+    const nationalRoles = ['Executive Director', 'Regional Director (National)', 'National Youth Officer', 'national_admin'];
 
     requestedRole.addEventListener('change', () => {
-      const national = requestedRole.value === 'national_admin';
-      chapterField.classList.toggle('hidden', national);
-      chapterName.required = !national;
-      if (national) chapterName.value = '';
+      const isNational = nationalRoles.includes(requestedRole.value);
+      chapterField.classList.toggle('hidden', isNational);
+      chapterName.required = !isNational;
+      if (isNational) chapterName.value = '';
     });
 
     // Live Registration (Account Request) Handler
@@ -215,7 +216,8 @@ const loginTab = document.getElementById('loginTab');
       if (!fullName.value.trim()) { errors.push('Enter your full name.'); invalid.push('fullName'); }
       if (!validEmail(email.value.trim())) { errors.push('Enter a valid email address.'); invalid.push('signupEmail'); }
       if (!requestedRole.value) { errors.push('Select the role you are requesting.'); invalid.push('requestedRole'); }
-      if (requestedRole.value === 'chapter_admin' && !chapterName.value) { errors.push('Select your chapter.'); invalid.push('chapterName'); }
+      const isNational = nationalRoles.includes(requestedRole.value);
+      if (!isNational && !chapterName.value) { errors.push('Select your chapter.'); invalid.push('chapterName'); }
       if (password.value.length < 8) { errors.push('Your password must contain at least 8 characters.'); invalid.push('signupPassword'); }
       if (password.value !== confirmPassword.value) { errors.push('The passwords do not match.'); invalid.push('confirmPassword'); }
       if (!agree.checked) { errors.push('Confirm the account request statement.'); invalid.push('agreeTerms'); }
@@ -234,7 +236,8 @@ const loginTab = document.getElementById('loginTab');
           email: email.value.trim(),
           password: password.value,
           requested_role: requestedRole.value,
-          chapter_id: chapterName.value || null
+          position: requestedRole.value,
+          chapter_id: isNational ? null : (chapterName.value || null)
         };
 
         const result = window.YTR_API 

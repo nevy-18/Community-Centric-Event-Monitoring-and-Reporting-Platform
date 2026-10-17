@@ -393,6 +393,74 @@ class TestYTRBackendAPI(unittest.TestCase):
         self.assertEqual(data_s['table_counts']['users'], 7)
         print("[PASS] System flush & baseline demo seed passed: Clean baseline restored.")
 
+    def test_29_register_with_roles_and_positions(self):
+        # 1. National role registration
+        nat_email = 'test.nyo@ytr.org'
+        res_nat = self.client.post('/api/auth/register', json={
+            'full_name': 'Test Youth Officer',
+            'email': nat_email,
+            'password': 'Password123!',
+            'role': 'National Youth Officer'
+        })
+        self.assertEqual(res_nat.status_code, 201)
+        data_nat = res_nat.get_json()
+        self.assertEqual(data_nat['data']['role'], 'national_admin')
+        self.assertEqual(data_nat['data']['position'], 'National Youth Officer')
+
+        # 2. Chapter role registration without chapter should fail
+        res_fail = self.client.post('/api/auth/register', json={
+            'full_name': 'Test Chapter Pres',
+            'email': 'test.cp@ytr.org',
+            'password': 'Password123!',
+            'role': 'Chapter President'
+        })
+        self.assertEqual(res_fail.status_code, 400)
+
+        # 3. Chapter role registration with chapter
+        ch_email = 'test.cp@ytr.org'
+        res_ch = self.client.post('/api/auth/register', json={
+            'full_name': 'Test Chapter Pres',
+            'email': ch_email,
+            'password': 'Password123!',
+            'role': 'Chapter President',
+            'chapter_id': 1
+        })
+        self.assertEqual(res_ch.status_code, 201)
+        data_ch = res_ch.get_json()
+        self.assertEqual(data_ch['data']['role'], 'chapter_admin')
+        self.assertEqual(data_ch['data']['position'], 'Chapter President')
+        print("[PASS] Registration with National and Chapter positions passed.")
+
+    def test_30_executive_authorization_backup_and_flush(self):
+        # 1. Executive Director authorized for backup
+        res_exec = self.client.get('/api/system/backup?format=json', headers={'X-User-Email': 'admin@ytr.org'})
+        self.assertEqual(res_exec.status_code, 200)
+        data_exec = res_exec.get_json()
+        self.assertEqual(data_exec['status'], 'success')
+        self.assertIn('data', data_exec)
+
+        # 2. Regional Director (National) authorized for backup
+        res_rd_nat = self.client.get('/api/system/backup?format=json', headers={'X-User-Email': 'adminhost@gmail.com'})
+        self.assertEqual(res_rd_nat.status_code, 200)
+
+        # 3. Non-executive National Youth Officer blocked from backup (HTTP 403)
+        res_nyo = self.client.get('/api/system/backup?format=json', headers={'X-User-Email': 'test.nyo@ytr.org'})
+        self.assertEqual(res_nyo.status_code, 403)
+        self.assertIn('denied', res_nyo.get_json().get('message', '').lower())
+
+        # 4. Chapter Coordinator blocked from backup (HTTP 403)
+        res_chap = self.client.get('/api/system/backup?format=json', headers={'X-User-Email': 'joan.dela@gmail.com'})
+        self.assertEqual(res_chap.status_code, 403)
+
+        # 5. Non-executive blocked from flush (HTTP 403)
+        res_flush_chap = self.client.post('/api/system/flush', json={'mode': 'activity', 'confirmation': 'FLUSH'}, headers={'X-User-Email': 'joan.dela@gmail.com'})
+        self.assertEqual(res_flush_chap.status_code, 403)
+
+        # 6. Executive allowed to flush (HTTP 200)
+        res_flush_exec = self.client.post('/api/system/flush', json={'mode': 'demo', 'confirmation': 'FLUSH'}, headers={'X-User-Email': 'admin@ytr.org'})
+        self.assertEqual(res_flush_exec.status_code, 200)
+        print("[PASS] Executive authorization for backup and reset/flush passed.")
+
 if __name__ == '__main__':
     unittest.main()
 
