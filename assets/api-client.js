@@ -235,6 +235,19 @@ const YTR_API = {
     getSummary() {
       return YTR_API.request('/notifications/summary');
     }
+  },
+
+  // System Administration & Data Flush
+  system: {
+    getSummary() {
+      return YTR_API.request('/system/summary');
+    },
+    flush(mode, confirmation) {
+      return YTR_API.request('/system/flush', {
+        method: 'POST',
+        body: JSON.stringify({ mode, confirmation })
+      });
+    }
   }
 };
 

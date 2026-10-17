@@ -934,3 +934,123 @@ tr:hover td { background-color: #f9fafb; }
     max-height: 130px !important;
   }
 }
+
+/* System Maintenance & Data Flush Modal */
+.modal-md {
+  max-width: 620px !important;
+  width: 95% !important;
+  max-height: 92vh !important;
+  margin: auto !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #ffffff !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.4) !important;
+}
+
+.flush-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.flush-stat-pill {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  text-align: center;
+}
+.flush-stat-pill strong {
+  display: block;
+  font-size: 1.15rem;
+  color: #0f172a;
+  line-height: 1.1;
+}
+.flush-stat-pill span {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+
+.flush-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.flush-option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.85rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.flush-option-label:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+.flush-option-label input[type="radio"]:checked ~ .flush-option-content {
+  color: #0f172a;
+}
+.flush-option-label.active {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+.flush-option-label input[type="radio"] {
+  margin-top: 0.25rem;
+  accent-color: #dc2626;
+}
+.flush-option-content h5 {
+  margin: 0 0 0.2rem 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.flush-option-content p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.flush-confirm-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  padding: 0.85rem;
+  margin-top: 0.85rem;
+}
+.flush-confirm-box label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #9f1239;
+  margin-bottom: 0.4rem;
+}
+.flush-confirm-input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 2px solid #fda4af;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #881337;
+  outline: none;
+  background: #ffffff;
+}
+.flush-confirm-input:focus {
+  border-color: #e11d48;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.2);
+}
+

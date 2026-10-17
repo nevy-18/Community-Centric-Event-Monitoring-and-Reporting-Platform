@@ -359,6 +359,40 @@ class TestYTRBackendAPI(unittest.TestCase):
 
         print("[PASS] Strict stage deliverables enforcement validations passed.")
 
+    def test_26_system_summary(self):
+        res = self.client.get('/api/system/summary')
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertEqual(data.get('status'), 'success')
+        self.assertIn('table_counts', data.get('data', {}))
+        self.assertIn('activity_records_total', data.get('data', {}))
+        print(f"[PASS] System summary API passed: {data['data']['activity_records_total']} activity records.")
+
+    def test_27_system_flush_requires_confirmation(self):
+        # Missing or wrong confirmation code should fail with HTTP 400
+        res = self.client.post('/api/system/flush', json={'mode': 'activity', 'confirmation': 'WRONG'})
+        self.assertEqual(res.status_code, 400)
+        data = res.get_json()
+        self.assertEqual(data.get('status'), 'error')
+        self.assertIn("confirmation code required", data.get('message', '').lower())
+        print("[PASS] System flush security guard passed: Rejects unconfirmed wipe requests.")
+
+    def test_28_system_flush_and_demo_seed(self):
+        # Trigger verified demo flush & re-seed
+        res = self.client.post('/api/system/flush', json={'mode': 'demo', 'confirmation': 'FLUSH'})
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertEqual(data.get('status'), 'success')
+        self.assertIn('deleted_summary', data.get('data', {}))
+
+        # Verify summary counts reflect clean baseline
+        res_summary = self.client.get('/api/system/summary')
+        data_s = res_summary.get_json().get('data', {})
+        self.assertEqual(data_s['table_counts']['events'], 7)
+        self.assertEqual(data_s['table_counts']['chapters'], 6)
+        self.assertEqual(data_s['table_counts']['users'], 7)
+        print("[PASS] System flush & baseline demo seed passed: Clean baseline restored.")
+
 if __name__ == '__main__':
     unittest.main()
 

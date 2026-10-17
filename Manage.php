@@ -18,13 +18,19 @@
       <main class="page-content">
         
         <!-- Page Header -->
-        <div class="page-header">
+        <div class="page-header flex-between" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
           <div class="header-title-group">
             <div class="header-icon"><i class="ph-fill ph-user"></i></div>
             <div>
               <h1 class="font-roboto">Manage Account</h1>
               <p>Review account requests, assign roles, and manage system access.</p>
             </div>
+          </div>
+          <div>
+            <button type="button" class="btn btn-outline font-roboto" onclick="openSystemFlushModal()" style="border-color: #fca5a5; color: #b91c1c; background: #fff5f5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+              <i class="ph-bold ph-trash" style="font-size: 1.1rem; color: #dc2626;"></i>
+              <span>Flush System Data</span>
+            </button>
           </div>
         </div>
 
@@ -196,6 +202,96 @@
     </div>
   </div>
 
+  <!-- SYSTEM DATA FLUSH MODAL -->
+  <div id="systemFlushModal" class="modal-overlay hidden" style="display: none;">
+    <div class="modal-md">
+      <!-- Modal Header -->
+      <div class="modal-header-banner" style="background: #fff1f2; border-bottom: 1px solid #fecdd3;">
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <div style="background: #fee2e2; color: #dc2626; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-warning-octagon"></i>
+          </div>
+          <div>
+            <h3 style="color: #991b1b; margin: 0; font-size: 1rem;">System Maintenance: Data Flush</h3>
+            <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;">Purge operational activity, reset test records, or restore clean demo state.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeSystemFlushModal()"><i class="ph ph-x"></i></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body-scroll" style="background: #ffffff;">
+        <div style="font-size: 0.825rem; color: #475569; margin-bottom: 0.5rem;">
+          <strong>Current System Records:</strong>
+        </div>
+        <div class="flush-stat-grid" id="flushStatGrid">
+          <div class="flush-stat-pill">
+            <strong id="statEvents">--</strong>
+            <span>Events</span>
+          </div>
+          <div class="flush-stat-pill">
+            <strong id="statRequests">--</strong>
+            <span>Requests</span>
+          </div>
+          <div class="flush-stat-pill">
+            <strong id="statReports">--</strong>
+            <span>Reports</span>
+          </div>
+          <div class="flush-stat-pill">
+            <strong id="statUsers">--</strong>
+            <span>Users</span>
+          </div>
+          <div class="flush-stat-pill">
+            <strong id="statFiles">--</strong>
+            <span>Files</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <label style="font-size: 0.825rem; font-weight: 700; color: #1e293b;">Choose Flush Mode:</label>
+          <div class="flush-option-list">
+            <label class="flush-option-label active" id="optLabelActivity" onclick="selectFlushMode('activity')">
+              <input type="radio" name="flush_mode_radio" value="activity" checked>
+              <div class="flush-option-content">
+                <h5>🧹 Flush Operational Activity (Recommended)</h5>
+                <p>Clears all events, proposals, poster requests, timeline deliverables, reports, notifications, and audit logs. <strong>User accounts and registered chapters remain safe and intact.</strong></p>
+              </div>
+            </label>
+
+            <label class="flush-option-label" id="optLabelFull" onclick="selectFlushMode('full')">
+              <input type="radio" name="flush_mode_radio" value="full">
+              <div class="flush-option-content">
+                <h5>🔄 Full Factory Reset</h5>
+                <p>Completely resets all database tables to pristine baseline state (default chapters, default template steps, and default administrative logins).</p>
+              </div>
+            </label>
+
+            <label class="flush-option-label" id="optLabelDemo" onclick="selectFlushMode('demo')">
+              <input type="radio" name="flush_mode_radio" value="demo">
+              <div class="flush-option-content">
+                <h5>🚀 Full Reset &amp; Seed Demo Data</h5>
+                <p>Resets the database and immediately populates realistic sample proposals, poster requests, and conducted events with 2-week compliance timers for testing.</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="flush-confirm-box">
+          <label><i class="ph-bold ph-shield-warning"></i> Safety Verification: Type "FLUSH" to unlock</label>
+          <input type="text" id="flushConfirmationInput" class="flush-confirm-input" placeholder="Type FLUSH to confirm" oninput="checkFlushConfirmation()">
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" class="btn btn-outline font-roboto" onclick="closeSystemFlushModal()">Cancel</button>
+        <button type="button" class="btn btn-danger font-roboto" id="btnExecuteFlush" disabled onclick="executeSystemFlush()" style="background: #dc2626; border-color: #b91c1c; color: white; display: inline-flex; align-items: center; gap: 0.4rem; opacity: 0.5; cursor: not-allowed;">
+          <i class="ph-bold ph-trash"></i> <span id="flushBtnText">Execute Flush</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/api-client.js"></script>
   <script>
     let activeFilter = 'pending';
@@ -361,6 +457,109 @@
         loadAccounts(activeFilter);
       } else {
         alert(res.message || 'Error declining account.');
+      }
+    }
+
+    // ==========================================
+    // System Maintenance & Data Flush Handlers
+    // ==========================================
+    let currentFlushMode = 'activity';
+
+    async function openSystemFlushModal() {
+      const modal = document.getElementById('systemFlushModal');
+      const input = document.getElementById('flushConfirmationInput');
+      
+      input.value = '';
+      selectFlushMode('activity');
+      checkFlushConfirmation();
+
+      modal.style.display = 'flex';
+      modal.classList.remove('hidden');
+
+      // Fetch live counts
+      const res = await YTR_API.system.getSummary();
+      if (res.status === 'success' && res.data && res.data.table_counts) {
+        const tc = res.data.table_counts;
+        document.getElementById('statEvents').textContent = tc.events || 0;
+        document.getElementById('statRequests').textContent = tc.poster_requests || 0;
+        document.getElementById('statReports').textContent = tc.event_reports || 0;
+        document.getElementById('statUsers').textContent = tc.users || 0;
+        document.getElementById('statFiles').textContent = res.data.uploaded_files_count || 0;
+      }
+    }
+
+    function closeSystemFlushModal() {
+      const modal = document.getElementById('systemFlushModal');
+      modal.style.display = 'none';
+      modal.classList.add('hidden');
+    }
+
+    function selectFlushMode(mode) {
+      currentFlushMode = mode;
+      ['activity', 'full', 'demo'].forEach(m => {
+        const lbl = document.getElementById('optLabel' + m.charAt(0).toUpperCase() + m.slice(1));
+        const radio = lbl ? lbl.querySelector('input[type="radio"]') : null;
+        if (lbl) {
+          if (m === mode) {
+            lbl.classList.add('active');
+            if (radio) radio.checked = true;
+          } else {
+            lbl.classList.remove('active');
+            if (radio) radio.checked = false;
+          }
+        }
+      });
+    }
+
+    function checkFlushConfirmation() {
+      const input = document.getElementById('flushConfirmationInput');
+      const btn = document.getElementById('btnExecuteFlush');
+      const text = (input.value || '').trim().toUpperCase();
+      if (text === 'FLUSH') {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+      } else {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+      }
+    }
+
+    async function executeSystemFlush() {
+      const input = document.getElementById('flushConfirmationInput');
+      const btn = document.getElementById('btnExecuteFlush');
+      const btnText = document.getElementById('flushBtnText');
+      const text = (input.value || '').trim().toUpperCase();
+
+      if (text !== 'FLUSH') {
+        alert('Please type "FLUSH" to confirm this action.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      btnText.textContent = 'Flushing...';
+
+      try {
+        const res = await YTR_API.system.flush(currentFlushMode, 'FLUSH');
+        if (res.status === 'success') {
+          alert('Success! ' + (res.message || 'System data has been flushed.'));
+          closeSystemFlushModal();
+          // Reload page state
+          loadMetrics();
+          loadAccounts(activeFilter);
+          loadChapterOptions();
+        } else {
+          alert('Flush Failed: ' + (res.message || 'An error occurred during flush.'));
+        }
+      } catch (err) {
+        alert('Flush Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btnText.textContent = 'Execute Flush';
+        checkFlushConfirmation();
       }
     }
 
