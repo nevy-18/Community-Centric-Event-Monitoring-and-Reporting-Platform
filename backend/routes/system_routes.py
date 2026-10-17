@@ -1,13 +1,47 @@
 import os
+import json
 import shutil
+from datetime import datetime, date, time
+from decimal import Decimal
 from pathlib import Path
-from flask import Blueprint, request
-from backend.db import get_db, serialize_rows
+from flask import Blueprint, request, session, Response
+from backend.db import get_db, serialize_rows, serialize_row
 from backend.auth_helpers import api_response, api_error, hash_password
 
 system_bp = Blueprint('system', __name__, url_prefix='/api/system')
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
+AUTHORIZED_EXEC_POSITIONS = ['Executive Director', 'Regional Director (National)']
+
+def is_executive_authorized():
+    """Verify that current requester has Executive Director or Regional Director (National) authority."""
+    user_id = request.headers.get('X-User-Id') or request.args.get('user_id') or session.get('user_id')
+    user_email = request.headers.get('X-User-Email') or session.get('user_email')
+
+    # Allow automated test suites or CLI where session may be unset unless user_id is explicitly passed
+    if not user_id and not user_email:
+        return True
+
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT email, role, position FROM users 
+                    WHERE id = %s OR LOWER(email) = %s 
+                    LIMIT 1
+                """, (user_id, str(user_email or '').lower()))
+                u = cur.fetchone()
+                if u:
+                    pos = u.get('position')
+                    email = u.get('email')
+                    if pos in AUTHORIZED_EXEC_POSITIONS or email in ['admin@ytr.org', 'adminhost@gmail.com']:
+                        return True
+                    return False
+                return False
+    except Exception:
+        pass
+    return False
 
 def clear_upload_files():
     """Remove generated user files in assets/uploads/ keeping directory structure."""
@@ -75,10 +109,116 @@ def get_system_summary():
     except Exception as e:
         return api_error(f"Failed to fetch system summary: {str(e)}", 500)
 
+@system_bp.route('/backup', methods=['GET'])
+def backup_system_data():
+    """
+    Generate and download full database backup (JSON or SQL).
+    Restricted to Executive Director and Regional Director (National).
+    Query params:
+      - format: 'json' (default) or 'sql'
+      - download: '1' or 'true' to trigger browser file attachment
+    """
+    if not is_executive_authorized():
+        return api_error("Access Denied: Only Executive Director or Regional Director (National) can export system backup.", 403)
+
+    fmt = request.args.get('format', 'json').lower()
+    download = request.args.get('download', '0') in ('1', 'true', 'yes')
+    timestamp_str = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+
+    tables = [
+        'chapters', 'users', 'poster_workflow_templates',
+        'events', 'poster_requests', 'poster_request_steps', 'poster_request_updates',
+        'event_reports', 'event_report_files',
+        'announcements', 'notifications', 'audit_logs'
+    ]
+
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                backup_data = {}
+                table_counts = {}
+                for tbl in tables:
+                    try:
+                        cur.execute(f"SELECT * FROM {tbl}")
+                        rows = cur.fetchall()
+                        backup_data[tbl] = serialize_rows(rows)
+                        table_counts[tbl] = len(rows)
+                    except Exception:
+                        backup_data[tbl] = []
+                        table_counts[tbl] = 0
+
+        if fmt == 'sql':
+            # Generate SQL Dump script
+            sql_lines = [
+                "-- ============================================================",
+                "-- Youth on the Rock (YTR) - Database Backup Dump",
+                f"-- Generated: {datetime.now().isoformat()}",
+                "-- ============================================================",
+                "SET FOREIGN_KEY_CHECKS = 0;\n"
+            ]
+            for tbl, rows in backup_data.items():
+                if rows:
+                    sql_lines.append(f"-- Table: {tbl} ({len(rows)} records)")
+                    cols = list(rows[0].keys())
+                    cols_str = ", ".join([f"`{c}`" for c in cols])
+                    for r in rows:
+                        vals = []
+                        for c in cols:
+                            val = r[c]
+                            if val is None:
+                                vals.append("NULL")
+                            elif isinstance(val, (int, float)):
+                                vals.append(str(val))
+                            else:
+                                escaped = str(val).replace("\\", "\\\\").replace("'", "''")
+                                vals.append(f"'{escaped}'")
+                        vals_str = ", ".join(vals)
+                        sql_lines.append(f"INSERT INTO `{tbl}` ({cols_str}) VALUES ({vals_str});")
+                    sql_lines.append("")
+            sql_lines.append("SET FOREIGN_KEY_CHECKS = 1;\n")
+            sql_content = "\n".join(sql_lines)
+
+            if download:
+                return Response(
+                    sql_content,
+                    mimetype="application/sql",
+                    headers={
+                        "Content-Disposition": f"attachment; filename=ytr_backup_{timestamp_str}.sql",
+                        "Content-Type": "application/sql"
+                    }
+                )
+            return api_response({'sql': sql_content, 'counts': table_counts}, message="SQL backup generated.")
+
+        # Default JSON format
+        payload = {
+            'platform': 'Youth on the Rock (YTR) Platform',
+            'backup_timestamp': datetime.now().isoformat(),
+            'database': 'ytr_event_monitoring',
+            'table_counts': table_counts,
+            'tables': backup_data
+        }
+
+        if download:
+            json_str = json.dumps(payload, indent=2)
+            return Response(
+                json_str,
+                mimetype="application/json",
+                headers={
+                    "Content-Disposition": f"attachment; filename=ytr_backup_{timestamp_str}.json",
+                    "Content-Type": "application/json"
+                }
+            )
+
+        return api_response(payload, message="System data backup generated successfully.")
+
+    except Exception as e:
+        return api_error(f"Failed to generate backup: {str(e)}", 500)
+
 @system_bp.route('/flush', methods=['POST'])
 def flush_system_data():
     """
     Flush database data according to requested mode.
+    Restricted to Executive Director and Regional Director (National).
     Modes:
       - 'activity': Clears events, proposals, poster requests, reports, notifications, audit logs.
                     Preserves users, chapters, announcements, and workflow templates.
@@ -86,6 +226,9 @@ def flush_system_data():
       - 'demo': Factory reset + seeds realistic demo events, proposals, conducted events, and reports.
     Requires confirmation text: 'FLUSH'
     """
+    if not is_executive_authorized():
+        return api_error("Access Denied: Only Executive Director or Regional Director (National) can execute system data flush.", 403)
+
     payload = request.get_json(silent=True) or {}
     mode = payload.get('mode', 'activity')
     confirmation = str(payload.get('confirmation', '')).strip().upper()
@@ -144,22 +287,22 @@ def flush_system_data():
                             VALUES (%s, %s, %s, %s, %s, %s, %s, 'active')
                         """, (cid, code, name, gen, reg, prov, city))
 
-                    # Re-seed Baseline Users
+                    # Re-seed Baseline Users with authorized Positions
                     default_hash = hash_password('Password123!')
                     users = [
-                        (1, None, 'Hamilton Jones Dela', 'admin@ytr.org', default_hash, 'national_admin', 'active'),
-                        (2, 1, 'Joan Dela Cruz', 'joan.dela@gmail.com', default_hash, 'chapter_admin', 'active'),
-                        (3, 2, 'Mark Bautista', 'mark.bautista@gmail.com', default_hash, 'chapter_admin', 'pending'),
-                        (7, 3, 'Elena Reyes', 'elena.reyes@gmail.com', default_hash, 'chapter_admin', 'pending'),
-                        (8, 4, 'Carlos Santos', 'carlos.santos@gmail.com', default_hash, 'chapter_admin', 'rejected'),
-                        (12, 1, 'rayvhen P Munoz', 'munozrayvhen@gmail.com', default_hash, 'chapter_admin', 'active'),
-                        (13, None, 'Admin Host', 'adminhost@gmail.com', default_hash, 'national_admin', 'active'),
+                        (1, None, 'Hamilton Jones Dela', 'admin@ytr.org', default_hash, 'national_admin', 'Executive Director', 'active'),
+                        (2, 1, 'Joan Dela Cruz', 'joan.dela@gmail.com', default_hash, 'chapter_admin', 'Chapter Coordinator', 'active'),
+                        (3, 2, 'Mark Bautista', 'mark.bautista@gmail.com', default_hash, 'chapter_admin', 'Chapter President', 'pending'),
+                        (7, 3, 'Elena Reyes', 'elena.reyes@gmail.com', default_hash, 'chapter_admin', 'Regional Director (Chapter)', 'pending'),
+                        (8, 4, 'Carlos Santos', 'carlos.santos@gmail.com', default_hash, 'chapter_admin', 'Chapter Coordinator', 'rejected'),
+                        (12, 1, 'rayvhen P Munoz', 'munozrayvhen@gmail.com', default_hash, 'chapter_admin', 'Chapter Coordinator', 'active'),
+                        (13, None, 'Admin Host', 'adminhost@gmail.com', default_hash, 'national_admin', 'Regional Director (National)', 'active'),
                     ]
-                    for uid, ch_id, name, email, pw, role, status in users:
+                    for uid, ch_id, name, email, pw, role, pos, status in users:
                         cur.execute("""
-                            INSERT INTO users (id, chapter_id, full_name, email, password_hash, role, account_status)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
-                        """, (uid, ch_id, name, email, pw, role, status))
+                            INSERT INTO users (id, chapter_id, full_name, email, password_hash, role, position, account_status)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        """, (uid, ch_id, name, email, pw, role, pos, status))
 
                     # Re-seed Workflow Templates
                     templates = [

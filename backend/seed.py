@@ -43,17 +43,17 @@ def seed_database():
             # 2. Seed Users
             default_hash = hash_password('Password123!')
             users = [
-                (None, 'Hamilton Jones Dela', 'admin@ytr.org', default_hash, 'national_admin', 'active'),
-                (laguna_id, 'Joan Dela Cruz', 'joan.dela@gmail.com', default_hash, 'chapter_admin', 'active'),
-                (ncr_id, 'Mark Bautista', 'mark.bautista@gmail.com', default_hash, 'chapter_admin', 'pending'),
+                (None, 'Hamilton Jones Dela', 'admin@ytr.org', default_hash, 'national_admin', 'Executive Director', 'active'),
+                (laguna_id, 'Joan Dela Cruz', 'joan.dela@gmail.com', default_hash, 'chapter_admin', 'Chapter Coordinator', 'active'),
+                (ncr_id, 'Mark Bautista', 'mark.bautista@gmail.com', default_hash, 'chapter_admin', 'Chapter President', 'pending'),
             ]
 
-            for ch_id, name, email, pw, role, status in users:
+            for ch_id, name, email, pw, role, pos, status in users:
                 cur.execute("""
-                    INSERT INTO users (chapter_id, full_name, email, password_hash, role, account_status)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                    ON DUPLICATE KEY UPDATE full_name = VALUES(full_name), account_status = VALUES(account_status)
-                """, (ch_id, name, email, pw, role, status))
+                    INSERT INTO users (chapter_id, full_name, email, password_hash, role, position, account_status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE full_name = VALUES(full_name), position = VALUES(position), account_status = VALUES(account_status)
+                """, (ch_id, name, email, pw, role, pos, status))
 
             # 3. Seed Announcements
             cur.execute("SELECT id FROM users WHERE email = 'admin@ytr.org'")
