@@ -92,10 +92,10 @@ const YTR_API = {
     getById(id) {
       return YTR_API.request(`/accounts/${id}`);
     },
-    approve(id, role, chapter_id, position = null) {
+    approve(id, role, chapter_id) {
       return YTR_API.request(`/accounts/${id}/approve`, {
         method: 'POST',
-        body: JSON.stringify({ role, chapter_id, position })
+        body: JSON.stringify({ role, chapter_id })
       });
     },
     decline(id, review_note) {
@@ -241,12 +241,6 @@ const YTR_API = {
   system: {
     getSummary() {
       return YTR_API.request('/system/summary');
-    },
-    backup(format = 'json') {
-      return YTR_API.request(`/system/backup?format=${format}`);
-    },
-    getBackupUrl(format = 'json') {
-      return `${API_BASE_URL}/system/backup?format=${format}&download=1`;
     },
     flush(mode, confirmation) {
       return YTR_API.request('/system/flush', {

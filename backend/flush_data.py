@@ -76,19 +76,19 @@ def run_flush(mode='activity', verbose=True):
                 # Users
                 pw_hash = hash_password('Password123!')
                 users = [
-                    (1, None, 'Hamilton Jones Dela', 'admin@ytr.org', pw_hash, 'national_admin', 'Executive Director', 'active'),
-                    (2, 1, 'Joan Dela Cruz', 'joan.dela@gmail.com', pw_hash, 'chapter_admin', 'Chapter Coordinator', 'active'),
-                    (3, 2, 'Mark Bautista', 'mark.bautista@gmail.com', pw_hash, 'chapter_admin', 'Chapter President', 'pending'),
-                    (7, 3, 'Elena Reyes', 'elena.reyes@gmail.com', pw_hash, 'chapter_admin', 'Regional Director (Chapter)', 'pending'),
-                    (8, 4, 'Carlos Santos', 'carlos.santos@gmail.com', pw_hash, 'chapter_admin', 'Chapter Coordinator', 'rejected'),
-                    (12, 1, 'rayvhen P Munoz', 'munozrayvhen@gmail.com', pw_hash, 'chapter_admin', 'Chapter Coordinator', 'active'),
-                    (13, None, 'Admin Host', 'adminhost@gmail.com', pw_hash, 'national_admin', 'Regional Director (National)', 'active'),
+                    (1, None, 'Hamilton Jones Dela', 'admin@ytr.org', pw_hash, 'national_admin', 'active'),
+                    (2, 1, 'Joan Dela Cruz', 'joan.dela@gmail.com', pw_hash, 'chapter_admin', 'active'),
+                    (3, 2, 'Mark Bautista', 'mark.bautista@gmail.com', pw_hash, 'chapter_admin', 'pending'),
+                    (7, 3, 'Elena Reyes', 'elena.reyes@gmail.com', pw_hash, 'chapter_admin', 'pending'),
+                    (8, 4, 'Carlos Santos', 'carlos.santos@gmail.com', pw_hash, 'chapter_admin', 'rejected'),
+                    (12, 1, 'rayvhen P Munoz', 'munozrayvhen@gmail.com', pw_hash, 'chapter_admin', 'active'),
+                    (13, None, 'Admin Host', 'adminhost@gmail.com', pw_hash, 'national_admin', 'active'),
                 ]
-                for uid, ch_id, name, email, pw, role, pos, status in users:
+                for uid, ch_id, name, email, pw, role, status in users:
                     cur.execute("""
-                        INSERT INTO users (id, chapter_id, full_name, email, password_hash, role, position, account_status)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (uid, ch_id, name, email, pw, role, pos, status))
+                        INSERT INTO users (id, chapter_id, full_name, email, password_hash, role, account_status)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (uid, ch_id, name, email, pw, role, status))
 
                 # Workflow templates
                 templates = [

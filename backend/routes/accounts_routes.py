@@ -33,7 +33,7 @@ def list_accounts():
     search = request.args.get('search', '').strip()
 
     sql = """
-        SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
+        SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.account_status,
                u.requested_at, u.reviewed_at, u.review_note,
                c.chapter_name, c.chapter_code
         FROM users u
@@ -52,9 +52,9 @@ def list_accounts():
         sql += " AND u.account_status IN ('rejected', 'suspended')"
 
     if search:
-        sql += " AND (u.full_name LIKE %s OR u.email LIKE %s OR c.chapter_name LIKE %s OR u.position LIKE %s)"
+        sql += " AND (u.full_name LIKE %s OR u.email LIKE %s OR c.chapter_name LIKE %s)"
         s = f"%{search}%"
-        params.extend([s, s, s, s])
+        params.extend([s, s, s])
 
     sql += " ORDER BY u.requested_at DESC, u.id DESC"
 
@@ -70,7 +70,7 @@ def get_account(user_id):
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
+                SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.account_status,
                        u.requested_at, u.reviewed_at, u.review_note,
                        c.chapter_name, c.chapter_code,
                        r.full_name AS reviewer_name
@@ -91,15 +91,11 @@ def get_account(user_id):
 def approve_account(user_id):
     data = request.get_json(silent=True) or request.form.to_dict() or {}
     role = data.get('role', 'chapter_admin')
-    position = data.get('position')
     chapter_id = data.get('chapter_id')
     reviewer_id = session.get('user_id')
 
     if role not in ['national_admin', 'chapter_admin']:
         return api_error('Invalid role specified.', 400)
-
-    if not position:
-        position = 'Executive Director' if role == 'national_admin' else 'Chapter Coordinator'
 
     with get_db() as conn:
         with conn.cursor() as cur:
@@ -107,12 +103,11 @@ def approve_account(user_id):
                 UPDATE users
                 SET account_status = 'active',
                     role = %s,
-                    position = %s,
                     chapter_id = %s,
                     reviewed_by = %s,
                     reviewed_at = NOW()
                 WHERE id = %s
-            """, (role, position, chapter_id if role == 'chapter_admin' else None, reviewer_id, user_id))
+            """, (role, chapter_id if role == 'chapter_admin' else None, reviewer_id, user_id))
 
     return api_response({}, 'Account approved successfully.')
 

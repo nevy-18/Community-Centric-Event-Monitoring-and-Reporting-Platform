@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(190) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   role ENUM('national_admin','chapter_admin') NOT NULL,
-  position VARCHAR(100) NULL,
   account_status ENUM('pending','active','rejected','suspended') NOT NULL DEFAULT 'pending',
   requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   reviewed_by BIGINT UNSIGNED NULL,

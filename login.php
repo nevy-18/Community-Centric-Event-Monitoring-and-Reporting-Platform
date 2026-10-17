@@ -168,19 +168,11 @@
 
                 <select id="requestedRole" name="requested_role" required>
 
-                  <option value="" selected disabled>Select your role / position</option>
+                  <option value="" selected disabled>Select a role</option>
 
-                  <optgroup label="NATIONAL">
-                    <option value="Executive Director">Executive Director</option>
-                    <option value="Regional Director (National)">Regional Director (National)</option>
-                    <option value="National Youth Officer">National Youth Officer</option>
-                  </optgroup>
+                  <option value="chapter_admin">Chapter Admin</option>
 
-                  <optgroup label="CHAPTER">
-                    <option value="Chapter Coordinator">Chapter Coordinator</option>
-                    <option value="Chapter President">Chapter President</option>
-                    <option value="Regional Director (Chapter)">Regional Director (Chapter)</option>
-                  </optgroup>
+                  <option value="national_admin">National Admin</option>
 
                 </select>
 

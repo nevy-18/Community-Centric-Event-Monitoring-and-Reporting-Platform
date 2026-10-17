@@ -27,7 +27,7 @@
             </div>
           </div>
           <div>
-            <button type="button" id="btnHeaderFlush" class="btn btn-outline font-roboto" onclick="openSystemFlushModal()" style="display: none; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+            <button type="button" class="btn btn-outline font-roboto" onclick="openSystemFlushModal()" style="border-color: #fca5a5; color: #b91c1c; background: #fff5f5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
               <i class="ph-bold ph-trash" style="font-size: 1.1rem; color: #dc2626;"></i>
               <span>Flush System Data</span>
             </button>
@@ -168,34 +168,18 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label font-roboto">Assign Role &amp; Tier</label>
+                <label class="form-label font-roboto">Assign Role</label>
                 <div class="radio-group font-roboto">
                   <label class="radio-label">
-                    <input type="radio" name="assign_role" id="roleNational" value="national_admin" onchange="syncRolePositionOptions('national_admin')"> National Admin
+                    <input type="radio" name="assign_role" id="roleNational" value="national_admin"> National Admin
                   </label>
                   <label class="radio-label">
-                    <input type="radio" name="assign_role" id="roleChapter" value="chapter_admin" checked onchange="syncRolePositionOptions('chapter_admin')"> Chapter Admin
+                    <input type="radio" name="assign_role" id="roleChapter" value="chapter_admin" checked> Chapter Admin
                   </label>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label font-roboto">Specific Position / Title</label>
-                <select class="form-select font-roboto" id="assignPositionSelect">
-                  <optgroup label="── NATIONAL POSITIONS ──" id="optGrpNational">
-                    <option value="Executive Director">Executive Director</option>
-                    <option value="Regional Director (National)">Regional Director (National)</option>
-                    <option value="National Youth Officer">National Youth Officer</option>
-                  </optgroup>
-                  <optgroup label="── CHAPTER POSITIONS ──" id="optGrpChapter">
-                    <option value="Chapter Coordinator">Chapter Coordinator</option>
-                    <option value="Chapter President">Chapter President</option>
-                    <option value="Regional Director (Chapter)">Regional Director (Chapter)</option>
-                  </optgroup>
-                </select>
-              </div>
-
-              <div class="form-group" id="assignChapterGroup">
                 <label class="form-label font-roboto">Assign Chapter</label>
                 <select class="form-select font-roboto" id="assignChapterSelect">
                   <option value="">Loading chapters...</option>
@@ -369,15 +353,12 @@
             <td>
               <div class="td-user">
                 <img src="https://placehold.co/32x32/e2e8f0/64748b" alt="Avatar">
-                <span class="font-roboto">${escapeHtml(user.full_name)}</span>
+                <span class="font-roboto">${user.full_name}</span>
               </div>
             </td>
-            <td class="td-sub">${escapeHtml(user.email)}</td>
-            <td class="td-sub">${escapeHtml(user.chapter_name || 'National HQ')}</td>
-            <td style="text-align: center;">
-              <span class="${roleBadgeClass} font-roboto">${roleLabel}</span>
-              ${user.position ? `<div style="font-size: 0.72rem; color: #475569; font-weight: 600; margin-top: 3px;"><i class="ph ph-identification-badge"></i> ${escapeHtml(user.position)}</div>` : ''}
-            </td>
+            <td class="td-sub">${user.email}</td>
+            <td class="td-sub">${user.chapter_name || 'National HQ'}</td>
+            <td style="text-align: center;"><span class="${roleBadgeClass} font-roboto">${roleLabel}</span></td>
             <td class="td-sub" style="font-size: 0.8rem;">${reqDate}</td>
             <td style="text-align: center;"><span class="${statusBadgeClass} font-roboto">${user.account_status.toUpperCase()}</span></td>
             <td style="text-align: center;">
@@ -394,38 +375,12 @@
       }
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
     // Switch Tab
     function switchAccountTab(filter, btn) {
       activeFilter = filter;
       document.querySelectorAll('.tabs-container .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       loadAccounts(filter);
-    }
-
-    function syncRolePositionOptions(role) {
-      const posSelect = document.getElementById('assignPositionSelect');
-      const chGroup = document.getElementById('assignChapterGroup');
-      if (role === 'national_admin') {
-        if (chGroup) chGroup.style.display = 'none';
-        if (!posSelect.value || ['Chapter Coordinator', 'Chapter President', 'Regional Director (Chapter)'].includes(posSelect.value)) {
-          posSelect.value = 'Executive Director';
-        }
-      } else {
-        if (chGroup) chGroup.style.display = 'block';
-        if (!posSelect.value || ['Executive Director', 'Regional Director (National)', 'National Youth Officer'].includes(posSelect.value)) {
-          posSelect.value = 'Chapter Coordinator';
-        }
-      }
     }
 
     // Select User into Review Panel
@@ -435,19 +390,13 @@
       document.getElementById('reviewUserEmail').textContent = user.email;
       document.getElementById('reviewUserBadge').textContent = user.account_status.toUpperCase();
       document.getElementById('reviewUserChapter').textContent = user.chapter_name || 'National HQ';
-      document.getElementById('reviewUserRole').textContent = (user.position ? user.position + ' • ' : '') + (user.role === 'national_admin' ? 'National Admin' : 'Chapter Admin');
-      document.getElementById('reviewUserReason').textContent = `Account request submitted for ${user.full_name} (${user.email}). Position: ${user.position || 'Not specified'}. Review authorization and confirm chapter assignment below.`;
+      document.getElementById('reviewUserRole').textContent = user.role === 'national_admin' ? 'National Admin' : 'Chapter Admin';
+      document.getElementById('reviewUserReason').textContent = `Account request submitted for ${user.full_name} (${user.email}). Review authorization and confirm chapter assignment below.`;
 
       if (user.role === 'national_admin') {
         document.getElementById('roleNational').checked = true;
-        syncRolePositionOptions('national_admin');
       } else {
         document.getElementById('roleChapter').checked = true;
-        syncRolePositionOptions('chapter_admin');
-      }
-
-      if (user.position) {
-        document.getElementById('assignPositionSelect').value = user.position;
       }
 
       if (user.chapter_id) {
@@ -474,15 +423,14 @@
       }
 
       const role = document.querySelector('input[name="assign_role"]:checked').value;
-      const position = document.getElementById('assignPositionSelect').value;
       const chapterId = document.getElementById('assignChapterSelect').value;
 
       if (role === 'chapter_admin' && !chapterId) {
-        alert('Please select a chapter for Chapter role.');
+        alert('Please select a chapter for the Chapter Admin.');
         return;
       }
 
-      const res = await YTR_API.accounts.approve(selectedUserId, role, chapterId, position);
+      const res = await YTR_API.accounts.approve(selectedUserId, role, chapterId);
       if (res.status === 'success') {
         alert('Account approved successfully!');
         loadMetrics();
@@ -615,24 +563,8 @@
       }
     }
 
-    function checkExecutiveAccess() {
-      try {
-        const rawUser = localStorage.getItem('ytr_user');
-        if (rawUser) {
-          const u = JSON.parse(rawUser);
-          const execPositions = ['Executive Director', 'Regional Director (National)'];
-          const isExec = execPositions.includes(u.position) || u.email === 'admin@ytr.org';
-          const flushBtn = document.getElementById('btnHeaderFlush');
-          if (flushBtn) {
-            flushBtn.style.display = isExec ? 'inline-flex' : 'none';
-          }
-        }
-      } catch (e) {}
-    }
-
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
-      checkExecutiveAccess();
       loadMetrics();
       loadChapterOptions();
       loadAccounts('pending');

@@ -7,9 +7,6 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 EMAIL_REGEX = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 
-NATIONAL_ROLES = ['Executive Director', 'Regional Director (National)', 'National Youth Officer']
-CHAPTER_ROLES = ['Chapter Coordinator', 'Chapter President', 'Regional Director (Chapter)']
-
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json(silent=True) or request.form.to_dict() or {}
@@ -25,7 +22,7 @@ def login():
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.role, u.position, u.account_status,
+                SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.role, u.account_status,
                        c.chapter_name
                 FROM users u
                 LEFT JOIN chapters c ON c.id = u.chapter_id
@@ -51,7 +48,6 @@ def login():
             session['user_name'] = user['full_name']
             session['user_email'] = user['email']
             session['user_role'] = user['role']
-            session['user_position'] = user.get('position')
             session['chapter_id'] = user['chapter_id']
             session['chapter_name'] = user['chapter_name']
 
@@ -63,7 +59,6 @@ def login():
         'full_name': user['full_name'],
         'email': user['email'],
         'role': user['role'],
-        'position': user.get('position') or ('Executive Director' if user['role'] == 'national_admin' else 'Chapter Coordinator'),
         'chapter_id': user['chapter_id'],
         'chapter_name': user['chapter_name']
     }
@@ -81,11 +76,10 @@ def register():
     full_name = data.get('full_name', '').strip()
     email = data.get('email', '').strip().lower()
     password = data.get('password', '')
-    raw_role = (data.get('requested_role') or data.get('role') or '').strip()
-    raw_position = (data.get('position') or '').strip()
+    role = data.get('requested_role', '')
     chapter_id = data.get('chapter_id')
 
-    if not full_name or not email or not password or not raw_role:
+    if not full_name or not email or not password or not role:
         return api_error('All required fields must be filled out.', 400)
 
     if not re.match(EMAIL_REGEX, email):
@@ -94,26 +88,11 @@ def register():
     if len(password) < 8:
         return api_error('Password must contain at least 8 characters.', 400)
 
-    # Determine Tier (role) and Specific Position
-    if raw_role in NATIONAL_ROLES:
-        db_role = 'national_admin'
-        position = raw_role
-        chapter_id = None
-    elif raw_role in CHAPTER_ROLES:
-        db_role = 'chapter_admin'
-        position = raw_role
-    elif raw_role == 'national_admin':
-        db_role = 'national_admin'
-        position = raw_position or 'Executive Director'
-        chapter_id = None
-    elif raw_role == 'chapter_admin':
-        db_role = 'chapter_admin'
-        position = raw_position or 'Chapter Coordinator'
-    else:
-        return api_error('Invalid role or position selected.', 400)
+    if role not in ['national_admin', 'chapter_admin']:
+        return api_error('Invalid role requested.', 400)
 
-    if db_role == 'chapter_admin' and not chapter_id:
-        return api_error('Please select a valid chapter for Chapter roles.', 400)
+    if role == 'chapter_admin' and not chapter_id:
+        return api_error('Please select a valid chapter for Chapter Admin role.', 400)
 
     with get_db() as conn:
         with conn.cursor() as cur:
@@ -125,16 +104,14 @@ def register():
             pw_hash = hash_password(password)
 
             cur.execute("""
-                INSERT INTO users (chapter_id, full_name, email, password_hash, role, position, account_status, requested_at)
-                VALUES (%s, %s, %s, %s, %s, %s, 'pending', NOW())
-            """, (chapter_id, full_name, email, pw_hash, db_role, position))
+                INSERT INTO users (chapter_id, full_name, email, password_hash, role, account_status, requested_at)
+                VALUES (%s, %s, %s, %s, %s, 'pending', NOW())
+            """, (chapter_id if role == 'chapter_admin' else None, full_name, email, pw_hash, role))
 
             new_user_id = cur.lastrowid
 
     return api_response({
-        'user_id': new_user_id,
-        'role': db_role,
-        'position': position
+        'user_id': new_user_id
     }, 'Account request submitted successfully. It will be reviewed by an administrator.', 201)
 
 @auth_bp.route('/logout', methods=['POST', 'GET'])
@@ -151,7 +128,7 @@ def get_current_user():
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
+                SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.account_status,
                        c.chapter_name
                 FROM users u
                 LEFT JOIN chapters c ON c.id = u.chapter_id
