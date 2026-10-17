@@ -9,12 +9,18 @@ def hash_password(password: str) -> str:
     return hashed.decode('utf-8')
 
 def verify_password(password: str, hashed_password: str) -> bool:
-    """Verify password against bcrypt hash (supports standard $2b$ and PHP $2y$ prefix)."""
-    if not hashed_password:
+    """Verify password against bcrypt hash (supports standard $2b$, $2a$, and PHP $2y$ prefix), with plaintext fallback."""
+    if not hashed_password or not password:
         return False
-    # Normalize PHP $2y$ to $2b$ for python bcrypt
-    normalized_hash = hashed_password.replace('$2y$', '$2b$').encode('utf-8')
-    return bcrypt.checkpw(password.encode('utf-8'), normalized_hash)
+    # Plaintext fallback (if set directly in database during development)
+    if password == hashed_password:
+        return True
+    try:
+        # Normalize PHP $2y$ and $2a$ to $2b$ for python bcrypt
+        normalized_hash = hashed_password.replace('$2y$', '$2b$').replace('$2a$', '$2b$').encode('utf-8')
+        return bcrypt.checkpw(password.encode('utf-8'), normalized_hash)
+    except Exception:
+        return False
 
 def api_response(data=None, message="Success", status_code=200):
     """Standardized API response format."""
