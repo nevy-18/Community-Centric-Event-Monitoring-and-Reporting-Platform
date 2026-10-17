@@ -140,17 +140,17 @@
 
 
     <!-- MODAL 1: PRE-APPROVAL VERIFICATION REVIEW (Image 1) -->
-    <div id="verification-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 1000; align-items: center; justify-content: center;">
-        <div class="modal-xl" style="background: #ffffff;">
+    <div id="verification-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-xl">
             <!-- Modal Header -->
             <div class="modal-header-banner">
                 <div>
                     <h3 class="font-roboto">
-                        <i class="ph-fill ph-check-circle" style="color: #16a34a;"></i> Event Poster Details
+                        <i class="ph-fill ph-check-circle" style="color: #16a34a;"></i> Event Poster Details & Verification
                     </h3>
-                    <p>View the complete information and progress of this chapter event</p>
+                    <p>Review necessary details and verify requirements before approving public materials</p>
                 </div>
-                <button type="button" onclick="closeVerificationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; padding: 4px;">
+                <button type="button" onclick="closeVerificationModal()" aria-label="Close modal">
                     <i class="ph ph-x"></i>
                 </button>
             </div>
@@ -320,17 +320,17 @@
 
 
     <!-- MODAL 2: MULTI-STAGE EVENT TIMELINE & PROOF MANAGEMENT (Image 2) -->
-    <div id="timeline-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 1000; align-items: center; justify-content: center;">
-        <div class="modal-xl" style="background: #ffffff;">
+    <div id="timeline-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-xl">
             <!-- Modal Header -->
             <div class="modal-header-banner">
                 <div>
                     <h3 class="font-roboto">
-                        <i class="ph-fill ph-kanban" style="color: var(--primary);"></i> Event Poster Details
+                        <i class="ph-fill ph-kanban" style="color: var(--primary);"></i> Event Poster Details & Progress
                     </h3>
-                    <p>View the complete information and progress of this chapter event</p>
+                    <p>View the complete information, milestone deliverables, and progress of this chapter event</p>
                 </div>
-                <button type="button" onclick="closeTimelineModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; padding: 4px;">
+                <button type="button" onclick="closeTimelineModal()" aria-label="Close modal">
                     <i class="ph ph-x"></i>
                 </button>
             </div>
@@ -340,29 +340,29 @@
                 <div class="timeline-grid">
                     <!-- Column 1: Event Poster Preview Card -->
                     <div class="timeline-left-card">
-                        <div class="poster-media-box" style="height: 320px;">
+                        <div class="poster-media-box">
                             <img id="tl-poster-img" src="assets/images/background.jpg" alt="Official Poster" onerror="this.src='assets/images/background.jpg'">
                             <button type="button" class="poster-zoom-btn" onclick="openZoomImage(document.getElementById('tl-poster-img').src)">
                                 <i class="ph ph-magnifying-glass-plus"></i> View Full Poster
                             </button>
                         </div>
                         <div>
-                            <span class="badge" id="tl-status-pill" style="background: #dbeafe; color: #1e40af; font-weight: 700; margin-bottom: 0.5rem; display: inline-block;">
+                            <span class="badge" id="tl-status-pill" style="background: #dbeafe; color: #1e40af; font-weight: 700; margin-bottom: 0.35rem; display: inline-block;">
                                 Stage 1: Poster Request
                             </span>
-                            <h3 class="font-roboto" id="tl-event-title" style="font-size: 1.15rem; color: #0f172a; font-weight: 800; margin: 0 0 0.35rem;">
+                            <h3 class="font-roboto" id="tl-event-title" style="font-size: 1.05rem; color: #0f172a; font-weight: 800; margin: 0 0 0.2rem;">
                                 Event Title
                             </h3>
-                            <p id="tl-event-theme" style="color: #64748b; font-size: 0.85rem; margin-bottom: 0.75rem;">
+                            <p id="tl-event-theme" style="color: #64748b; font-size: 0.8rem; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 Subtitle / Theme
                             </p>
-                            <div style="font-size: 0.8rem; color: #334155; line-height: 1.6; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            <div style="font-size: 0.78rem; color: #334155; line-height: 1.5; border-top: 1px solid #f1f5f9; padding-top: 0.35rem;">
                                 <div><strong>Chapter:</strong> <span id="tl-chapter-name">--</span></div>
                                 <div><strong>Date:</strong> <span id="tl-date">--</span></div>
                                 <div><strong>Venue:</strong> <span id="tl-venue">--</span></div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-outline" style="width: 100%;" onclick="downloadCurrentPoster()">
+                        <button type="button" class="btn btn-outline" style="width: 100%; margin-top: auto; padding: 0.4rem; font-size: 0.78rem;" onclick="downloadCurrentPoster()">
                             <i class="ph ph-download-simple"></i> Download Poster Collateral
                         </button>
                     </div>
@@ -496,6 +496,24 @@
             loadMetrics();
             loadPosterData('accepted');
             loadPosterData('queue');
+
+            // Close modals when clicking on overlay backdrop
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+
+            // Close open modals on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                        overlay.style.display = 'none';
+                    });
+                }
+            });
         });
 
         async function loadMetrics() {

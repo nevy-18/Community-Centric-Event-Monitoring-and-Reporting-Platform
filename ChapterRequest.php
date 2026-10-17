@@ -127,7 +127,7 @@
 
     <!-- MODAL: REQUEST NEW POSTER -->
     <!-- MODAL 1: REQUEST NEW POSTER (Comprehensive with all criteria) -->
-    <div id="new-poster-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 1000; align-items: center; justify-content: center;">
+    <div id="new-poster-modal" class="modal-overlay" style="display: none;">
         <div style="background: #ffffff; border-radius: 14px; max-width: 680px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(15,23,42,0.25);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
                 <div>
@@ -221,8 +221,8 @@
 
 
     <!-- MODAL 2: CHAPTER EVENT TIMELINE & ASSET DOWNLOAD MODAL -->
-    <div id="chapter-timeline-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 1000; align-items: center; justify-content: center;">
-        <div class="modal-xl" style="background: #ffffff;">
+    <div id="chapter-timeline-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-xl">
             <!-- Modal Header -->
             <div class="modal-header-banner">
                 <div>
@@ -231,7 +231,7 @@
                     </h3>
                     <p>Track your media collateral progress, download approved posters, and view milestone updates</p>
                 </div>
-                <button type="button" onclick="closeChapterTimelineModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; padding: 4px;">
+                <button type="button" onclick="closeChapterTimelineModal()" aria-label="Close modal">
                     <i class="ph ph-x"></i>
                 </button>
             </div>
@@ -241,29 +241,29 @@
                 <div class="timeline-grid">
                     <!-- Column 1: Poster Preview & Download -->
                     <div class="timeline-left-card">
-                        <div class="poster-media-box" style="height: 320px;">
+                        <div class="poster-media-box">
                             <img id="ctl-preview-poster-img" src="assets/images/background.jpg" alt="Official Poster" onerror="this.src='assets/images/background.jpg'">
                             <button type="button" class="poster-zoom-btn" onclick="openZoomImage(document.getElementById('ctl-preview-poster-img').src)">
                                 <i class="ph ph-magnifying-glass-plus"></i> View Full Poster
                             </button>
                         </div>
                         <div>
-                            <span class="badge" id="ctl-chapter-status-pill" style="background: #dbeafe; color: #1e40af; font-weight: 700; margin-bottom: 0.5rem; display: inline-block;">
+                            <span class="badge" id="ctl-chapter-status-pill" style="background: #dbeafe; color: #1e40af; font-weight: 700; margin-bottom: 0.35rem; display: inline-block;">
                                 Production In-Progress
                             </span>
-                            <h3 class="font-roboto" id="ctl-chapter-title" style="font-size: 1.15rem; color: #0f172a; font-weight: 800; margin: 0 0 0.35rem;">
+                            <h3 class="font-roboto" id="ctl-chapter-title" style="font-size: 1.05rem; color: #0f172a; font-weight: 800; margin: 0 0 0.2rem;">
                                 Event Title
                             </h3>
-                            <p id="ctl-chapter-theme" style="color: #64748b; font-size: 0.85rem; margin-bottom: 0.75rem;">
+                            <p id="ctl-chapter-theme" style="color: #64748b; font-size: 0.8rem; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 Theme / Concept
                             </p>
-                            <div style="font-size: 0.8rem; color: #334155; line-height: 1.6; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            <div style="font-size: 0.78rem; color: #334155; line-height: 1.5; border-top: 1px solid #f1f5f9; padding-top: 0.35rem;">
                                 <div><strong>Date & Time:</strong> <span id="ctl-chapter-datetime">--</span></div>
                                 <div><strong>Venue:</strong> <span id="ctl-chapter-venue">--</span></div>
                                 <div><strong>Target Attendees:</strong> <span id="ctl-chapter-attendees">--</span></div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary" id="btn-chapter-download-poster" style="width: 100%; background: #16a34a; border-color: #15803d;" onclick="downloadChapterPoster()">
+                        <button type="button" class="btn btn-primary" id="btn-chapter-download-poster" style="width: 100%; margin-top: auto; padding: 0.45rem; font-size: 0.8rem; background: #16a34a; border-color: #15803d;" onclick="downloadChapterPoster()">
                             <i class="ph ph-download-simple"></i> Download Official Poster
                         </button>
                     </div>
@@ -474,6 +474,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadPosterData('accepted');
             loadPosterData('queue');
+
+            // Close modals when clicking on overlay backdrop
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+
+            // Close open modals on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                        overlay.style.display = 'none';
+                    });
+                }
+            });
         });
 
         async function loadPosterData(tab) {
