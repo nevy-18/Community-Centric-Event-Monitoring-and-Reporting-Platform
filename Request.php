@@ -585,11 +585,11 @@
 
             grid.innerHTML = items.map(p => {
                 const dueBadgeHtml = p.due_badge 
-                    ? `<span class="${p.due_badge.cls}" style="margin-left: 0.4rem;"><i class="ph ph-clock"></i> ${p.due_badge.label}</span>` 
+                    ? `<span class="${p.due_badge.cls}"><i class="ph ph-clock"></i> ${p.due_badge.label}</span>` 
                     : '';
                 const timerBadgeHtml = p.report_timer 
-                    ? `<span class="${p.report_timer.badge_cls}" style="margin-left: 0.4rem;"><i class="ph-bold ph-timer"></i> ${p.report_timer.label}</span>` 
-                    : (p.approval_timer ? `<span class="${p.approval_timer.cls}" style="margin-left: 0.4rem;"><i class="ph ph-timer"></i> ${p.approval_timer.label}</span>` : '');
+                    ? `<span class="${p.report_timer.badge_cls}"><i class="ph-bold ph-timer"></i> ${p.report_timer.label}</span>` 
+                    : (p.approval_timer ? `<span class="${p.approval_timer.cls}"><i class="ph ph-timer"></i> ${p.approval_timer.label}</span>` : '');
 
                 const isCompleted = p.status === 'completed';
                 const statusLabel = isCompleted ? 'Event Accomplished' : (p.current_step ? `Stage ${p.current_step} Active` : 'Production In-Progress');
@@ -599,9 +599,9 @@
 
                 return `
                     <div class="poster-card type-accepted">
-                        <div class="card-hero" style="position: relative;">
+                        <div class="card-hero">
                             <img src="${escapeHtml(posterImg)}" alt="${escapeHtml(p.event_title)}" onerror="this.src='assets/images/background.jpg'">
-                            <div style="position: absolute; top: 12px; left: 12px; display: flex; flex-wrap: wrap; gap: 4px;">
+                            <div class="card-hero-badges">
                                 <span class="status-badge ${statusCls}"><i class="ph ${isCompleted ? 'ph-check-circle' : 'ph-clock'}"></i> ${statusLabel}</span>
                                 ${timerBadgeHtml}
                                 ${dueBadgeHtml}
