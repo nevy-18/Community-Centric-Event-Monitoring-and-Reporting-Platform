@@ -347,33 +347,33 @@
                             </button>
                         </div>
                         <div>
-                            <span class="badge" id="tl-status-pill" style="background: #dbeafe; color: #1e40af; font-weight: 700; margin-bottom: 0.35rem; display: inline-block;">
+                            <span class="badge" id="tl-status-pill" style="background: #dbeafe; color: #1e40af; font-weight: 700; margin-bottom: 0.5rem; display: inline-block; font-size: 0.78rem; padding: 4px 10px; border-radius: 6px;">
                                 Stage 1: Poster Request
                             </span>
-                            <h3 class="font-roboto" id="tl-event-title" style="font-size: 1.05rem; color: #0f172a; font-weight: 800; margin: 0 0 0.2rem;">
+                            <h3 class="font-roboto" id="tl-event-title" style="font-size: 1.15rem; color: #0f172a; font-weight: 800; margin: 0 0 0.35rem; line-height: 1.35;">
                                 Event Title
                             </h3>
-                            <p id="tl-event-theme" style="color: #64748b; font-size: 0.8rem; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <p id="tl-event-theme" style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.75rem; line-height: 1.45;">
                                 Subtitle / Theme
                             </p>
-                            <div style="font-size: 0.78rem; color: #334155; line-height: 1.5; border-top: 1px solid #f1f5f9; padding-top: 0.35rem;">
+                            <div style="font-size: 0.875rem; color: #334155; line-height: 1.6; border-top: 1px solid #f1f5f9; padding-top: 0.65rem; display: flex; flex-direction: column; gap: 0.35rem;">
                                 <div><strong>Chapter:</strong> <span id="tl-chapter-name">--</span></div>
                                 <div><strong>Date:</strong> <span id="tl-date">--</span></div>
                                 <div><strong>Venue:</strong> <span id="tl-venue">--</span></div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-outline" style="width: 100%; margin-top: auto; padding: 0.4rem; font-size: 0.78rem;" onclick="downloadCurrentPoster()">
+                        <button type="button" class="btn btn-outline" style="width: 100%; margin-top: auto; padding: 0.65rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 8px;" onclick="downloadCurrentPoster()">
                             <i class="ph ph-download-simple"></i> Download Poster Collateral
                         </button>
                     </div>
 
                     <!-- Column 2: Event Timeline (Numbered Vertical Pipeline) -->
                     <div class="timeline-center-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 0.5rem;">
-                            <h4 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 800; font-size: 1.1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+                            <h4 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 800; font-size: 1.15rem;">
                                 Event Timeline
                             </h4>
-                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">5 Core Production Milestones</span>
+                            <span style="font-size: 0.825rem; color: #64748b; font-weight: 600;">5 Core Production Milestones</span>
                         </div>
 
                         <div class="timeline-pipeline" id="tl-pipeline-container">
@@ -383,30 +383,30 @@
 
                     <!-- Column 3: Admin Controls & Proof Ledger -->
                     <div class="timeline-right-card">
-                        <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem;">
-                            <h4 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 800; font-size: 1.1rem;">
+                        <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+                            <h4 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 800; font-size: 1.15rem;">
                                 Admin Controls
                             </h4>
-                            <p style="margin: 0.2rem 0 0; color: #64748b; font-size: 0.78rem;">Upload deliverables, advance pipeline, and attach proofs</p>
+                            <p style="margin: 0.25rem 0 0; color: #64748b; font-size: 0.85rem;">Upload deliverables, advance pipeline, and attach proofs</p>
                         </div>
 
                         <!-- Stage 4: Documentation & Conducted Audit Review Card -->
-                        <div id="ctl-doc-audit-card" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <h5 class="font-roboto" style="margin: 0; font-size: 0.925rem; font-weight: 800; color: #0f172a;">
+                        <div id="ctl-doc-audit-card" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 1.15rem; margin-bottom: 1.15rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                                <h5 class="font-roboto" style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">
                                     <i class="ph-bold ph-clipboard-text" style="color: #2563eb;"></i> Event Documentation Review
                                 </h5>
-                                <span id="audit-status-badge" class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.7rem;">Pending</span>
+                                <span id="audit-status-badge" class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px;">Pending</span>
                             </div>
 
-                            <div id="audit-timer-notice" style="display: none; font-size: 0.75rem; margin-bottom: 0.6rem; padding: 0.4rem 0.6rem; border-radius: 6px;"></div>
+                            <div id="audit-timer-notice" style="display: none; font-size: 0.85rem; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 6px;"></div>
 
-                            <div id="audit-details-container" style="font-size: 0.8rem; line-height: 1.5; color: #334155;">
+                            <div id="audit-details-container" style="font-size: 0.875rem; line-height: 1.6; color: #334155;">
                                 <!-- Populated dynamically -->
                             </div>
 
-                            <div id="audit-action-container" style="margin-top: 0.75rem;">
-                                <button type="button" class="btn btn-primary" id="btn-approve-audit" onclick="submitApproveDocumentation()" style="width: 100%; background: #16a34a; border-color: #15803d; font-size: 0.825rem; font-weight: 700;">
+                            <div id="audit-action-container" style="margin-top: 0.85rem;">
+                                <button type="button" class="btn btn-primary" id="btn-approve-audit" onclick="submitApproveDocumentation()" style="width: 100%; background: #16a34a; border-color: #15803d; font-size: 0.875rem; font-weight: 700; padding: 0.65rem 1rem; border-radius: 8px;">
                                     <i class="ph-bold ph-check-circle"></i> Approve Documentation & Conclude Event
                                 </button>
                             </div>
@@ -414,10 +414,10 @@
 
                         <form id="admin-timeline-form" onsubmit="submitTimelineUpdate(event)">
                             <div style="margin-bottom: 0.85rem;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+                                <label style="display: block; font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.4rem;">
                                     Update Timeline Status
                                 </label>
-                                <select id="ctl-stage-select" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background: #fff;" onchange="handleStageSelectChange()">
+                                <select id="ctl-stage-select" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.875rem; background: #fff;" onchange="handleStageSelectChange()">
                                     <option value="1">1. Poster Request</option>
                                     <option value="2">2. Posted on Page</option>
                                     <option value="3">3. Promotional Video</option>
@@ -427,10 +427,10 @@
                             </div>
 
                             <div style="margin-bottom: 0.85rem;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+                                <label style="display: block; font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.4rem;">
                                     Stage State
                                 </label>
-                                <select id="ctl-status-select" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background: #fff;">
+                                <select id="ctl-status-select" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.875rem; background: #fff;">
                                     <option value="completed">Completed</option>
                                     <option value="in_progress">In Progress</option>
                                     <option value="pending">Pending</option>
@@ -438,42 +438,42 @@
                             </div>
 
                             <div style="margin-bottom: 0.85rem;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+                                <label style="display: block; font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.4rem;">
                                     Upload Proof / Official Media
                                 </label>
                                 <div class="proof-dropzone" onclick="document.getElementById('ctl-proof-file').click()">
-                                    <i class="ph ph-cloud-arrow-up" style="font-size: 1.8rem; color: #2563eb;"></i>
-                                    <p style="margin: 0.25rem 0 0; font-size: 0.825rem; font-weight: 700; color: #1e293b;">Click to upload proof</p>
-                                    <p style="margin: 0; font-size: 0.725rem; color: #64748b;">Images, PDF, MP4 up to 50MB</p>
+                                    <i class="ph ph-cloud-arrow-up" style="font-size: 2.2rem; color: #2563eb;"></i>
+                                    <p style="margin: 0.35rem 0 0; font-size: 0.875rem; font-weight: 700; color: #1e293b;">Click to upload proof</p>
+                                    <p style="margin: 0.15rem 0 0; font-size: 0.78rem; color: #64748b;">Images, PDF, MP4 up to 50MB</p>
                                     <input type="file" id="ctl-proof-file" accept="image/*,video/mp4,application/pdf" onchange="handleProofFileChange(this)">
                                 </div>
-                                <div id="ctl-file-name-display" style="display: none; margin-top: 0.4rem; font-size: 0.78rem; color: #16a34a; font-weight: 600;">
+                                <div id="ctl-file-name-display" style="display: none; margin-top: 0.5rem; font-size: 0.85rem; color: #16a34a; font-weight: 600;">
                                     <i class="ph-fill ph-file-check"></i> <span id="ctl-file-name-text"></span>
                                 </div>
-                                <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; color: #475569; margin-top: 0.45rem; cursor: pointer;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #475569; margin-top: 0.6rem; cursor: pointer;">
                                     <input type="checkbox" id="ctl-is-final-poster" checked> Set as official poster for Chapter download
                                 </label>
                             </div>
 
                             <div style="margin-bottom: 1rem;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+                                <label style="display: block; font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.4rem;">
                                     Add Notes (Optional)
                                 </label>
-                                <textarea id="ctl-notes" rows="2" placeholder="e.g. Published to official FB page, post link: https://..." style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;"></textarea>
+                                <textarea id="ctl-notes" rows="2" placeholder="e.g. Published to official FB page, post link: https://..." style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.875rem; min-height: 65px;"></textarea>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" id="ctl-submit-btn" style="width: 100%;">
+                            <button type="submit" class="btn btn-primary" id="ctl-submit-btn" style="width: 100%; padding: 0.7rem 1.25rem; font-size: 0.9rem; font-weight: 700; border-radius: 8px;">
                                 <i class="ph ph-floppy-disk"></i> Save Update
                             </button>
                         </form>
 
                         <!-- Recent Proofs Ledger -->
-                        <div style="border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 0.5rem;">
+                        <div style="border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 1rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <h5 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 700; font-size: 0.9rem;">Recent Proofs</h5>
-                                <span id="ctl-proofs-count" style="font-size: 0.75rem; color: #64748b; font-weight: 600;">0 attached</span>
+                                <h5 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 700; font-size: 0.95rem;">Recent Proofs</h5>
+                                <span id="ctl-proofs-count" style="font-size: 0.8rem; color: #64748b; font-weight: 600;">0 attached</span>
                             </div>
-                            <div id="ctl-recent-proofs-list" style="max-height: 180px; overflow-y: auto;">
+                            <div id="ctl-recent-proofs-list" style="max-height: 220px; overflow-y: auto;">
                                 <!-- Populated dynamically -->
                             </div>
                         </div>
@@ -1001,26 +1001,31 @@
                             `;
                         }
 
+                        let conductedDateStr = 'Yes';
+                        if (req.event_conducted_at) {
+                            conductedDateStr = req.event_conducted_at.replace('T', ' ').substring(0, 16);
+                        }
+
                         auditDetails.innerHTML = `
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.65rem; margin-bottom: 0.5rem;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 0.75rem; font-size: 0.875rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
                                     <strong>Conducted Status:</strong>
-                                    <span>${req.is_event_conducted ? '<span style="color:#16a34a; font-weight:700;"><i class="ph-bold ph-check"></i> Conducted (' + (req.event_conducted_at || 'Yes') + ')</span>' : '<span style="color:#64748b;">Not confirmed yet</span>'}</span>
+                                    <span>${req.is_event_conducted ? '<span style="color:#16a34a; font-weight:700;"><i class="ph-bold ph-check"></i> Conducted (' + escapeHtml(conductedDateStr) + ')</span>' : '<span style="color:#64748b;">Not confirmed yet</span>'}</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
                                     <strong>Total Attendees:</strong>
                                     <span style="font-weight:700; color: #0f172a;">${req.attendees_count !== null && req.attendees_count !== undefined ? req.attendees_count : '--'}</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
                                     <strong>First-Timers:</strong>
                                     <span style="font-weight:600; color: #475569;">${req.first_timers_count !== null && req.first_timers_count !== undefined ? req.first_timers_count : '--'}</span>
                                 </div>
-                                <div style="margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px dashed #e2e8f0;">
-                                    <strong>Summary & Highlights:</strong>
-                                    <p style="margin: 0.2rem 0 0; color: #475569; font-size: 0.775rem;">${escapeHtml(req.report_summary || 'No summary submitted yet.')}</p>
+                                <div style="margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px dashed #e2e8f0;">
+                                    <strong style="display: block; margin-bottom: 0.25rem;">Summary & Highlights:</strong>
+                                    <p style="margin: 0; color: #475569; font-size: 0.85rem; line-height: 1.5;">${escapeHtml(req.report_summary || 'No summary submitted yet.')}</p>
                                 </div>
-                                <div style="margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px dashed #e2e8f0;">
-                                    <strong>Photos / Attendance Sheet:</strong>
+                                <div style="margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px dashed #e2e8f0;">
+                                    <strong style="display: block; margin-bottom: 0.25rem;">Photos / Attendance Sheet:</strong>
                                     <div>${proofDownloadHtml}</div>
                                 </div>
                             </div>
