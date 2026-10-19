@@ -24,7 +24,7 @@
                 <div class="page-header flex-between" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
                     <div class="header-title-group">
                         <h1 class="font-roboto">Event Poster Approval</h1>
-                        <p style="color: var(--text-muted); margin-top: 0.25rem;">Review, endorse, and manage promotional media requests and visual collateral across all chapters.</p>
+                        <p style="color: var(--text-muted); margin-top: 0.25rem;">Review, endorse, and manage promotional media requests and official event materials across all chapters.</p>
                     </div>
                     <div class="header-actions">
                         <span class="portal-indicator national" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.8rem; font-weight: 700; padding: 0.45rem 0.9rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem;">
@@ -121,7 +121,7 @@
                 <div id="accepted-grid" class="poster-grid tab-content active">
                     <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
                         <i class="ph ph-spinner ph-spin" style="font-size: 2rem;"></i>
-                        <p style="margin-top: 0.5rem;">Loading accepted poster collaterals...</p>
+                        <p style="margin-top: 0.5rem;">Loading accepted poster requests...</p>
                     </div>
                 </div>
 
@@ -283,7 +283,7 @@
                                 <i class="ph-bold ph-image" style="color: #2563eb;"></i> Provide Official Poster Graphic
                             </label>
                             <p style="font-size: 0.725rem; color: #64748b; margin-bottom: 0.6rem;">
-                                Upload the finalized official poster designed by National Creative. The Chapter will receive and download this collateral immediately upon approval.
+                                Upload the finalized official poster designed by National Creative. The Chapter will be able to view and download this poster immediately upon approval.
                             </p>
                             <div class="proof-dropzone" style="padding: 1rem;" onclick="document.getElementById('verif-poster-file').click()">
                                 <i class="ph ph-cloud-arrow-up" style="font-size: 1.75rem; color: #2563eb;"></i>
@@ -319,16 +319,16 @@
     </div>
 
 
-    <!-- MODAL 2: MULTI-STAGE EVENT TIMELINE & PROOF MANAGEMENT (Image 2) -->
+    <!-- MODAL 2: EVENT DETAILS & PROGRESS TIMELINE -->
     <div id="timeline-modal" class="modal-overlay" style="display: none;">
         <div class="modal-xl">
             <!-- Modal Header -->
             <div class="modal-header-banner">
                 <div>
                     <h3 class="font-roboto">
-                        <i class="ph-fill ph-kanban" style="color: var(--primary);"></i> Event Poster Details & Progress
+                        <i class="ph-bold ph-calendar-check" style="color: var(--primary);"></i> Event Details & Progress
                     </h3>
-                    <p>View the complete information, milestone deliverables, and progress of this chapter event</p>
+                    <p>Track milestone deliverables and production progress for this chapter event.</p>
                 </div>
                 <button type="button" onclick="closeTimelineModal()" aria-label="Close modal">
                     <i class="ph ph-x"></i>
@@ -347,7 +347,7 @@
                             </button>
                         </div>
                         <div>
-                            <span class="badge tl-status-pill" id="tl-status-pill" style="background: #dbeafe; color: #1e40af;">
+                            <span class="badge tl-status-pill" id="tl-status-pill" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
                                 Stage 1: Poster Request
                             </span>
                             <h3 class="font-roboto tl-event-title" id="tl-event-title">
@@ -363,7 +363,7 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-outline tl-action-btn" onclick="downloadCurrentPoster()">
-                            <i class="ph ph-download-simple"></i> Download Poster Collateral
+                            <i class="ph ph-download-simple"></i> Download Official Poster
                         </button>
                     </div>
 
@@ -373,7 +373,7 @@
                             <h4 class="font-roboto tl-card-title">
                                 Event Timeline
                             </h4>
-                            <span style="font-size: clamp(0.85rem, 0.78rem + 0.2vw, 1.05rem); color: #64748b; font-weight: 600;">5 Core Production Milestones</span>
+                            <span style="font-size: 0.8125rem; color: #64748b; font-weight: 600;">5 Milestone Stages</span>
                         </div>
 
                         <div class="timeline-pipeline" id="tl-pipeline-container">
@@ -381,13 +381,13 @@
                         </div>
                     </div>
 
-                    <!-- Column 3: Admin Controls & Proof Ledger -->
+                    <!-- Column 3: Event Controls & Proof Ledger -->
                     <div class="timeline-right-card">
                         <div class="tl-card-header">
                             <h4 class="font-roboto tl-card-title">
-                                Admin Controls
+                                Event Controls
                             </h4>
-                            <p class="tl-card-subtitle">Upload deliverables, advance pipeline, and attach proofs</p>
+                            <p class="tl-card-subtitle">Update stage status, upload proofs, and advance progress</p>
                         </div>
 
                         <!-- Stage 4: Documentation & Conducted Audit Review Card -->
@@ -396,16 +396,16 @@
                                 <h5 class="font-roboto">
                                     <i class="ph-bold ph-clipboard-text" style="color: #2563eb;"></i> Event Documentation Review
                                 </h5>
-                                <span id="audit-status-badge" class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700; font-size: clamp(0.82rem, 0.76rem + 0.2vw, 0.98rem); padding: 0.3rem 0.8rem; border-radius: 8px;">Pending</span>
+                                <span id="audit-status-badge" class="badge" style="background: #fef3c7; color: #92400e; font-weight: 600; font-size: 0.75rem; padding: 2px 8px; border-radius: 6px;">Pending</span>
                             </div>
 
-                            <div id="audit-timer-notice" style="display: none; font-size: clamp(0.92rem, 0.85rem + 0.2vw, 1.12rem); margin-bottom: 0.85rem; padding: 0.65rem 0.95rem; border-radius: 8px;"></div>
+                            <div id="audit-timer-notice" style="display: none; font-size: 0.875rem; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 6px;"></div>
 
-                            <div id="audit-details-container" style="font-size: clamp(0.95rem, 0.88rem + 0.25vw, 1.18rem); line-height: 1.6; color: #334155;">
+                            <div id="audit-details-container" style="font-size: 0.875rem; line-height: 1.5; color: #334155;">
                                 <!-- Populated dynamically -->
                             </div>
 
-                            <div id="audit-action-container" style="margin-top: 1rem;">
+                            <div id="audit-action-container" style="margin-top: 0.85rem;">
                                 <button type="button" class="btn btn-primary tl-action-btn" id="btn-approve-audit" onclick="submitApproveDocumentation()" style="background: #16a34a; border-color: #15803d;">
                                     <i class="ph-bold ph-check-circle"></i> Approve Documentation & Conclude Event
                                 </button>
@@ -413,7 +413,7 @@
                         </div>
 
                         <form id="admin-timeline-form" onsubmit="submitTimelineUpdate(event)">
-                            <div style="margin-bottom: 1rem;">
+                            <div style="margin-bottom: 0.85rem;">
                                 <label class="tl-form-label">
                                     Update Timeline Status
                                 </label>
@@ -426,9 +426,9 @@
                                 </select>
                             </div>
 
-                            <div style="margin-bottom: 1rem;">
+                            <div style="margin-bottom: 0.85rem;">
                                 <label class="tl-form-label">
-                                    Stage State
+                                    Status
                                 </label>
                                 <select id="ctl-status-select" class="tl-form-control">
                                     <option value="completed">Completed</option>
@@ -437,21 +437,21 @@
                                 </select>
                             </div>
 
-                            <div style="margin-bottom: 1rem;">
+                            <div style="margin-bottom: 0.85rem;">
                                 <label class="tl-form-label">
-                                    Upload Proof / Official Media
+                                    Upload Proof / Supporting File
                                 </label>
                                 <div class="proof-dropzone" onclick="document.getElementById('ctl-proof-file').click()">
                                     <i class="ph ph-cloud-arrow-up"></i>
-                                    <p class="dropzone-title">Click to upload proof</p>
-                                    <p class="dropzone-sub">Images, PDF, MP4 up to 50MB</p>
+                                    <p class="dropzone-title">Click or drag file to upload</p>
+                                    <p class="dropzone-sub">JPG, PNG, PDF, or MP4 up to 50MB</p>
                                     <input type="file" id="ctl-proof-file" accept="image/*,video/mp4,application/pdf" onchange="handleProofFileChange(this)">
                                 </div>
-                                <div id="ctl-file-name-display" style="display: none; margin-top: 0.6rem; font-size: clamp(0.92rem, 0.85rem + 0.2vw, 1.12rem); color: #16a34a; font-weight: 700;">
+                                <div id="ctl-file-name-display" style="display: none; margin-top: 0.5rem; font-size: 0.875rem; color: #16a34a; font-weight: 600;">
                                     <i class="ph-fill ph-file-check"></i> <span id="ctl-file-name-text"></span>
                                 </div>
-                                <label style="display: flex; align-items: center; gap: 0.6rem; font-size: clamp(0.9rem, 0.84rem + 0.2vw, 1.1rem); color: #475569; margin-top: 0.75rem; cursor: pointer;">
-                                    <input type="checkbox" id="ctl-is-final-poster" checked style="width: 1.1rem; height: 1.1rem; accent-color: #2563eb;"> Set as official poster for Chapter download
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: #475569; margin-top: 0.65rem; cursor: pointer;">
+                                    <input type="checkbox" id="ctl-is-final-poster" checked style="width: 1rem; height: 1rem; accent-color: #2563eb;"> Set as official poster for Chapter download
                                 </label>
                             </div>
 
@@ -566,7 +566,7 @@
                     <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: #fff; border-radius: 8px; border: 1px dashed #cbd5e1;">
                         <i class="ph ph-image-square" style="font-size: 2.5rem; color: #94a3b8;"></i>
                         <h4 style="color: #334155; margin: 0.5rem 0 0.25rem;">No Accepted Posters Yet</h4>
-                        <p style="color: #64748b; font-size: 0.9rem;">Approved poster collateral will appear here once endorsed.</p>
+                        <p style="color: #64748b; font-size: 0.9rem;">Approved posters will appear here once endorsed.</p>
                     </div>`;
                 return;
             }
@@ -947,7 +947,7 @@
 
                     const currentStepNum = req.current_step || 1;
                     const isDone = req.status === 'completed';
-                    document.getElementById('tl-status-pill').textContent = isDone ? 'All Milestones Concluded' : `Active Stage: ${currentStepNum} of 5`;
+                    document.getElementById('tl-status-pill').textContent = isDone ? 'Event Completed' : `Active Stage: ${currentStepNum} of 5`;
                     document.getElementById('tl-status-pill').style.background = isDone ? '#dcfce7' : '#dbeafe';
                     document.getElementById('tl-status-pill').style.color = isDone ? '#15803d' : '#1e40af';
 
@@ -974,16 +974,16 @@
                         auditCard.style.display = 'block';
 
                         if (docStatus === 'approved') {
-                            auditStatusBadge.textContent = 'Report Validated & Concluded';
+                            auditStatusBadge.textContent = 'Report Approved & Concluded';
                             auditStatusBadge.style.background = '#dcfce7';
                             auditStatusBadge.style.color = '#15803d';
                             auditActionBtn.style.display = 'none';
                         } else if (docStatus === 'submitted') {
-                            auditStatusBadge.textContent = 'Report Submitted — Needs Validation';
+                            auditStatusBadge.textContent = 'Report Submitted — Needs Review';
                             auditStatusBadge.style.background = '#fef3c7';
                             auditStatusBadge.style.color = '#92400e';
                             auditActionBtn.style.display = 'block';
-                            auditActionBtn.innerHTML = '<i class="ph-bold ph-seal-check"></i> Validate Report & Conclude Timeline';
+                            auditActionBtn.innerHTML = '<i class="ph-bold ph-check-circle"></i> Validate Report & Conclude Event';
                         } else {
                             auditStatusBadge.textContent = 'Awaiting Chapter Report';
                             auditStatusBadge.style.background = '#f1f5f9';
@@ -1007,7 +1007,7 @@
                         }
 
                         auditDetails.innerHTML = `
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 0.85rem; margin-bottom: 0.65rem; font-size: clamp(0.92rem, 0.85rem + 0.2vw, 1.12rem);">
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 0.85rem; margin-bottom: 0.65rem; font-size: 0.875rem;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
                                     <strong>Conducted Status:</strong>
                                     <span>${req.is_event_conducted ? '<span style="color:#16a34a; font-weight:700;"><i class="ph-bold ph-check"></i> Conducted (' + escapeHtml(conductedDateStr) + ')</span>' : '<span style="color:#64748b;">Not confirmed yet</span>'}</span>
@@ -1022,7 +1022,7 @@
                                 </div>
                                 <div style="margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px dashed #e2e8f0;">
                                     <strong style="display: block; margin-bottom: 0.25rem;">Summary & Highlights:</strong>
-                                    <p style="margin: 0; color: #475569; font-size: clamp(0.9rem, 0.84rem + 0.15vw, 1.05rem); line-height: 1.5;">${escapeHtml(req.report_summary || 'No summary submitted yet.')}</p>
+                                    <p style="margin: 0; color: #475569; font-size: 0.875rem; line-height: 1.5;">${escapeHtml(req.report_summary || 'No summary submitted yet.')}</p>
                                 </div>
                                 <div style="margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px dashed #e2e8f0;">
                                     <strong style="display: block; margin-bottom: 0.25rem;">Photos / Attendance Sheet:</strong>
@@ -1062,11 +1062,11 @@
             }
 
             const stepDescriptions = {
-                1: 'Communications, Marketing & Creative Team drafts and finalized official graphics.',
-                2: 'Official publication on social media page with live engagement link.',
-                3: 'Promotional teaser video clip produced and distributed.',
-                4: 'Post-activity attendance, photo documentation, and accomplishment report.',
-                5: 'Final event audit approved and collateral archived.'
+                1: 'Draft and finalize the official poster graphics.',
+                2: 'Publish approved poster on official page with live event link.',
+                3: 'Produce and share promotional teaser video.',
+                4: 'Submit attendee count, photo documentation, and accomplishment report.',
+                5: 'Verification completed and event documentation archived.'
             };
 
             pipelineEl.innerHTML = steps.map(s => {
@@ -1118,8 +1118,8 @@
 
             if (proofUpdates.length === 0) {
                 listEl.innerHTML = `
-                    <div style="text-align: center; padding: 1.25rem; color: #94a3b8; font-size: clamp(0.9rem, 0.84rem + 0.2vw, 1.08rem);">
-                        <i class="ph ph-folder-open" style="font-size: 1.8rem;"></i>
+                    <div style="text-align: center; padding: 1.25rem; color: #94a3b8; font-size: 0.875rem;">
+                        <i class="ph ph-folder-open" style="font-size: 1.75rem;"></i>
                         <p style="margin-top: 0.35rem;">No files uploaded yet.</p>
                     </div>`;
                 return;
@@ -1136,13 +1136,13 @@
                 return `
                     <div class="recent-proof-item">
                         <div class="recent-proof-left">
-                            <i class="ph ${icon}" style="font-size: clamp(1.3rem, 1.15rem + 0.3vw, 1.65rem); color: #2563eb;"></i>
+                            <i class="ph ${icon}" style="font-size: 1.35rem; color: #2563eb;"></i>
                             <div>
                                 <div class="proof-file-name" title="${escapeHtml(fname)}">${escapeHtml(fname)}</div>
-                                <div style="font-size: clamp(0.78rem, 0.72rem + 0.15vw, 0.92rem); color: #64748b;">${escapeHtml(timeStr)}</div>
+                                <div style="font-size: 0.75rem; color: #64748b;">${escapeHtml(timeStr)}</div>
                             </div>
                         </div>
-                        <a href="${escapeHtml(path)}" target="_blank" download class="btn btn-outline" style="padding: clamp(0.35rem, 0.3rem + 0.15vw, 0.55rem) clamp(0.6rem, 0.5rem + 0.2vw, 0.85rem); font-size: clamp(0.85rem, 0.78rem + 0.2vw, 1.05rem);">
+                        <a href="${escapeHtml(path)}" target="_blank" download class="btn btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.8125rem;">
                             <i class="ph ph-download-simple"></i>
                         </a>
                     </div>
