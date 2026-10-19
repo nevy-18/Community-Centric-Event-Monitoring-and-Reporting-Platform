@@ -106,7 +106,7 @@ def list_proposals():
     search = request.args.get('search', '').strip()
 
     sql = """
-        SELECT e.id, e.chapter_id, e.title, e.description, e.event_type, e.ytr_program,
+        SELECT e.id, e.chapter_id, e.title, e.description, e.event_type, e.ytr_program, e.target_audience,
                e.start_datetime, e.end_datetime, e.venue, e.status,
                e.created_at, e.review_note, e.target_turnout, e.budget_amount,
                e.budget_threshold, e.due_date, e.approved_at, e.attachment_path,
@@ -199,6 +199,7 @@ def create_proposal():
     description = data.get('description', '').strip()
     event_type = data.get('event_type', 'chapter')
     ytr_program = data.get('ytr_program') or data.get('program') or 'Lead up (Youth Leadership)'
+    target_audience = (data.get('target_audience') or 'Open for All').strip() or 'Open for All'
     target_turnout = int(data.get('target_turnout') or 100)
     budget_amount = float(data.get('budget_amount') or 0.0)
     budget_threshold = float(data.get('budget_threshold') or 25000.0)
@@ -249,14 +250,15 @@ def create_proposal():
                 chapter_id = ch['id'] if ch else None
 
             cur.execute("""
-                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, attachment_path, status, created_by, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
+                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, target_audience, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, attachment_path, status, created_by, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
             """, (
                 chapter_id,
                 title,
                 description,
                 event_type,
                 ytr_program,
+                target_audience,
                 formatted_start,
                 formatted_end,
                 venue,

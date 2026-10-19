@@ -348,6 +348,7 @@ def create_poster_request():
     venue = str(data.get('venue') or '').strip()
     theme = str(data.get('theme_or_concept') or '').strip()
     target_participants = str(data.get('target_participants') or '').strip()
+    target_audience = str(data.get('target_audience') or 'Open for All').strip() or 'Open for All'
     registration_link = str(data.get('registration_link') or '').strip()
     caption = str(data.get('caption') or '').strip()
     deadline = str(data.get('requested_deadline') or '').strip()
@@ -396,11 +397,11 @@ def create_poster_request():
             cur.execute("""
                 INSERT INTO poster_requests
                 (chapter_id, requested_by, event_title, event_date, event_time, venue, theme_or_concept,
-                 target_participants, registration_link, caption, requested_deadline, additional_notes,
+                 target_participants, target_audience, registration_link, caption, requested_deadline, additional_notes,
                  reference_poster_path, status, current_step, submitted_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'submitted', 1, NOW())
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'submitted', 1, NOW())
             """, (chapter_id, requested_by, event_title, event_date, event_time, venue, theme,
-                  target_participants, registration_link, caption, deadline, notes, reference_poster_path))
+                  target_participants, target_audience, registration_link, caption, deadline, notes, reference_poster_path))
             new_id = cur.lastrowid
             ensure_steps_exist(cur, new_id, 'submitted')
             conn.commit()

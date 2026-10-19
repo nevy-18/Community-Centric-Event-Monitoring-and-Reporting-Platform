@@ -258,6 +258,15 @@
                   </div>
 
                   <div class="review-detail-group">
+                    <label class="font-roboto"><i class="ph-fill ph-users-three"></i> Target Audience</label>
+                    <div style="margin-top: 3px;">
+                      <span id="detailProposalAudience" class="badge font-roboto" style="background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 0.78rem; font-weight: 700; padding: 4px 8px;">
+                        Open for All
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="review-detail-group">
                     <label class="font-roboto"><i class="ph-fill ph-calendar-blank"></i> Proposed Schedule & Venue</label>
                     <p id="detailProposalSchedule" class="font-roboto" style="font-size: 0.8rem; color: #0f172a; font-weight: bold;">-</p>
                     <p id="detailApprovalTimer" style="font-size: 0.75rem; color: #166534; font-weight: 700; margin-top: 2px;"></p>
@@ -398,6 +407,10 @@
                 <td id="dossierProgram" style="padding: 7px 12px; font-weight: 700; color: #1e40af; border: 1px solid #cbd5e1;">-</td>
               </tr>
               <tr style="background: #f8fafc;">
+                <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Target Audience / Demographics</td>
+                <td id="dossierAudience" style="padding: 7px 12px; font-weight: 700; color: #0f172a; border: 1px solid #cbd5e1;">-</td>
+              </tr>
+              <tr>
                 <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Host Chapter</td>
                 <td id="dossierChapter" style="padding: 7px 12px; font-weight: 700; border: 1px solid #cbd5e1;">-</td>
               </tr>
@@ -607,6 +620,7 @@
                   <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin: 2px 0;">
                     <span class="td-sub font-roboto" style="font-weight: 600; color: #2563eb;">${p.event_type.toUpperCase()} EVENT</span>
                     ${p.ytr_program ? `<span class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.7rem; padding: 1px 6px; font-weight: 700;"><i class="ph-bold ph-compass"></i> ${p.ytr_program}</span>` : ''}
+                    <span class="badge font-roboto" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 0.7rem; padding: 1px 6px; font-weight: 600;"><i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}</span>
                   </div>
                   <div>${timerBadgeHtml} ${dueBadgeHtml}</div>
                 </div>
@@ -665,6 +679,12 @@
           programEl.style.background = '#eff6ff'; programEl.style.color = '#1d4ed8'; programEl.style.borderColor = '#bfdbfe';
         }
       }
+
+      const audienceEl = document.getElementById('detailProposalAudience');
+      if (audienceEl) {
+        audienceEl.textContent = p.target_audience || 'Open for All';
+      }
+
       document.getElementById('detailProposalSchedule').textContent = (p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (p.venue || 'TBD');
       document.getElementById('detailProposalNotes').textContent = p.description || 'No description provided.';
 
@@ -884,6 +904,7 @@
       document.getElementById('dossierSubmissionDate').textContent = 'Submitted: ' + (p.created_at ? p.created_at.substring(0, 10) : 'Recent');
       document.getElementById('dossierTitle').textContent = p.title || 'Untitled Event';
       document.getElementById('dossierProgram').textContent = p.ytr_program || 'Lead up (Youth Leadership)';
+      document.getElementById('dossierAudience').textContent = p.target_audience || 'Open for All';
       document.getElementById('dossierChapter').textContent = (p.chapter_name || 'All Chapters') + (p.chapter_code ? ` (${p.chapter_code})` : '') + (p.region ? ` • ${p.region}` : '');
       document.getElementById('dossierEventType').textContent = ((p.event_type || 'chapter') + ' Event').toUpperCase();
 

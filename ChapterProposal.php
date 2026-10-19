@@ -187,6 +187,25 @@
                     <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Designate which of the 4 core YTR initiative frameworks this event fulfills.</small>
                 </div>
 
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+                        <i class="ph-bold ph-users-three" style="color: #2563eb;"></i> Target Audience / Demographic *
+                    </label>
+                    <select id="p-target-audience" required style="width: 100%; padding: 0.6rem; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; background: #fff; font-weight: 600; color: #1e293b;" onchange="handleProposalAudienceChange(this.value)">
+                        <option value="Open for All (General Youth)">Open for All (General Youth)</option>
+                        <option value="BSIT Students">BSIT Students</option>
+                        <option value="College / University Students">College / University Students</option>
+                        <option value="Senior High School (SHS) Students">Senior High School (SHS) Students</option>
+                        <option value="Junior High School (JHS) Students">Junior High School (JHS) Students</option>
+                        <option value="Youth Leaders &amp; Campus Officers">Youth Leaders &amp; Campus Officers</option>
+                        <option value="Other">Other (Specify)</option>
+                    </select>
+                    <div id="p-audience-custom-wrap" style="display: none; margin-top: 0.45rem;">
+                        <input type="text" id="p-target-audience-custom" placeholder="Specify target demographic (e.g. BSIT 3rd Year, Engineering Dept, etc.)..." style="width: 100%; padding: 0.55rem; border: 1.5px solid #3b82f6; border-radius: 6px; font-size: 0.85rem; background: #eff6ff;">
+                    </div>
+                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Specify if this event is tailored for BSIT students, campus youth, or open for all.</small>
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Type *</label>
@@ -320,6 +339,10 @@
                             <td id="dossierProgram" style="padding: 7px 12px; font-weight: 700; color: #1e40af; border: 1px solid #cbd5e1;">-</td>
                         </tr>
                         <tr style="background: #f8fafc;">
+                            <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Target Audience / Demographics</td>
+                            <td id="dossierAudience" style="padding: 7px 12px; font-weight: 700; color: #0f172a; border: 1px solid #cbd5e1;">-</td>
+                        </tr>
+                        <tr>
                             <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Host Chapter</td>
                             <td id="dossierChapter" style="padding: 7px 12px; font-weight: 700; border: 1px solid #cbd5e1;">-</td>
                         </tr>
@@ -548,6 +571,10 @@
                     </span>`;
                 }
 
+                const audienceBadge = `<span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 0.72rem; padding: 2px 7px; font-weight: 600;">
+                    <i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}
+                </span>`;
+
                 return `
                     <tr>
                         <td>
@@ -555,6 +582,7 @@
                             <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px;">
                                 <small style="color: #64748b; text-transform: uppercase;">${escapeHtml(p.event_type || 'Event')}</small>
                                 ${progBadge}
+                                ${audienceBadge}
                             </div>
                         </td>
                         <td>
@@ -581,6 +609,20 @@
             }).join('');
         }
 
+        function handleProposalAudienceChange(val) {
+            const wrap = document.getElementById('p-audience-custom-wrap');
+            const customInput = document.getElementById('p-target-audience-custom');
+            if (val === 'Other') {
+                wrap.style.display = 'block';
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                wrap.style.display = 'none';
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
+
         function openProposalModal() {
             document.getElementById('proposal-modal').style.display = 'flex';
         }
@@ -595,10 +637,16 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
 
+            let audienceVal = document.getElementById('p-target-audience').value;
+            if (audienceVal === 'Other') {
+                audienceVal = document.getElementById('p-target-audience-custom').value.trim() || 'Other';
+            }
+
             const formData = new FormData();
             formData.append('chapter_id', chapterId);
             formData.append('title', document.getElementById('p-title').value.trim());
             formData.append('ytr_program', document.getElementById('p-program').value);
+            formData.append('target_audience', audienceVal);
             formData.append('event_type', document.getElementById('p-type').value);
             formData.append('venue', document.getElementById('p-venue').value.trim());
             formData.append('start_datetime', document.getElementById('p-start').value);
@@ -618,6 +666,7 @@
                 if (res.ok) {
                     alert('Proposal submitted successfully! It is now pending National Board evaluation.');
                     document.getElementById('chapter-proposal-form').reset();
+                    document.getElementById('p-audience-custom-wrap').style.display = 'none';
                     closeProposalModal();
                     loadChapterProposals();
                 } else {
@@ -652,6 +701,7 @@
             document.getElementById('dossierSubmissionDate').textContent = 'Submitted: ' + (p.created_at ? p.created_at.substring(0, 10) : 'Recent');
             document.getElementById('dossierTitle').textContent = p.title || 'Untitled Event';
             document.getElementById('dossierProgram').textContent = p.ytr_program || 'Lead up (Youth Leadership)';
+            document.getElementById('dossierAudience').textContent = p.target_audience || 'Open for All';
             document.getElementById('dossierChapter').textContent = (p.chapter_name || 'Chapter') + (p.chapter_code ? ` (${p.chapter_code})` : '');
             document.getElementById('dossierEventType').textContent = ((p.event_type || 'chapter') + ' Event').toUpperCase();
 

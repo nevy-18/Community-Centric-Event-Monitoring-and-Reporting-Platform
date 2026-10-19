@@ -559,6 +559,73 @@ class TestYTRBackendAPI(unittest.TestCase):
 
         print("[PASS] Comprehensive empty field submission and validation tests passed.")
 
+    def test_32_target_audience_support(self):
+        # 1. Propose event with specific target_audience (e.g. BSIT Students)
+        prop_payload = {
+            'title': 'BSIT Hackathon and Youth Leadership Forum',
+            'chapter_id': 1,
+            'start_date': '2026-11-20',
+            'end_date': '2026-11-21',
+            'venue': 'CCS IT Laboratory, Main Campus',
+            'description': 'Targeted technology, ethics, and leadership summit for BSIT students.',
+            'event_type': 'leadership_training',
+            'ytr_program': 'Rise up (Youth Excellence)',
+            'target_audience': 'BSIT Students',
+            'target_turnout': 150,
+            'budget_amount': 18000,
+            'due_date': '2026-11-25'
+        }
+        res_prop = self.client.post('/api/proposals', json=prop_payload)
+        self.assertIn(res_prop.status_code, [200, 201])
+        prop_id = res_prop.get_json()['data']['event_id']
+
+        # Verify get proposal returns target_audience
+        res_get_prop = self.client.get(f'/api/proposals/{prop_id}')
+        self.assertEqual(res_get_prop.status_code, 200)
+        prop_data = res_get_prop.get_json().get('data', {})
+        self.assertEqual(prop_data.get('target_audience'), 'BSIT Students')
+        self.assertEqual(prop_data.get('ytr_program'), 'Rise up (Youth Excellence)')
+
+        # 2. Test proposal default target_audience
+        prop_default = {
+            'title': 'General Youth Fellowship',
+            'chapter_id': 1,
+            'start_date': '2026-11-28',
+            'venue': 'Community Center',
+            'description': 'Fellowship open to all chapter youths.',
+            'event_type': 'fellowship'
+        }
+        res_def = self.client.post('/api/proposals', json=prop_default)
+        self.assertIn(res_def.status_code, [200, 201])
+        def_id = res_def.get_json()['data']['event_id']
+        res_get_def = self.client.get(f'/api/proposals/{def_id}')
+        self.assertEqual(res_get_def.get_json()['data']['target_audience'], 'Open for All')
+
+        # 3. Create poster request with target_audience
+        poster_payload = {
+            'chapter_id': 1,
+            'event_title': 'BSIT Cybersecurity & Leadership Summit',
+            'event_date': '2026-12-05',
+            'event_time': '01:00 PM',
+            'venue': 'Tech Auditorium',
+            'theme_or_concept': 'Defending the Faith, Securing the Future',
+            'target_participants': '200 BSIT Delegates',
+            'target_audience': 'BSIT Students',
+            'requested_deadline': '2026-11-30',
+            'caption': 'Calling all BSIT Students! Register now for our annual tech summit.'
+        }
+        res_poster = self.client.post('/api/poster-requests', json=poster_payload)
+        self.assertIn(res_poster.status_code, [200, 201])
+        poster_id = res_poster.get_json()['data']['request_id']
+
+        # Verify timeline reflects target_audience
+        res_tl = self.client.get(f'/api/poster-requests/{poster_id}/timeline')
+        self.assertEqual(res_tl.status_code, 200)
+        tl_req = res_tl.get_json()['data']['request']
+        self.assertEqual(tl_req.get('target_audience'), 'BSIT Students')
+
+        print("[PASS] Target Audience / Demographics support verified for Proposals and Poster Requests.")
+
 if __name__ == '__main__':
     unittest.main()
 

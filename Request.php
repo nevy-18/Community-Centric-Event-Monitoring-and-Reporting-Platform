@@ -192,6 +192,10 @@
                                 <span class="meta-val" id="verif-participants">--</span>
                             </div>
                             <div class="meta-row">
+                                <span class="meta-label">Target Audience:</span>
+                                <span class="meta-val" id="verif-audience" style="font-weight: 700; color: #1e40af;">--</span>
+                            </div>
+                            <div class="meta-row">
                                 <span class="meta-label">Chapter Name:</span>
                                 <span class="meta-val" id="verif-chapter-name">--</span>
                             </div>
@@ -244,6 +248,15 @@
                             </label>
 
                             <label class="checklist-item verified" onclick="toggleCheckItem(this)">
+                                <input type="checkbox" id="chk-audience" checked>
+                                <div class="checklist-text">
+                                    <div class="checklist-name">Target Audience / Demographic</div>
+                                    <div class="checklist-sub">Specified target demographic verified (BSIT, Youth, etc.)</div>
+                                </div>
+                                <i class="ph-fill ph-check-circle" style="color: #16a34a; font-size: 1.25rem;"></i>
+                            </label>
+
+                            <label class="checklist-item verified" onclick="toggleCheckItem(this)">
                                 <input type="checkbox" id="chk-chapter" checked>
                                 <div class="checklist-text">
                                     <div class="checklist-name">Chapter Name</div>
@@ -273,7 +286,7 @@
 
                         <div style="margin-top: 1.25rem; padding: 0.75rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; text-align: center;">
                             <span id="verif-check-summary" style="font-weight: 700; color: #16a34a; font-size: 0.85rem;">
-                                <i class="ph-fill ph-check-circle"></i> All 6 Requirements Confirmed
+                                <i class="ph-fill ph-check-circle"></i> All 7 Requirements Confirmed
                             </span>
                         </div>
 
@@ -360,6 +373,7 @@
                                 <div><strong>Chapter:</strong> <span id="tl-chapter-name">--</span></div>
                                 <div><strong>Date:</strong> <span id="tl-date">--</span></div>
                                 <div><strong>Venue:</strong> <span id="tl-venue">--</span></div>
+                                <div><strong>Audience:</strong> <span id="tl-audience" style="color: #1e40af; font-weight: 700;">--</span></div>
                             </div>
                         </div>
                         <button type="button" class="btn btn-outline tl-action-btn" onclick="downloadCurrentPoster()">
@@ -610,6 +624,7 @@
                                 <li><i class="ph ph-calendar"></i> ${escapeHtml(p.event_date || 'Date TBD')}</li>
                                 <li><i class="ph ph-map-pin"></i> ${escapeHtml(p.venue || 'Venue TBD')}</li>
                                 <li><i class="ph ph-buildings"></i> ${escapeHtml(p.chapter_name || 'Chapter')}</li>
+                                <li><i class="ph ph-users-three"></i> Audience: ${escapeHtml(p.target_audience || 'Open for All')}</li>
                             </ul>
                             <p class="event-desc" style="color: #475569; font-size: 0.875rem;">
                                 ${escapeHtml(p.theme_or_concept || p.review_note || 'Official event banner approved and queued for distribution.')}
@@ -680,7 +695,7 @@
                                     </div>
                                     <div class="info-group">
                                         <span class="label">Concept & Venue:</span>
-                                        <span class="value text-sm">${escapeHtml(p.theme_or_concept || 'Theme not specified')}<br><small style="color: #64748b;">${escapeHtml(p.venue || '')}</small></span>
+                                        <span class="value text-sm">${escapeHtml(p.theme_or_concept || 'Theme not specified')}<br><small style="color: #64748b;">${escapeHtml(p.venue || '')}</small><br><span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.7rem;padding:1px 6px;margin-top:3px;display:inline-block;"><i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -750,6 +765,7 @@
             document.getElementById('verif-datetime').textContent = (item.event_date || 'Date TBD') + timeStr;
             document.getElementById('verif-venue').textContent = item.venue || 'Venue TBD';
             document.getElementById('verif-participants').textContent = item.target_participants || '100+ Participants';
+            document.getElementById('verif-audience').textContent = item.target_audience || 'Open for All';
             document.getElementById('verif-chapter-name').textContent = item.chapter_name || 'National Chapter';
             
             const capText = item.caption ? item.caption : 'Official promo blurb prepared by Chapter.';
@@ -762,6 +778,7 @@
             document.getElementById('chk-datetime').checked = !!item.event_date;
             document.getElementById('chk-venue').checked = !!item.venue;
             document.getElementById('chk-participants').checked = !!item.target_participants;
+            if (document.getElementById('chk-audience')) document.getElementById('chk-audience').checked = !!(item.target_audience || true);
             document.getElementById('chk-chapter').checked = !!item.chapter_name;
             document.getElementById('chk-visuals').checked = true;
             document.getElementById('chk-caption').checked = !!(item.caption || item.registration_link);
@@ -821,7 +838,7 @@
             checkboxes.forEach(c => { if (c.checked) checked++; });
             const summary = document.getElementById('verif-check-summary');
             if (checked === checkboxes.length) {
-                summary.innerHTML = '<i class="ph-fill ph-check-circle"></i> All 6 Requirements Confirmed';
+                summary.innerHTML = `<i class="ph-fill ph-check-circle"></i> All ${checkboxes.length} Requirements Confirmed`;
                 summary.style.color = '#16a34a';
             } else {
                 summary.innerHTML = `<i class="ph ph-warning-circle"></i> ${checked} of ${checkboxes.length} Requirements Verified`;
@@ -853,6 +870,7 @@
             if (document.getElementById('chk-datetime').checked) checklist.push('date_time');
             if (document.getElementById('chk-venue').checked) checklist.push('venue');
             if (document.getElementById('chk-participants').checked) checklist.push('participants');
+            if (document.getElementById('chk-audience') && document.getElementById('chk-audience').checked) checklist.push('audience');
             if (document.getElementById('chk-chapter').checked) checklist.push('chapter_name');
             if (document.getElementById('chk-visuals').checked) checklist.push('visuals');
             if (document.getElementById('chk-caption').checked) checklist.push('caption_link');
@@ -941,6 +959,7 @@
                     document.getElementById('tl-chapter-name').textContent = req.chapter_name || 'Chapter';
                     document.getElementById('tl-date').textContent = req.event_date || 'Date TBD';
                     document.getElementById('tl-venue').textContent = req.venue || 'Venue TBD';
+                    document.getElementById('tl-audience').textContent = req.target_audience || 'Open for All';
 
                     const currentStepNum = req.current_step || 1;
                     const isDone = req.status === 'completed';

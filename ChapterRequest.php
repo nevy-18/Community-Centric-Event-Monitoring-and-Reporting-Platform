@@ -169,6 +169,25 @@
                 </div>
 
                 <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+                        <i class="ph-bold ph-users-three" style="color: #2563eb;"></i> Target Audience / Demographic *
+                    </label>
+                    <select id="np-target-audience" required style="width: 100%; padding: 0.6rem; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; background: #fff; font-weight: 600; color: #1e293b;" onchange="handlePosterAudienceChange(this.value)">
+                        <option value="Open for All (General Youth)">Open for All (General Youth)</option>
+                        <option value="BSIT Students">BSIT Students</option>
+                        <option value="College / University Students">College / University Students</option>
+                        <option value="Senior High School (SHS) Students">Senior High School (SHS) Students</option>
+                        <option value="Junior High School (JHS) Students">Junior High School (JHS) Students</option>
+                        <option value="Youth Leaders &amp; Campus Officers">Youth Leaders &amp; Campus Officers</option>
+                        <option value="Other">Other (Specify)</option>
+                    </select>
+                    <div id="np-audience-custom-wrap" style="display: none; margin-top: 0.4rem;">
+                        <input type="text" id="np-target-audience-custom" placeholder="Specify target demographic (e.g. BSIT Students, Engineering Dept, etc.)..." style="width: 100%; padding: 0.55rem; border: 1.5px solid #3b82f6; border-radius: 6px; font-size: 0.85rem; background: #eff6ff;">
+                    </div>
+                    <small style="color: #64748b; font-size: 0.725rem; display: block; margin-top: 0.25rem;">Specify who this poster design and invitation message are tailored for.</small>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
                     <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Subtitle / Theme / Concept *</label>
                     <input type="text" id="np-theme" required placeholder="e.g. Level up or Stay the Game: True Greatness through Faith" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem;">
                 </div>
@@ -261,6 +280,7 @@
                                 <div><strong>Date & Time:</strong> <span id="ctl-chapter-datetime">--</span></div>
                                 <div><strong>Venue:</strong> <span id="ctl-chapter-venue">--</span></div>
                                 <div><strong>Target Attendees:</strong> <span id="ctl-chapter-attendees">--</span></div>
+                                <div><strong>Target Audience:</strong> <span id="ctl-chapter-audience" style="color: #1e40af; font-weight: 700;">--</span></div>
                             </div>
                         </div>
                         <button type="button" class="btn btn-primary tl-action-btn" id="btn-chapter-download-poster" style="background: #16a34a; border-color: #15803d;" onclick="downloadChapterPoster()">
@@ -577,6 +597,7 @@
                             <ul class="event-bullets">
                                 <li><i class="ph ph-calendar"></i> ${escapeHtml(p.event_date || 'Date TBD')}</li>
                                 <li><i class="ph ph-map-pin"></i> ${escapeHtml(p.venue || 'Venue TBD')}</li>
+                                <li><i class="ph ph-users-three"></i> Audience: ${escapeHtml(p.target_audience || 'Open for All')}</li>
                                 <li><i class="ph ph-clock"></i> Deadline: ${escapeHtml(p.requested_deadline || 'N/A')}</li>
                             </ul>
                             <p class="event-desc" style="color: #475569; font-size: 0.875rem;">
@@ -623,7 +644,8 @@
                                     <h4 class="event-title font-roboto" style="color: #0f172a; font-weight: 700; margin: 0 0 0.25rem;">${escapeHtml(p.event_title)}</h4>
                                     <div style="font-size: 0.8rem; color: #475569;">
                                         <strong>Date:</strong> ${escapeHtml(p.event_date || 'N/A')}<br>
-                                        <strong>Venue:</strong> ${escapeHtml(p.venue || 'N/A')}
+                                        <strong>Venue:</strong> ${escapeHtml(p.venue || 'N/A')}<br>
+                                        <strong>Audience:</strong> ${escapeHtml(p.target_audience || 'Open for All')}
                                     </div>
                                 </div>
                             </div>
@@ -671,6 +693,20 @@
             });
         }
 
+        function handlePosterAudienceChange(val) {
+            const wrap = document.getElementById('np-audience-custom-wrap');
+            const customInput = document.getElementById('np-target-audience-custom');
+            if (val === 'Other') {
+                wrap.style.display = 'block';
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                wrap.style.display = 'none';
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
+
         function openNewPosterModal() {
             clearPosterFormValidation();
             document.getElementById('new-poster-modal').style.display = 'flex';
@@ -678,6 +714,8 @@
 
         function closeNewPosterModal() {
             document.getElementById('new-poster-modal').style.display = 'none';
+            const customWrap = document.getElementById('np-audience-custom-wrap');
+            if (customWrap) customWrap.style.display = 'none';
             clearPosterFormValidation();
         }
 
@@ -765,6 +803,13 @@
             formData.append('event_time', time);
             formData.append('venue', venue);
             formData.append('target_participants', participants);
+
+            let targetAudience = document.getElementById('np-target-audience').value;
+            if (targetAudience === 'Other') {
+                targetAudience = document.getElementById('np-target-audience-custom').value.trim() || 'Other';
+            }
+            formData.append('target_audience', targetAudience);
+
             formData.append('theme_or_concept', theme);
             formData.append('registration_link', regLink);
             formData.append('requested_deadline', deadline);
@@ -783,6 +828,8 @@
                     document.getElementById('new-poster-form').reset();
                     clearPosterFormValidation();
                     document.getElementById('np-file-display').style.display = 'none';
+                    const customWrap = document.getElementById('np-audience-custom-wrap');
+                    if (customWrap) customWrap.style.display = 'none';
                     closeNewPosterModal();
                     await loadPosterData('accepted');
                     await loadPosterData('queue');
@@ -826,6 +873,7 @@
                     document.getElementById('ctl-chapter-datetime').textContent = (req.event_date || 'Date TBD') + timeStr;
                     document.getElementById('ctl-chapter-venue').textContent = req.venue || 'Venue TBD';
                     document.getElementById('ctl-chapter-attendees').textContent = req.target_participants || '100+ Participants';
+                    document.getElementById('ctl-chapter-audience').textContent = req.target_audience || 'Open for All';
 
                     const currentStepNum = req.current_step || 1;
                     const isDone = req.status === 'completed';
