@@ -319,6 +319,20 @@
                     </div>
                   </div>
 
+                  <!-- Uploaded Attendance Sheet Document -->
+                  <div id="detailAttendanceSheetBox" class="review-detail-group" style="display: none;">
+                    <label class="font-roboto"><i class="ph-fill ph-file-arrow-down"></i> Official Attendance Sheet</label>
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 0.65rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ph ph-file-check" style="font-size: 1.25rem; color: #1e40af;"></i>
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a;">Signed Attendance Sheet</span>
+                      </div>
+                      <a id="detailAttendanceSheetBtn" href="#" target="_blank" class="btn btn-outline btn-sm font-roboto" style="background: #fff; font-size: 0.72rem; padding: 0.2rem 0.5rem; text-decoration: none; color: #1d4ed8; border-color: #93c5fd;">
+                        <i class="ph ph-download-simple"></i> Download
+                      </a>
+                    </div>
+                  </div>
+
                   <!-- Action Buttons: Print Report -->
                   <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
                     <button class="btn btn-primary font-roboto" style="width: 100%;" onclick="openPrintPreview()">
@@ -441,6 +455,22 @@
           <h4 style="font-size: 0.9rem; font-weight: 800; color: #1a2f63; margin-bottom: 0.35rem;">EXECUTIVE SUMMARY & HIGHLIGHTS</h4>
           <div id="printSummaryText" style="padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.75rem; line-height: 1.5; margin-bottom: 1.5rem;">
             -
+          </div>
+
+          <!-- Attendance Sheet Document Banner -->
+          <div id="printAttendanceSheetCard" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <div style="background: #dbeafe; color: #1d4ed8; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="ph ph-file-arrow-down"></i>
+              </div>
+              <div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: #1e3a8a;">Official Attendance Sheet Attached</div>
+                <div style="font-size: 0.7rem; color: #475569;">Physical sign-in scan / digital attendee roster uploaded by Chapter Admin.</div>
+              </div>
+            </div>
+            <a id="printAttendanceSheetLink" href="#" target="_blank" class="btn btn-outline btn-sm font-roboto print-no-print" style="background: #ffffff; color: #1e40af; border-color: #93c5fd; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; padding: 0.3rem 0.65rem;">
+              <i class="ph ph-download-simple"></i> Download Sheet File
+            </a>
           </div>
 
           <!-- Official Digital Signatures & Certifications (2-Column Layout) -->
@@ -607,6 +637,10 @@
             ? `<span class="badge approved font-roboto"><i class="ph ph-check-circle"></i> Submitted</span>` 
             : `<span class="badge pending font-roboto">Pending Submission</span>`;
 
+          let sheetBadge = r.attendance_sheet_path
+            ? `<div style="margin-top: 3px;"><a href="${YTR_API.reports.getAttendanceSheetUrl(r.report_id || r.id)}" target="_blank" class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.68rem; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Download Official Attendance Sheet"><i class="ph ph-file-arrow-down"></i> Sheet Attached</a></div>`
+            : '';
+
           row.innerHTML = `
             <td>
               <div style="display: flex; align-items: center; gap: 0.85rem;">
@@ -615,7 +649,10 @@
                 </div>
                 <div>
                   <p class="font-roboto" style="font-weight: 800; color: #0f172a; font-size: 0.875rem; margin: 0;">${r.event_title}</p>
-                  <span class="badge chapter-admin font-roboto" style="margin-top: 3px;">${r.chapter_name || 'Chapter Event'}</span>
+                  <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px;">
+                    <span class="badge chapter-admin font-roboto">${r.chapter_name || 'Chapter Event'}</span>
+                    ${sheetBadge}
+                  </div>
                 </div>
               </div>
             </td>
@@ -686,6 +723,16 @@
         vBadge.style.display = 'inline-flex';
         vBadge.className = 'badge pending font-roboto';
         vBadge.innerHTML = '<i class="ph ph-clock"></i> Awaiting Dossier';
+      }
+
+      // Sidebar Attendance Sheet Download Link
+      const sheetBox = document.getElementById('detailAttendanceSheetBox');
+      const sheetBtn = document.getElementById('detailAttendanceSheetBtn');
+      if (r.attendance_sheet_path) {
+        if (sheetBtn) sheetBtn.href = YTR_API.reports.getAttendanceSheetUrl(r.report_id || r.id);
+        if (sheetBox) sheetBox.style.display = 'block';
+      } else {
+        if (sheetBox) sheetBox.style.display = 'none';
       }
     }
 
@@ -943,11 +990,21 @@
 
       document.getElementById('printSummaryText').textContent = r.report_summary || 'Activities successfully conducted with full chapter participation.';
       
+      // Attendance Sheet Attachment Card in Print Preview
+      const attSheetCard = document.getElementById('printAttendanceSheetCard');
+      const attSheetLink = document.getElementById('printAttendanceSheetLink');
+      if (r.attendance_sheet_path) {
+        if (attSheetLink) attSheetLink.href = YTR_API.reports.getAttendanceSheetUrl(r.report_id || r.id);
+        if (attSheetCard) attSheetCard.style.display = 'flex';
+      } else {
+        if (attSheetCard) attSheetCard.style.display = 'none';
+      }
+
       // 1. Submitter Signatory Block
       document.getElementById('printSignerName').textContent = r.signed_by_name || 'Chapter Administrator';
       document.getElementById('printSignerTimestamp').textContent = 'Verified on ' + (r.signed_at || r.submitted_at || new Date().toLocaleDateString());
       const submitterSigBox = document.getElementById('printSubmitterSigBox');
-      if (r.e_signature && r.e_signature.trim().length > 10) {
+      if (r.e_signature && r.e_signature.trim().length > 5) {
         submitterSigBox.innerHTML = `<img src="${r.e_signature}" alt="Chapter Signature" style="max-height: 44px; max-width: 140px; object-fit: contain;">`;
       } else {
         submitterSigBox.innerHTML = `<span style="font-size: 0.72rem; color: #16a34a; font-weight: 600;"><i class="ph ph-check-circle"></i> Digital Dossier Signed</span>`;

@@ -3,6 +3,7 @@ Comprehensive Test Suite for YTR Python Backend Endpoints
 Usage: python backend/test_api.py
 """
 import sys
+import io
 from pathlib import Path
 import unittest
 import json
@@ -626,6 +627,102 @@ class TestYTRBackendAPI(unittest.TestCase):
 
         print("[PASS] Target Audience / Demographics support verified for Proposals and Poster Requests.")
 
+    def test_33_report_attendance_sheet_and_signature_upload(self):
+        # 1. Create an event for report filing
+        event_payload = {
+            'title': 'Youth Leadership Bootcamp & Summit',
+            'chapter_id': 1,
+            'start_date': '2026-11-20 09:00:00',
+            'end_date': '2026-11-20 17:00:00',
+            'venue': 'Grand Ballroom',
+            'description': 'Annual youth leadership empowerment seminar.',
+            'event_type': 'leadership_training',
+            'ytr_program': 'Lead up (Youth Leadership)',
+            'target_audience': 'Youth Leaders & Student Councils',
+            'target_turnout': 120,
+            'budget_amount': 22000
+        }
+        res_ev = self.client.post('/api/proposals', json=event_payload)
+        self.assertIn(res_ev.status_code, [200, 201])
+        event_id = res_ev.get_json()['data']['event_id']
+
+        # 2. Prepare sample files for attendance sheet and signature image
+        sample_attendance_content = b"Attendee Name,Email,Role\nJohn Doe,john@test.com,First-Timer\nJane Smith,jane@test.com,Leader\n"
+        sample_sig_content = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15c4\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82"
+
+        # 3. Submit report using multipart/form-data with file uploads
+        form_data = {
+            'event_id': event_id,
+            'chapter_id': 1,
+            'total_participants': '135',
+            'first_timers': '45',
+            'existing_members': '80',
+            'youth_leaders_count': '10',
+            'budget_spent': '21500',
+            'report_summary': 'Event successfully conducted with great student turnout.',
+            'challenges': 'Minor audio setup delay.',
+            'recommendations': 'Prepare auxiliary audio system in advance.',
+            'signed_by_name': 'Joan Dela Cruz (Chapter Admin)',
+            'attendee_roster': json.dumps([
+                {'name': 'John Doe', 'contact': 'john@test.com', 'role': 'First-Timer'},
+                {'name': 'Jane Smith', 'contact': 'jane@test.com', 'role': 'Youth Leader'}
+            ]),
+            'attendance_sheet': (io.BytesIO(sample_attendance_content), 'official_attendance_roster.csv', 'text/csv'),
+            'signature_file': (io.BytesIO(sample_sig_content), 'joan_signature.png', 'image/png')
+        }
+
+        res_rep = self.client.post('/api/reports', data=form_data, content_type='multipart/form-data')
+        self.assertEqual(res_rep.status_code, 201, msg=f"Submit failed: {res_rep.get_data(as_text=True)}")
+        rep_id = res_rep.get_json()['data']['report_id']
+
+        # 4. Fetch the report by ID and verify fields
+        res_get = self.client.get(f'/api/reports/{rep_id}')
+        self.assertEqual(res_get.status_code, 200)
+        rep_data = res_get.get_json()['data']
+        self.assertIsNotNone(rep_data.get('attendance_sheet_path'))
+        self.assertTrue(rep_data['attendance_sheet_path'].startswith('assets/uploads/attendance/'))
+        self.assertIsNotNone(rep_data.get('e_signature'))
+        self.assertTrue(rep_data['e_signature'].startswith('assets/uploads/signatures/'))
+        self.assertEqual(rep_data.get('total_participants'), 135)
+        self.assertEqual(rep_data.get('first_timers'), 45)
+
+        # 5. Test downloading the attached attendance sheet
+        res_dl = self.client.get(f'/api/reports/{rep_id}/attendance-sheet')
+        self.assertEqual(res_dl.status_code, 200)
+        self.assertEqual(res_dl.data, sample_attendance_content)
+
+        # 6. Verify report list query includes attendance_sheet_path
+        res_list = self.client.get('/api/reports')
+        self.assertEqual(res_list.status_code, 200)
+        reports = res_list.get_json()['data']
+        matching = [r for r in reports if r.get('report_id') == rep_id or r.get('id') == rep_id]
+        self.assertTrue(len(matching) >= 1)
+        self.assertIsNotNone(matching[0].get('attendance_sheet_path'))
+
+        # 7. Test canvas pad signature fallback (data URL signature)
+        canvas_sig_dataurl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        res_canvas_rep = self.client.post('/api/reports', json={
+            'event_id': event_id,
+            'chapter_id': 1,
+            'total_participants': 140,
+            'first_timers': 50,
+            'existing_members': 80,
+            'youth_leaders_count': 10,
+            'budget_spent': 21500,
+            'report_summary': 'Updated with canvas pad signature.',
+            'signed_by_name': 'Joan Dela Cruz',
+            'e_signature': canvas_sig_dataurl
+        })
+        self.assertEqual(res_canvas_rep.status_code, 201)
+        res_get_canvas = self.client.get(f'/api/reports/{rep_id}')
+        self.assertEqual(res_get_canvas.status_code, 200)
+        # Should keep existing attendance_sheet_path while updating signature to data URL
+        self.assertEqual(res_get_canvas.get_json()['data']['e_signature'], canvas_sig_dataurl)
+        self.assertIsNotNone(res_get_canvas.get_json()['data']['attendance_sheet_path'])
+
+        print("[PASS] Report attendance sheet and signature upload & download tests passed.")
+
 if __name__ == '__main__':
     unittest.main()
+
 

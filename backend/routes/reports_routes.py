@@ -1,7 +1,11 @@
-from flask import Blueprint, request, session
+import os
+import uuid
+from flask import Blueprint, request, session, send_file
 from backend.db import get_db, serialize_rows, serialize_row
 from backend.auth_helpers import api_response, api_error
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 reports_bp = Blueprint('reports', __name__, url_prefix='/api/reports')
 
@@ -40,7 +44,7 @@ def list_reports():
 
     sql = """
         SELECT r.id AS report_id, r.total_participants, r.first_timers, r.existing_members,
-               r.youth_leaders_count, r.attendee_roster, r.e_signature, r.signed_by_name,
+               r.youth_leaders_count, r.attendee_roster, r.attendance_sheet_path, r.e_signature, r.signed_by_name,
                r.signed_at, r.budget_spent, r.report_summary, r.highlights, r.challenges,
                r.recommendations, r.status AS report_status, r.submitted_at,
                e.id AS event_id, e.title AS event_title, e.event_type, e.ytr_program, e.start_datetime, e.end_datetime,
@@ -132,6 +136,23 @@ def get_report(report_id):
 
     return api_response(enrich_report(serialize_row(rep)))
 
+@reports_bp.route('/<int:report_id>/attendance-sheet', methods=['GET'])
+def download_attendance_sheet(report_id):
+    """Download the attached physical or digital attendance sheet document."""
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, attendance_sheet_path FROM event_reports WHERE id = %s", (report_id,))
+            rep = cur.fetchone()
+    if not rep or not rep.get('attendance_sheet_path'):
+        return api_error('No attendance sheet document attached to this report.', 404)
+
+    rel_path = rep['attendance_sheet_path'].lstrip('/\\')
+    file_path = os.path.join(PROJECT_ROOT, rel_path)
+    if not os.path.exists(file_path):
+        return api_error('Attached attendance sheet file is missing on server.', 404)
+
+    return send_file(file_path, as_attachment=True)
+
 @reports_bp.route('', methods=['POST'])
 def submit_report():
     data = request.get_json(silent=True) or request.form.to_dict() or {}
@@ -152,6 +173,31 @@ def submit_report():
 
     if not event_id:
         return api_error('Event ID is required.', 400)
+
+    # Process uploaded attendance sheet document (PDF, Excel, Word, Image)
+    attendance_sheet_path = None
+    att_file = request.files.get('attendance_sheet') or request.files.get('attendance_file') or request.files.get('attendance_doc')
+    if att_file and att_file.filename != '':
+        ext = os.path.splitext(att_file.filename)[1].lower()
+        unique_fname = f"attendance_{uuid.uuid4().hex[:10]}{ext}"
+        target_dir = os.path.join(PROJECT_ROOT, 'assets', 'uploads', 'attendance')
+        os.makedirs(target_dir, exist_ok=True)
+        save_path = os.path.join(target_dir, unique_fname)
+        att_file.save(save_path)
+        attendance_sheet_path = f"assets/uploads/attendance/{unique_fname}"
+    elif data.get('attendance_sheet_path'):
+        attendance_sheet_path = data.get('attendance_sheet_path')
+
+    # Process uploaded signature image file (PNG, JPG, WEBP)
+    sig_file = request.files.get('signature_file') or request.files.get('signature_image') or request.files.get('signature')
+    if sig_file and sig_file.filename != '':
+        ext = os.path.splitext(sig_file.filename)[1].lower()
+        unique_fname = f"sig_chapter_{uuid.uuid4().hex[:10]}{ext}"
+        target_dir = os.path.join(PROJECT_ROOT, 'assets', 'uploads', 'signatures')
+        os.makedirs(target_dir, exist_ok=True)
+        save_path = os.path.join(target_dir, unique_fname)
+        sig_file.save(save_path)
+        e_signature = f"assets/uploads/signatures/{unique_fname}"
 
     with get_db() as conn:
         with conn.cursor() as cur:
@@ -196,10 +242,12 @@ def submit_report():
                     return api_error('Only Chapter-based administrators can submit reports. No authorized chapter admin found for this chapter.', 403)
 
             # Check if report already exists for this event
-            cur.execute("SELECT id FROM event_reports WHERE event_id = %s LIMIT 1", (event_id,))
+            cur.execute("SELECT id, attendance_sheet_path, e_signature FROM event_reports WHERE event_id = %s LIMIT 1", (event_id,))
             existing = cur.fetchone()
 
             if existing:
+                final_att_path = attendance_sheet_path if attendance_sheet_path is not None else existing.get('attendance_sheet_path')
+                final_sig = e_signature if e_signature else existing.get('e_signature')
                 cur.execute("""
                     UPDATE event_reports
                     SET total_participants = %s,
@@ -207,6 +255,7 @@ def submit_report():
                         existing_members = %s,
                         youth_leaders_count = %s,
                         attendee_roster = %s,
+                        attendance_sheet_path = %s,
                         e_signature = %s,
                         signed_by_name = %s,
                         signed_at = NOW(),
@@ -221,7 +270,7 @@ def submit_report():
                     WHERE id = %s
                 """, (
                     total_participants, first_timers, existing_members, youth_leaders_count,
-                    attendee_roster, e_signature, signed_by_name, budget_spent,
+                    attendee_roster, final_att_path, final_sig, signed_by_name, budget_spent,
                     report_summary, highlights, challenges, recommendations,
                     existing['id']
                 ))
@@ -230,19 +279,19 @@ def submit_report():
                 cur.execute("""
                     INSERT INTO event_reports (
                         event_id, chapter_id, submitted_by, total_participants, first_timers,
-                        existing_members, youth_leaders_count, attendee_roster, e_signature,
-                        signed_by_name, signed_at, budget_spent, report_summary, highlights,
-                        challenges, recommendations, status, submitted_at, created_at
+                        existing_members, youth_leaders_count, attendee_roster, attendance_sheet_path,
+                        e_signature, signed_by_name, signed_at, budget_spent, report_summary,
+                        highlights, challenges, recommendations, status, submitted_at, created_at
                     ) VALUES (
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s,
-                        %s, NOW(), %s, %s, %s,
-                        %s, %s, 'approved', NOW(), NOW()
+                        %s, %s, NOW(), %s, %s,
+                        %s, %s, %s, 'approved', NOW(), NOW()
                     )
                 """, (
                     event_id, chapter_id, submitted_by, total_participants, first_timers,
-                    existing_members, youth_leaders_count, attendee_roster, e_signature,
-                    signed_by_name, budget_spent, report_summary, highlights,
+                    existing_members, youth_leaders_count, attendee_roster, attendance_sheet_path,
+                    e_signature, signed_by_name, budget_spent, report_summary, highlights,
                     challenges, recommendations
                 ))
                 rep_id = cur.lastrowid

@@ -165,10 +165,14 @@ const YTR_API = {
       return YTR_API.request(`/reports/${id}`);
     },
     submit(payload) {
+      const isFormData = typeof FormData !== 'undefined' && payload instanceof FormData;
       return YTR_API.request('/reports', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: isFormData ? payload : JSON.stringify(payload)
       });
+    },
+    getAttendanceSheetUrl(id) {
+      return `${YTR_API.baseUrl}/reports/${id}/attendance-sheet`;
     },
     getSignatories() {
       return YTR_API.request('/reports/signatories');

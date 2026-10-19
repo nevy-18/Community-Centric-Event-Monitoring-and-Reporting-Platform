@@ -274,6 +274,28 @@
               <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1.1rem;"><i class="ph ph-trash"></i></button>
             </div>
           </div>
+
+          <!-- Official Attendance Sheet Document Upload -->
+          <div style="margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1;">
+            <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+              <i class="ph ph-file-arrow-up" style="color: #2563eb;"></i> Official Attendance Sheet File Upload (Optional / Recommended)
+            </label>
+            <div style="border: 1.5px dashed #94a3b8; border-radius: 6px; background: #f8fafc; padding: 0.85rem; text-align: center; position: relative;">
+              <input type="file" id="rep-attendance-sheet" accept=".pdf,.xlsx,.xls,.csv,.docx,.doc,image/*" onchange="handleAttendanceSheetSelect(event)" style="position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
+              <div id="att-sheet-idle-msg">
+                <i class="ph ph-cloud-arrow-up" style="font-size: 1.6rem; color: #3b82f6;"></i>
+                <div style="font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-top: 2px;">
+                  Click or drag signed attendance sheet / sign-in log here
+                </div>
+                <small style="color: #64748b; font-size: 0.72rem;">PDF, Excel (.xlsx/.csv), Word, or scanned photo of physical attendance sheet (Max 25MB)</small>
+              </div>
+              <div id="att-sheet-selected-msg" style="display: none; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i class="ph ph-file-check" style="font-size: 1.4rem; color: #16a34a;"></i>
+                <span id="att-sheet-filename" style="font-size: 0.85rem; font-weight: 700; color: #0f172a;"></span>
+                <button type="button" onclick="clearAttendanceSheet(event)" style="background: none; border: none; color: #ef4444; font-size: 0.9rem; cursor: pointer; padding: 2px 6px;" title="Remove file"><i class="ph ph-x-circle"></i> Remove</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Narrative Summary -->
@@ -293,7 +315,7 @@
           </div>
         </div>
 
-        <!-- Submitter Information Section with Signature Canvas Pad -->
+        <!-- Submitter Information Section with Signature (Draw or Upload) -->
         <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">
             <i class="ph ph-user-check"></i> Submitting Chapter Coordinator / Administrator Full Name *
@@ -301,19 +323,56 @@
           <input type="text" id="rep-signer-name" required placeholder="e.g. Joan Dela Cruz (Chapter Admin)" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
           <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Official endorsement by authorized chapter personnel.</small>
 
-          <div style="margin-top: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <label style="font-size: 0.825rem; font-weight: 600; color: #1e293b; margin: 0;">
-                <i class="ph ph-pencil-line"></i> Submitter Signature (Sign on Pad)
+          <div style="margin-top: 1.1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+              <label style="font-size: 0.825rem; font-weight: 700; color: #1e293b; margin: 0;">
+                <i class="ph ph-signature"></i> Submitter Signature Endorsement *
               </label>
-              <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="clearSignatureCanvas()" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">
-                <i class="ph ph-arrow-counter-clockwise"></i> Clear Pad
-              </button>
+              <!-- Mode Tabs -->
+              <div style="display: flex; gap: 0.35rem;">
+                <button type="button" id="tabChapDrawSig" class="btn btn-primary btn-sm font-roboto" onclick="switchChapterSigMode('draw')" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                  <i class="ph ph-pencil-line"></i> Sign on Pad
+                </button>
+                <button type="button" id="tabChapUploadSig" class="btn btn-outline btn-sm font-roboto" onclick="switchChapterSigMode('upload')" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                  <i class="ph ph-upload-simple"></i> Upload Signature Image
+                </button>
+              </div>
             </div>
-            <div style="border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; padding: 2px;">
-              <canvas id="chapter-sig-canvas" width="600" height="130" style="width: 100%; height: 130px; display: block; cursor: crosshair; touch-action: none; border-radius: 4px;"></canvas>
+
+            <!-- Mode 1: Sign on Pad -->
+            <div id="chapSigDrawPanel">
+              <div style="border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; padding: 2px;">
+                <canvas id="chapter-sig-canvas" width="600" height="130" style="width: 100%; height: 130px; display: block; cursor: crosshair; touch-action: none; border-radius: 4px;"></canvas>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <small style="color: #64748b; font-size: 0.75rem;">Draw signature above using mouse, stylus, or touch screen.</small>
+                <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="clearSignatureCanvas()" style="font-size: 0.75rem; padding: 0.15rem 0.5rem;">
+                  <i class="ph ph-arrow-counter-clockwise"></i> Clear Pad
+                </button>
+              </div>
             </div>
-            <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Draw signature above using mouse, stylus, or touch screen.</small>
+
+            <!-- Mode 2: Upload Signature Image -->
+            <div id="chapSigUploadPanel" style="display: none;">
+              <div style="border: 1.5px dashed #94a3b8; border-radius: 6px; background: #ffffff; padding: 1rem; text-align: center; position: relative;">
+                <input type="file" id="rep-signature-file" accept="image/png, image/jpeg, image/webp" onchange="handleChapterSigFileSelect(event)" style="position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
+                <div id="chap-sig-upload-idle">
+                  <i class="ph ph-image" style="font-size: 1.8rem; color: #16a34a;"></i>
+                  <div style="font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-top: 2px;">
+                    Click or drag your signature image here
+                  </div>
+                  <small style="color: #64748b; font-size: 0.72rem;">PNG transparent background or clean white JPG recommended</small>
+                </div>
+                <div id="chap-sig-upload-preview" style="display: none; flex-direction: column; align-items: center; gap: 0.35rem;">
+                  <img id="chap-sig-preview-img" src="" alt="Signature Preview" style="max-height: 60px; max-width: 220px; object-fit: contain; border-bottom: 1.5px solid #0f172a; padding-bottom: 2px;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 4px;">
+                    <span id="chap-sig-filename" style="font-size: 0.78rem; font-weight: 600; color: #0f172a;"></span>
+                    <button type="button" onclick="clearChapterSigUpload(event)" style="background: none; border: none; color: #ef4444; font-size: 0.85rem; cursor: pointer;" title="Remove image"><i class="ph ph-x-circle"></i> Change</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -362,12 +421,107 @@
     let unreportedEvents = [];
     let selectedEventTarget = 100;
 
-    // Signature Pad State
+    // Signature & Attendance Sheet State
+    let activeChapSigMode = 'draw';
+    let uploadedChapSigFile = null;
+    let uploadedChapSigBase64 = null;
+    let selectedAttendanceSheetFile = null;
     let isDrawing = false;
     let hasDrawnOnCanvas = false;
     let canvas, ctx;
     let nationalExecSignature = null;
     let nationalExecName = 'Hamilton Jones Dela';
+
+    function switchChapterSigMode(mode) {
+      activeChapSigMode = mode;
+      const tabDraw = document.getElementById('tabChapDrawSig');
+      const tabUpload = document.getElementById('tabChapUploadSig');
+      const panelDraw = document.getElementById('chapSigDrawPanel');
+      const panelUpload = document.getElementById('chapSigUploadPanel');
+
+      if (mode === 'draw') {
+        tabDraw.className = 'btn btn-primary btn-sm font-roboto';
+        tabUpload.className = 'btn btn-outline btn-sm font-roboto';
+        panelDraw.style.display = 'block';
+        panelUpload.style.display = 'none';
+        setTimeout(initCanvas, 50);
+      } else {
+        tabDraw.className = 'btn btn-outline btn-sm font-roboto';
+        tabUpload.className = 'btn btn-primary btn-sm font-roboto';
+        panelDraw.style.display = 'none';
+        panelUpload.style.display = 'block';
+      }
+    }
+
+    function handleChapterSigFileSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file (PNG, JPG, or WEBP).');
+        return;
+      }
+      uploadedChapSigFile = file;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        uploadedChapSigBase64 = evt.target.result;
+        const previewImg = document.getElementById('chap-sig-preview-img');
+        const fnameEl = document.getElementById('chap-sig-filename');
+        const idleEl = document.getElementById('chap-sig-upload-idle');
+        const previewBox = document.getElementById('chap-sig-upload-preview');
+
+        if (previewImg) previewImg.src = uploadedChapSigBase64;
+        if (fnameEl) fnameEl.textContent = file.name;
+        if (idleEl) idleEl.style.display = 'none';
+        if (previewBox) previewBox.style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearChapterSigUpload(e) {
+      if (e) e.stopPropagation();
+      uploadedChapSigFile = null;
+      uploadedChapSigBase64 = null;
+      const fileInput = document.getElementById('rep-signature-file');
+      if (fileInput) fileInput.value = '';
+      const previewImg = document.getElementById('chap-sig-preview-img');
+      if (previewImg) previewImg.src = '';
+      const fnameEl = document.getElementById('chap-sig-filename');
+      if (fnameEl) fnameEl.textContent = '';
+      const idleEl = document.getElementById('chap-sig-upload-idle');
+      if (idleEl) idleEl.style.display = 'block';
+      const previewBox = document.getElementById('chap-sig-upload-preview');
+      if (previewBox) previewBox.style.display = 'none';
+    }
+
+    function handleAttendanceSheetSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (file.size > 25 * 1024 * 1024) {
+        alert('Attendance sheet file exceeds 25MB limit.');
+        return;
+      }
+      selectedAttendanceSheetFile = file;
+      const sizeKb = (file.size / 1024).toFixed(1);
+      const fnameEl = document.getElementById('att-sheet-filename');
+      if (fnameEl) fnameEl.textContent = `${file.name} (${sizeKb} KB)`;
+      const idleMsg = document.getElementById('att-sheet-idle-msg');
+      if (idleMsg) idleMsg.style.display = 'none';
+      const selMsg = document.getElementById('att-sheet-selected-msg');
+      if (selMsg) selMsg.style.display = 'flex';
+    }
+
+    function clearAttendanceSheet(e) {
+      if (e) e.stopPropagation();
+      selectedAttendanceSheetFile = null;
+      const fileInput = document.getElementById('rep-attendance-sheet');
+      if (fileInput) fileInput.value = '';
+      const fnameEl = document.getElementById('att-sheet-filename');
+      if (fnameEl) fnameEl.textContent = '';
+      const idleMsg = document.getElementById('att-sheet-idle-msg');
+      if (idleMsg) idleMsg.style.display = 'block';
+      const selMsg = document.getElementById('att-sheet-selected-msg');
+      if (selMsg) selMsg.style.display = 'none';
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       initCanvas();
@@ -662,6 +816,10 @@
 
         const sigHtml = `<span class="badge" style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;"><i class="ph ph-check-circle"></i> Filed</span><br><small style="color: #64748b;">${escapeHtml(r.signed_by_name || 'Chapter Admin')}</small>`;
 
+        const sheetBadge = r.attendance_sheet_path
+          ? `<div style="margin-top: 4px;"><a href="${YTR_API.reports.getAttendanceSheetUrl(r.id)}" target="_blank" class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Download Attendance Sheet Document"><i class="ph ph-file-arrow-down"></i> Sheet Attached</a></div>`
+          : '';
+
         return `
           <tr>
             <td>
@@ -676,6 +834,7 @@
               <small style="color: #64748b;">
                 First-Timers: <strong>${r.first_timers || 0}</strong> | Leaders: <strong>${r.youth_leaders_count || 0}</strong>
               </small>
+              ${sheetBadge}
             </td>
             <td>
               ${threshBadge}
@@ -698,6 +857,9 @@
     function openSubmitReportModal() {
       document.getElementById('submit-report-modal').style.display = 'flex';
       clearSignatureCanvas();
+      clearChapterSigUpload();
+      clearAttendanceSheet();
+      switchChapterSigMode('draw');
       if (currentUser && currentUser.full_name) {
         const signerInput = document.getElementById('rep-signer-name');
         if (signerInput && !signerInput.value) {
@@ -716,6 +878,14 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting Report...';
 
+      const hasSignature = (activeChapSigMode === 'upload' && uploadedChapSigFile) || (activeChapSigMode === 'draw' && hasDrawnOnCanvas);
+      if (!hasSignature) {
+        alert('Please provide your official endorsement signature by drawing on the pad or uploading your signature image.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-check-circle"></i> Endorse & Submit Report';
+        return;
+      }
+
       // Build attendee roster array
       const rosterRows = document.querySelectorAll('#roster-container .roster-grid-row');
       const rosterList = [];
@@ -728,27 +898,35 @@
         }
       });
 
-      const payload = {
-        event_id: parseInt(document.getElementById('rep-event-id').value),
-        chapter_id: chapterId,
-        submitted_by: currentUser ? currentUser.id : null,
-        total_participants: parseInt(document.getElementById('rep-total').value),
-        first_timers: parseInt(document.getElementById('rep-first-timers').value),
-        existing_members: parseInt(document.getElementById('rep-members').value || '0'),
-        youth_leaders_count: parseInt(document.getElementById('rep-leaders').value || '0'),
-        budget_spent: parseFloat(document.getElementById('rep-budget-spent').value || '0'),
-        report_summary: document.getElementById('rep-summary').value.trim(),
-        challenges: document.getElementById('rep-challenges').value.trim(),
-        recommendations: document.getElementById('rep-recommendations').value.trim(),
-        attendee_roster: JSON.stringify(rosterList),
-        e_signature: (canvas && hasDrawnOnCanvas) ? canvas.toDataURL('image/png') : '',
-        signed_by_name: document.getElementById('rep-signer-name').value.trim()
-      };
+      const formData = new FormData();
+      formData.append('event_id', document.getElementById('rep-event-id').value);
+      formData.append('chapter_id', chapterId);
+      if (currentUser && currentUser.id) formData.append('submitted_by', currentUser.id);
+      formData.append('total_participants', document.getElementById('rep-total').value);
+      formData.append('first_timers', document.getElementById('rep-first-timers').value);
+      formData.append('existing_members', document.getElementById('rep-members').value || '0');
+      formData.append('youth_leaders_count', document.getElementById('rep-leaders').value || '0');
+      formData.append('budget_spent', document.getElementById('rep-budget-spent').value || '0');
+      formData.append('report_summary', document.getElementById('rep-summary').value.trim());
+      formData.append('challenges', document.getElementById('rep-challenges').value.trim());
+      formData.append('recommendations', document.getElementById('rep-recommendations').value.trim());
+      formData.append('signed_by_name', document.getElementById('rep-signer-name').value.trim());
+      formData.append('attendee_roster', JSON.stringify(rosterList));
+
+      if (selectedAttendanceSheetFile) {
+        formData.append('attendance_sheet', selectedAttendanceSheetFile);
+      }
+
+      if (activeChapSigMode === 'upload' && uploadedChapSigFile) {
+        formData.append('signature_file', uploadedChapSigFile);
+      } else if (canvas && hasDrawnOnCanvas) {
+        formData.append('e_signature', canvas.toDataURL('image/png'));
+      }
 
       try {
-        const res = await YTR_API.reports.submit(payload);
+        const res = await YTR_API.reports.submit(formData);
         if (res.ok) {
-          alert('Report and attendee roster submitted successfully! National Admin has been notified.');
+          alert('Report, attendance sheet, and endorsement submitted successfully! National Admin has been notified.');
           document.getElementById('chapter-report-form').reset();
           closeSubmitReportModal();
           loadChapterReports();
@@ -789,7 +967,7 @@
         ? `<img src="${nationalExecSignature}" alt="Chief Executive Signature" style="max-height: 46px; max-width: 160px; object-fit: contain;">`
         : `<span style="font-size: 0.72rem; color: #64748b; font-style: italic;"><i class="ph ph-check-circle"></i> National Executive Approved</span>`;
       
-      const submitterSignatureHtml = (r.e_signature && r.e_signature.trim().length > 10)
+      const submitterSignatureHtml = (r.e_signature && r.e_signature.trim().length > 5)
         ? `<img src="${r.e_signature}" alt="Chapter Signature" style="max-height: 44px; max-width: 140px; object-fit: contain;">`
         : `<span style="font-size: 0.72rem; color: #16a34a; font-weight: 600;"><i class="ph ph-check-circle"></i> Digital Dossier Signed</span>`;
 
@@ -849,6 +1027,23 @@
             </div>
           </div>
         </div>
+
+        ${r.attendance_sheet_path ? `
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <div style="background: #dbeafe; color: #1d4ed8; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                <i class="ph ph-file-arrow-down"></i>
+              </div>
+              <div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: #1e3a8a;">Official Physical / Scanned Attendance Sheet Attached</div>
+                <div style="font-size: 0.72rem; color: #475569;">Verified attendance sign-in document archived with this report.</div>
+              </div>
+            </div>
+            <a href="${YTR_API.reports.getAttendanceSheetUrl(r.id)}" target="_blank" class="btn btn-outline btn-sm font-roboto print-no-print" style="background: #ffffff; color: #1e40af; border-color: #93c5fd; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem;">
+              <i class="ph ph-download-simple"></i> Download Sheet File
+            </a>
+          </div>
+        ` : ''}
 
         <div style="margin-bottom: 1.5rem;">
           <h4 style="margin: 0 0 0.5rem; color: #0f172a;">Executive Summary & Testimonies</h4>
