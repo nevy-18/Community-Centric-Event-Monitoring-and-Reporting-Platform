@@ -4,6 +4,8 @@
 # Uploads & Temp files
 upload/*
 !upload/.gitkeep
+assets/uploads/*
+!assets/uploads/**/.gitkeep
 
 # Operating System files
 Thumbs.db

@@ -135,10 +135,14 @@ const YTR_API = {
       return YTR_API.request(`/proposals/${id}`);
     },
     create(data) {
+      const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
       return YTR_API.request('/proposals', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: isFormData ? data : JSON.stringify(data)
       });
+    },
+    getAttachmentUrl(id) {
+      return `${YTR_API.baseUrl}/proposals/${id}/attachment`;
     },
     review(id, status, review_note) {
       return YTR_API.request(`/proposals/${id}/review`, {

@@ -43,6 +43,46 @@
     .modal-body {
       padding: 1.5rem;
     }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #proposalDossierModal, #proposalDossierModal .modal-box, #proposalDossierModal .modal-body, #printableProposalDossier, #printableProposalDossier * {
+        visibility: visible !important;
+      }
+      #proposalDossierModal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+        box-shadow: none !important;
+        z-index: 99999 !important;
+      }
+      #proposalDossierModal .modal-box {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #proposalDossierModal .modal-header,
+      #proposalDossierModal .print-action-bar,
+      #proposalDossierModal .print-status-banner,
+      #proposalDossierModal button {
+        display: none !important;
+      }
+      .print-document-sheet {
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -251,10 +291,13 @@
                   </div>
 
                   <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-paperclip"></i> Attached Proposal Document</label>
-                    <a href="#" onclick="alert('Proposal PDF file download started.'); return false;" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #2563eb; text-decoration: none; font-weight: bold;">
-                      <i class="ph ph-file-pdf" style="font-size: 1.15rem; color: #ef4444;"></i> Download Event_Proposal_2026.pdf
-                    </a>
+                    <label class="font-roboto"><i class="ph-fill ph-file-text"></i> Event Proposal Soft Copy &amp; Dossier</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 4px;">
+                      <button type="button" class="btn btn-primary btn-sm font-roboto" id="btnOpenProposalDossier" onclick="openProposalDossier(activeProposalId)" style="background: #1e3a8a; border-color: #172554; display: flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.5rem 0.75rem; width: 100%; text-decoration: none;">
+                        <i class="ph-bold ph-printer"></i> View &amp; Download Soft Copy (Dossier PDF)
+                      </button>
+                      <div id="detailProposalAttachmentContainer"></div>
+                    </div>
                   </div>
 
                   <!-- Decision Actions -->
@@ -293,10 +336,169 @@
         </div>
 
       </main>
+  <!-- PROPOSAL DOSSIER & SOFT COPY MODAL -->
+  <div id="proposalDossierModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box" style="max-width: 820px;">
+      <div class="modal-header">
+        <h3 class="font-roboto" style="font-size: 1.1rem; color: #0f172a; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+          <i class="ph-bold ph-file-text" style="color: #2563eb;"></i> Official Event Proposal Dossier (Soft Copy)
+        </h3>
+        <button type="button" onclick="closeProposalDossierModal()" style="background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer;"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Notice toolbar -->
+        <div class="print-status-banner" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 1rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: #dbeafe; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
+              <i class="ph-bold ph-download-simple"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #1e40af;">
+                Official Proposal Soft Copy Ready for Download
+              </div>
+              <div style="font-size: 0.72rem; color: #475569;">
+                Save this complete dossier as PDF via browser print, or download any uploaded chapter attachment below.
+              </div>
+            </div>
+          </div>
+          <div id="dossierAttachmentDownloadBtnContainer"></div>
+        </div>
+
+        <!-- Printable Document Sheet -->
+        <div id="printableProposalDossier" class="print-document-sheet" style="background: #ffffff; padding: 2rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Roboto', sans-serif;">
+          
+          <!-- Official Letterhead Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px double #1a2f63; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <h2 style="font-size: 1.35rem; font-weight: 900; color: #1a2f63; margin: 0; text-transform: uppercase; letter-spacing: 0.04em;">YOUTH ON THE ROCK NATIONAL MOVEMENT</h2>
+              <p style="font-size: 0.8rem; color: #475569; margin: 3px 0 0; text-transform: uppercase; font-weight: 700;">Community-Centric Event Monitoring &amp; Reporting Platform</p>
+              <p style="font-size: 0.75rem; color: #64748b; margin: 1px 0 0;">Official Chapter Event Proposal Dossier &amp; Executive Clearance Record</p>
+            </div>
+            <div style="text-align: right;">
+              <span id="dossierRefCode" style="display: inline-block; padding: 4px 10px; background: #eff6ff; color: #1e3a8a; font-weight: 800; font-size: 0.78rem; border-radius: 4px; border: 1px solid #bfdbfe;">
+                PROP #YTR-2026-0001
+              </span>
+              <p id="dossierSubmissionDate" style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">Submitted: Oct 14, 2026</p>
+            </div>
+          </div>
+
+          <!-- Section 1: Event Information Matrix -->
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #1a2f63; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.03em;">
+            1. Event Specifications &amp; Classifications
+          </h4>
+          <table style="width: 100%; border: 1px solid #cbd5e1; margin-bottom: 1.25rem; border-collapse: collapse; font-size: 0.825rem;">
+            <tbody>
+              <tr style="background: #f8fafc;">
+                <td style="padding: 7px 12px; font-weight: bold; width: 25%; border: 1px solid #cbd5e1; color: #334155;">Event Title</td>
+                <td id="dossierTitle" style="padding: 7px 12px; font-weight: 800; color: #1a2f63; font-size: 0.9rem; border: 1px solid #cbd5e1;">-</td>
+              </tr>
+              <tr>
+                <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">YTR Program Pillar</td>
+                <td id="dossierProgram" style="padding: 7px 12px; font-weight: 700; color: #1e40af; border: 1px solid #cbd5e1;">-</td>
+              </tr>
+              <tr style="background: #f8fafc;">
+                <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Host Chapter</td>
+                <td id="dossierChapter" style="padding: 7px 12px; font-weight: 700; border: 1px solid #cbd5e1;">-</td>
+              </tr>
+              <tr>
+                <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Event Classification</td>
+                <td id="dossierEventType" style="padding: 7px 12px; border: 1px solid #cbd5e1; text-transform: capitalize;">-</td>
+              </tr>
+              <tr style="background: #f8fafc;">
+                <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Schedule (Start - End)</td>
+                <td id="dossierSchedule" style="padding: 7px 12px; border: 1px solid #cbd5e1;">-</td>
+              </tr>
+              <tr>
+                <td style="padding: 7px 12px; font-weight: bold; border: 1px solid #cbd5e1; color: #334155;">Official Venue / Location</td>
+                <td id="dossierVenue" style="padding: 7px 12px; border: 1px solid #cbd5e1; font-weight: 600;">-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Section 2: Turnout Goal, Financial Allocation & Deadlines -->
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #1a2f63; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.03em;">
+            2. Attendance Thresholds &amp; Resource Allocation
+          </h4>
+          <table style="width: 100%; border: 1px solid #cbd5e1; margin-bottom: 1.25rem; text-align: center; border-collapse: collapse; font-size: 0.825rem;">
+            <thead>
+              <tr style="background: #1a2f63; color: #ffffff;">
+                <th style="padding: 7px; border: 1px solid #cbd5e1;">Target Attendance Turnout</th>
+                <th style="padding: 7px; border: 1px solid #cbd5e1;">Proposed Budget Request</th>
+                <th style="padding: 7px; border: 1px solid #cbd5e1;">Chapter Budget Ceiling</th>
+                <th style="padding: 7px; border: 1px solid #cbd5e1;">Post-Event Report Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="font-weight: bold;">
+                <td id="dossierTurnout" style="padding: 8px; border: 1px solid #cbd5e1; color: #1e40af; font-size: 0.9rem;">-</td>
+                <td id="dossierBudget" style="padding: 8px; border: 1px solid #cbd5e1; color: #0f172a; font-size: 0.9rem;">-</td>
+                <td id="dossierThreshold" style="padding: 8px; border: 1px solid #cbd5e1; color: #15803d; font-size: 0.9rem;">-</td>
+                <td id="dossierDueDate" style="padding: 8px; border: 1px solid #cbd5e1; color: #c2410c; font-size: 0.9rem;">-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Section 3: Event Concept & Program Outline -->
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #1a2f63; margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.03em;">
+            3. Program Concept, Objectives &amp; Ministry Scope
+          </h4>
+          <div id="dossierDescription" style="padding: 0.85rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.8rem; line-height: 1.6; color: #1e293b; white-space: pre-line; margin-bottom: 1.25rem;">
+            -
+          </div>
+
+          <!-- Section 4: Attached Soft Copy Reference -->
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: #1a2f63; margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.03em;">
+            4. Attached Submission Files &amp; Collaterals
+          </h4>
+          <div id="dossierAttachmentInfo" style="padding: 0.75rem 1rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 0.8rem; margin-bottom: 1.5rem;">
+            -
+          </div>
+
+          <!-- Section 5: Official Endorsements & Evaluation Block -->
+          <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
+            <!-- Prepared By -->
+            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 95px; text-align: left;">
+              <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+                Prepared &amp; Submitted by:
+              </div>
+              <div style="height: 38px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+                <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700;"><i class="ph ph-check-circle"></i> Digital Chapter Endorsement</span>
+              </div>
+              <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+              <p id="dossierSubmitterName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Chapter Coordinator</p>
+              <p id="dossierSubmitterTitle" style="font-size: 0.72rem; color: #475569; margin: 1px 0 0;">Chapter Administrator</p>
+              <p id="dossierSubmitterStamp" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Official Chapter Submission</p>
+            </div>
+
+            <!-- Evaluated By -->
+            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 95px; text-align: left;">
+              <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+                National Secretariat Evaluation:
+              </div>
+              <div style="height: 38px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+                <span id="dossierStatusBadge" class="badge approved font-roboto" style="font-size: 0.75rem; padding: 3px 8px;">
+                  APPROVED
+                </span>
+              </div>
+              <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+              <p id="dossierReviewerName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hamilton Jones Dela</p>
+              <p id="dossierReviewerTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
+              <p id="dossierReviewNotes" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Cleared for Chapter Execution</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-outline font-roboto" onclick="closeProposalDossierModal()">Close</button>
+          <button type="button" class="btn btn-primary font-roboto" onclick="window.print()" style="background: #1e3a8a; border-color: #172554;">
+            <i class="ph-bold ph-printer"></i> Print / Save as PDF (Soft Copy)
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-
-
 
   <script src="assets/api-client.js"></script>
   <!-- Interactive JavaScript Logic -->
@@ -304,6 +506,7 @@
     let activeProposalId = null;
     let currentStatus = 'all';
     let currentChapter = 'all';
+    let allProposalsData = [];
 
     // Load Metrics from Python backend
     async function loadProposalMetrics() {
@@ -357,6 +560,7 @@
 
       const res = await YTR_API.proposals.list(currentStatus, currentChapter, search);
       if (res.status === 'success' && Array.isArray(res.data)) {
+        allProposalsData = res.data;
         if (res.data.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;">No proposals match the selected filters.</td></tr>';
           return;
@@ -419,9 +623,14 @@
             </td>
             <td style="text-align: center;">${statusBadge}</td>
             <td style="text-align: center;">
-              <button class="btn btn-primary btn-sm font-roboto" style="margin: 0 auto;" onclick='selectProposalRecord(${JSON.stringify(p)})'>
-                <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
-              </button>
+              <div style="display: flex; gap: 0.35rem; justify-content: center; align-items: center;">
+                <button class="btn btn-primary btn-sm font-roboto" onclick='selectProposalRecord(${JSON.stringify(p)})'>
+                  <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
+                </button>
+                <button class="btn btn-outline btn-sm font-roboto" title="View &amp; Download Soft Copy (Dossier PDF)" onclick='openProposalDossier(${p.id})' style="padding: 0.4rem 0.55rem; color: #1e3a8a; border-color: #cbd5e1;">
+                  <i class="ph-bold ph-printer"></i>
+                </button>
+              </div>
             </td>
           `;
           tbody.appendChild(row);
@@ -503,6 +712,25 @@
       } else {
         budgetBadge.className = 'badge threshold-met font-roboto';
         budgetBadge.textContent = `₱${budgetAmt.toLocaleString()} / ₱${budgetCap.toLocaleString()} Cap (Passed)`;
+      }
+
+      // Populate attached file link in sidebar
+      const attBox = document.getElementById('detailProposalAttachmentContainer');
+      if (attBox) {
+        if (p.attachment_path) {
+          const fname = p.attachment_path.split('/').pop();
+          attBox.innerHTML = `
+            <a href="${p.attachment_path}" download class="btn btn-outline btn-sm font-roboto" style="display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.75rem; color: #166534; border-color: #86efac; background: #f0fdf4; text-decoration: none; padding: 0.4rem 0.65rem;">
+              <i class="ph-bold ph-paperclip"></i> Download Uploaded File (${escapeHtml(fname)})
+            </a>
+          `;
+        } else {
+          attBox.innerHTML = `
+            <span style="font-size: 0.72rem; color: #64748b; font-style: italic; display: block; text-align: center; margin-top: 2px;">
+              <i class="ph ph-info"></i> No external file attached. Use button above for full soft copy.
+            </span>
+          `;
+        }
       }
 
       // Dynamic Action & Tracking Panel:
@@ -628,6 +856,109 @@
         console.error('Proposal review error:', err);
         alert('Network error communicating with the Python API.');
       }
+    // Open Proposal Dossier / Soft Copy Modal
+    async function openProposalDossier(proposalId) {
+      const pid = proposalId || activeProposalId;
+      if (!pid) {
+        alert('Please select a proposal first.');
+        return;
+      }
+
+      let p = allProposalsData.find(item => item.id == pid);
+      if (!p) {
+        try {
+          const res = await YTR_API.proposals.getById(pid);
+          if (res.ok && res.data) p = res.data;
+        } catch(err) {
+          console.error('Error fetching proposal details:', err);
+        }
+      }
+
+      if (!p) {
+        alert('Could not load proposal details.');
+        return;
+      }
+
+      // Populate Dossier fields
+      document.getElementById('dossierRefCode').textContent = 'PROP #YTR-2026-' + String(p.id).padStart(4, '0');
+      document.getElementById('dossierSubmissionDate').textContent = 'Submitted: ' + (p.created_at ? p.created_at.substring(0, 10) : 'Recent');
+      document.getElementById('dossierTitle').textContent = p.title || 'Untitled Event';
+      document.getElementById('dossierProgram').textContent = p.ytr_program || 'Lead up (Youth Leadership)';
+      document.getElementById('dossierChapter').textContent = (p.chapter_name || 'All Chapters') + (p.chapter_code ? ` (${p.chapter_code})` : '') + (p.region ? ` • ${p.region}` : '');
+      document.getElementById('dossierEventType').textContent = ((p.event_type || 'chapter') + ' Event').toUpperCase();
+
+      const startStr = p.start_datetime ? p.start_datetime.substring(0, 16).replace('T', ' ') : 'TBD';
+      const endStr = p.end_datetime ? p.end_datetime.substring(0, 16).replace('T', ' ') : 'TBD';
+      document.getElementById('dossierSchedule').textContent = `${startStr} to ${endStr}`;
+      document.getElementById('dossierVenue').textContent = p.venue || 'TBD';
+
+      document.getElementById('dossierTurnout').textContent = (p.target_turnout || 100) + ' Attendees Goal';
+      document.getElementById('dossierBudget').textContent = 'PHP ' + Number(p.budget_amount || 0).toLocaleString();
+      document.getElementById('dossierThreshold').textContent = 'PHP ' + Number(p.budget_threshold || 25000).toLocaleString() + ' Cap';
+      document.getElementById('dossierDueDate').textContent = p.due_date || (p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD');
+      document.getElementById('dossierDescription').textContent = p.description || 'No description provided.';
+
+      // Attached file information
+      const attInfo = document.getElementById('dossierAttachmentInfo');
+      const bannerAttContainer = document.getElementById('dossierAttachmentDownloadBtnContainer');
+      if (p.attachment_path) {
+        const filename = p.attachment_path.split('/').pop();
+        attInfo.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <div style="font-weight: 700; color: #166534;"><i class="ph-bold ph-paperclip"></i> Attached Chapter Document: ${escapeHtml(filename)}</div>
+              <div style="font-size: 0.72rem; color: #475569; margin-top: 2px;">Official chapter proposal attachment soft copy.</div>
+            </div>
+            <a href="${p.attachment_path}" download class="btn btn-primary btn-sm font-roboto" style="background: #16a34a; border-color: #15803d; text-decoration: none; padding: 0.4rem 0.75rem;">
+              <i class="ph-bold ph-download-simple"></i> Download File
+            </a>
+          </div>
+        `;
+        bannerAttContainer.innerHTML = `
+          <a href="${p.attachment_path}" download class="btn btn-outline font-roboto btn-sm" style="background: #fff; font-size: 0.78rem; text-decoration: none; color: #16a34a; border-color: #86efac;">
+            <i class="ph ph-file-arrow-down"></i> Download Uploaded File
+          </a>
+        `;
+      } else {
+        attInfo.innerHTML = `
+          <div style="color: #475569; font-style: italic;">
+            <i class="ph ph-info"></i> No external document attached. This electronic dossier comprises the complete official proposal record.
+          </div>
+        `;
+        bannerAttContainer.innerHTML = '';
+      }
+
+      // Endorsements
+      document.getElementById('dossierSubmitterName').textContent = p.requester_name || 'Chapter Coordinator';
+      document.getElementById('dossierSubmitterTitle').textContent = p.requester_position || 'Chapter Administrator';
+      document.getElementById('dossierSubmitterStamp').textContent = 'Verified Chapter Submission';
+
+      const statusBadge = document.getElementById('dossierStatusBadge');
+      const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
+      const isPending = p.status === 'pending_approval';
+      if (isApproved) {
+        statusBadge.className = 'badge approved font-roboto';
+        statusBadge.textContent = 'OFFICIALLY APPROVED';
+      } else if (isPending) {
+        statusBadge.className = 'badge pending font-roboto';
+        statusBadge.textContent = 'PENDING NATIONAL REVIEW';
+      } else {
+        statusBadge.className = 'badge rose font-roboto';
+        statusBadge.textContent = 'REVISION REQUESTED';
+      }
+
+      document.getElementById('dossierReviewerName').textContent = p.reviewer_name || 'Hamilton Jones Dela';
+      document.getElementById('dossierReviewerTitle').textContent = p.reviewer_position || 'Chief Executive Operation';
+      document.getElementById('dossierReviewNotes').textContent = p.review_note ? `Note: "${p.review_note}"` : (isApproved ? 'Cleared for Chapter Execution' : 'Awaiting Review Outcome');
+
+      document.getElementById('proposalDossierModal').classList.add('open');
+      document.getElementById('proposalDossierModal').style.display = 'flex';
+    }
+
+    function closeProposalDossierModal() {
+      const modal = document.getElementById('proposalDossierModal');
+      modal.classList.remove('open');
+      modal.style.display = 'none';
     }
 
     function escapeHtml(str) {

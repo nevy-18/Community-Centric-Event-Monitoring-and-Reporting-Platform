@@ -1,7 +1,12 @@
-from flask import Blueprint, request, session
+import os
+import uuid
+from pathlib import Path
+from flask import Blueprint, request, session, send_file
 from backend.db import get_db, serialize_rows, serialize_row
 from backend.auth_helpers import api_response, api_error
 from datetime import datetime, date
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 proposals_bp = Blueprint('proposals', __name__, url_prefix='/api/proposals')
 
@@ -104,7 +109,7 @@ def list_proposals():
         SELECT e.id, e.chapter_id, e.title, e.description, e.event_type, e.ytr_program,
                e.start_datetime, e.end_datetime, e.venue, e.status,
                e.created_at, e.review_note, e.target_turnout, e.budget_amount,
-               e.budget_threshold, e.due_date, e.approved_at,
+               e.budget_threshold, e.due_date, e.approved_at, e.attachment_path,
                c.chapter_name, c.chapter_code,
                u.full_name AS requester_name
         FROM events e
@@ -147,9 +152,9 @@ def get_proposal(proposal_id):
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT e.*, c.chapter_name, c.chapter_code,
-                       u.full_name AS requester_name,
-                       r.full_name AS reviewer_name
+                SELECT e.*, c.chapter_name, c.chapter_code, c.region,
+                       u.full_name AS requester_name, u.email AS requester_email, u.position AS requester_position,
+                       r.full_name AS reviewer_name, r.position AS reviewer_position
                 FROM events e
                 LEFT JOIN chapters c ON c.id = e.chapter_id
                 LEFT JOIN users u ON u.id = e.created_by
@@ -166,6 +171,22 @@ def get_proposal(proposal_id):
     enriched = compute_proposal_badges(serialized)
 
     return api_response(enriched)
+
+@proposals_bp.route('/<int:proposal_id>/attachment', methods=['GET'])
+def download_proposal_attachment(proposal_id):
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, title, attachment_path FROM events WHERE id = %s", (proposal_id,))
+            ev = cur.fetchone()
+    if not ev or not ev.get('attachment_path'):
+        return api_error('No proposal attachment found for this event.', 404)
+
+    rel_path = ev['attachment_path'].lstrip('/\\')
+    file_path = os.path.join(PROJECT_ROOT, rel_path)
+    if not os.path.exists(file_path):
+        return api_error('Attached proposal file is missing on server.', 404)
+
+    return send_file(file_path, as_attachment=True)
 
 @proposals_bp.route('', methods=['POST'])
 def create_proposal():
@@ -186,6 +207,20 @@ def create_proposal():
 
     if not title or not start_date or not venue or not description:
         return api_error('Title, start date, venue, and description are required.', 400)
+
+    # Process uploaded attachment file if present
+    attachment_path = None
+    file = request.files.get('attachment') or request.files.get('proposal_file') or request.files.get('proposal_doc')
+    if file and file.filename != '':
+        ext = os.path.splitext(file.filename)[1].lower()
+        unique_fname = f"proposal_{uuid.uuid4().hex[:10]}{ext}"
+        target_dir = os.path.join(PROJECT_ROOT, 'assets', 'uploads', 'proposals')
+        os.makedirs(target_dir, exist_ok=True)
+        save_path = os.path.join(target_dir, unique_fname)
+        file.save(save_path)
+        attachment_path = f"assets/uploads/proposals/{unique_fname}"
+    elif data.get('attachment_path'):
+        attachment_path = data.get('attachment_path')
 
     def _format_dt(val, default_time='09:00:00'):
         if not val:
@@ -214,8 +249,8 @@ def create_proposal():
                 chapter_id = ch['id'] if ch else None
 
             cur.execute("""
-                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, status, created_by, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
+                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, attachment_path, status, created_by, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
             """, (
                 chapter_id,
                 title,
@@ -229,11 +264,12 @@ def create_proposal():
                 budget_amount,
                 budget_threshold,
                 due_date,
+                attachment_path,
                 created_by
             ))
             new_id = cur.lastrowid
 
-    return api_response({'event_id': new_id}, 'Event proposal submitted successfully and added to review queue!', 201)
+    return api_response({'event_id': new_id, 'attachment_path': attachment_path}, 'Event proposal submitted successfully and added to review queue!', 201)
 
 @proposals_bp.route('/<int:proposal_id>/review', methods=['POST'])
 def review_proposal(proposal_id):
