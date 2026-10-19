@@ -282,14 +282,23 @@
     const sidebarClose = document.getElementById('sidebar-close');
     const overlay = document.getElementById('mobile-overlay');
 
-    const toggleSidebar = () => {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
+    const toggleSidebar = (forceState) => {
+      if (!sidebar) return;
+      const willOpen = typeof forceState === 'boolean' ? forceState : !sidebar.classList.contains('open');
+      sidebar.classList.toggle('open', willOpen);
+      if (overlay) overlay.classList.toggle('open', willOpen);
+      document.body.classList.toggle('sidebar-mobile-open', willOpen);
     };
 
-    if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
-    if(sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
-    if(overlay) overlay.addEventListener('click', toggleSidebar);
+    if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', () => toggleSidebar());
+    if(sidebarClose) sidebarClose.addEventListener('click', () => toggleSidebar(false));
+    if(overlay) overlay.addEventListener('click', () => toggleSidebar(false));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+        toggleSidebar(false);
+      }
+    });
 
     // Close menus on outside click
     window.addEventListener('click', (e) => {

@@ -5,7 +5,7 @@
 
 <aside id="sidebar" class="sidebar">
   <!-- Mobile Close Button -->
-  <button id="sidebar-close" class="sidebar-close"><i class="ph ph-x"></i></button>
+  <button id="sidebar-close" class="sidebar-close" type="button" aria-label="Close navigation"><i class="ph ph-x"></i></button>
 
   <div class="sidebar-header">
     <img src="assets/images/LOGO.jpg" alt="YTR Logo" class="sidebar-logo">
