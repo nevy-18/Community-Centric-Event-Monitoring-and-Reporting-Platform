@@ -4,8 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YTR | Chapter Event Reports & Monitoring</title>
+  <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
   <link rel="stylesheet" href="assets/National.css">
   <style>
     /* Modal styles */
@@ -324,7 +327,7 @@
                     <label class="font-roboto"><i class="ph-fill ph-file-arrow-down"></i> Official Attendance Sheet</label>
                     <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 0.65rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
                       <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="ph ph-file-check" style="font-size: 1.25rem; color: #1e40af;"></i>
+                        <i class="ph-bold ph-file-text" style="font-size: 1.25rem; color: #1e40af;"></i>
                         <span style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a;">Signed Attendance Sheet</span>
                       </div>
                       <a id="detailAttendanceSheetBtn" href="#" target="_blank" class="btn btn-outline btn-sm font-roboto" style="background: #fff; font-size: 0.72rem; padding: 0.2rem 0.5rem; text-decoration: none; color: #1d4ed8; border-color: #93c5fd;">
@@ -635,7 +638,7 @@
 
           let statusBadge = isSubmitted 
             ? `<span class="badge approved font-roboto"><i class="ph ph-check-circle"></i> Submitted</span>` 
-            : `<span class="badge pending font-roboto">Pending Submission</span>`;
+            : `<span class="badge pending font-roboto"><i class="ph ph-clock"></i> Pending Submission</span>`;
 
           let sheetBadge = r.attendance_sheet_path
             ? `<div style="margin-top: 3px;"><a href="${YTR_API.reports.getAttendanceSheetUrl(r.report_id || r.id)}" target="_blank" class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.68rem; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Download Official Attendance Sheet"><i class="ph ph-file-arrow-down"></i> Sheet Attached</a></div>`
@@ -685,26 +688,55 @@
     // Select Report Record into Sidebar Overview
     function selectReportRecord(r) {
       selectedReportData = r;
-      document.getElementById('emptyReportState').style.display = 'none';
-      document.getElementById('activeReportContent').style.display = 'block';
+      const emptyState = document.getElementById('emptyReportState');
+      const activeContent = document.getElementById('activeReportContent');
+      if (emptyState) emptyState.style.display = 'none';
+      if (activeContent) activeContent.style.display = 'block';
 
-      document.getElementById('detailReportEventTitle').textContent = r.event_title;
-      document.getElementById('detailReportChapter').textContent = r.chapter_name || 'National Secretariat';
-      document.getElementById('detailReportSchedule').textContent = (r.start_datetime ? r.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (r.venue || 'TBD');
+      const titleEl = document.getElementById('detailEventTitle');
+      if (titleEl) titleEl.textContent = r.event_title || 'Event Report';
+
+      const chapterEl = document.getElementById('detailChapterName');
+      if (chapterEl) chapterEl.textContent = r.chapter_name || 'National Secretariat';
+
+      const scheduleEl = document.getElementById('detailDateVenue');
+      if (scheduleEl) scheduleEl.textContent = (r.start_datetime ? r.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (r.venue || 'TBD');
       
       const total = r.total_participants || 0;
       const target = r.target_turnout || 100;
-      const percent = r.turnout_percentage || 0;
+      const percent = r.turnout_percentage || (target > 0 ? Math.round((total / target) * 100) : 100);
 
-      document.getElementById('detailReportTurnoutFraction').textContent = `${total} / ${target}`;
-      document.getElementById('detailReportTurnoutFill').style.width = `${Math.min(percent, 100)}%`;
-      document.getElementById('detailReportTurnoutBadge').textContent = `${percent}% Performance`;
-      document.getElementById('detailReportBudgetSpent').textContent = `₱${Number(r.budget_spent || 0).toLocaleString()} Spent`;
+      const turnoutBadge = document.getElementById('detailTurnoutBadge');
+      if (turnoutBadge) {
+        turnoutBadge.textContent = `${percent}% Target`;
+        turnoutBadge.className = `badge font-roboto ${percent >= 100 ? 'threshold-met' : 'threshold-warn'}`;
+      }
 
-      document.getElementById('detailFirstTimersCount').textContent = r.first_timers || 0;
-      document.getElementById('detailMembersCount').textContent = r.existing_members || 0;
-      document.getElementById('detailLeadersCount').textContent = r.youth_leaders_count || 0;
-      document.getElementById('detailReportSummary').textContent = r.report_summary || 'No summary notes submitted yet.';
+      const progressBar = document.getElementById('detailTurnoutProgressBar');
+      if (progressBar) {
+        progressBar.style.width = `${Math.min(percent, 100)}%`;
+        progressBar.className = `threshold-fill ${percent >= 100 ? 'met' : 'warn'}`;
+      }
+
+      const turnoutText = document.getElementById('detailTurnoutText');
+      if (turnoutText) {
+        turnoutText.textContent = `${total} attendees out of ${target} target.`;
+      }
+
+      const totalEl = document.getElementById('detailTotal');
+      if (totalEl) totalEl.textContent = total;
+
+      const firstTimersEl = document.getElementById('detailFirstTimers');
+      if (firstTimersEl) firstTimersEl.textContent = r.first_timers || 0;
+
+      const membersEl = document.getElementById('detailMembers');
+      if (membersEl) membersEl.textContent = r.existing_members || 0;
+
+      const leadersEl = document.getElementById('detailLeaders');
+      if (leadersEl) leadersEl.textContent = r.youth_leaders_count || 0;
+
+      const notesEl = document.getElementById('detailNotes');
+      if (notesEl) notesEl.textContent = r.report_summary || 'No summary notes submitted yet.';
 
       // Submitter Information
       const signerNameP = document.getElementById('detailSignedByName');
@@ -712,17 +744,21 @@
       const vBadge = document.getElementById('detailVerificationBadge');
 
       if (r.submitted_at || r.total_participants) {
-        signerNameP.textContent = r.signed_by_name || 'Chapter Administrator';
-        signedDateP.textContent = 'Submitted on ' + (r.signed_at || r.submitted_at || 'Recently');
-        vBadge.style.display = 'inline-flex';
-        vBadge.className = 'badge approved font-roboto';
-        vBadge.innerHTML = '<i class="ph ph-shield-check"></i> Verified Chapter Dossier';
+        if (signerNameP) signerNameP.textContent = r.signed_by_name || 'Chapter Administrator';
+        if (signedDateP) signedDateP.textContent = 'Submitted on ' + (r.signed_at || r.submitted_at || 'Recently');
+        if (vBadge) {
+          vBadge.style.display = 'inline-flex';
+          vBadge.className = 'badge approved font-roboto';
+          vBadge.innerHTML = '<i class="ph ph-shield-check"></i> Verified Chapter Dossier';
+        }
       } else {
-        signerNameP.textContent = 'Pending Submission';
-        signedDateP.textContent = 'Awaiting chapter submission';
-        vBadge.style.display = 'inline-flex';
-        vBadge.className = 'badge pending font-roboto';
-        vBadge.innerHTML = '<i class="ph ph-clock"></i> Awaiting Dossier';
+        if (signerNameP) signerNameP.textContent = 'Pending Submission';
+        if (signedDateP) signedDateP.textContent = 'Awaiting chapter submission';
+        if (vBadge) {
+          vBadge.style.display = 'inline-flex';
+          vBadge.className = 'badge pending font-roboto';
+          vBadge.innerHTML = '<i class="ph ph-clock"></i> Awaiting Dossier';
+        }
       }
 
       // Sidebar Attendance Sheet Download Link

@@ -7,6 +7,9 @@
   
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
   
   <!-- Centralized CSS -->
   <link rel="stylesheet" href="assets/Chapter.css">
@@ -92,7 +95,7 @@
         <!-- 1. Metric Cards Row -->
         <div class="metrics-grid">
           <div class="metric-card">
-            <div class="metric-icon green"><i class="ph-fill ph-file-check"></i></div>
+            <div class="metric-icon green"><i class="ph-fill ph-files"></i></div>
             <div>
               <h5 class="metric-title font-roboto">Reports Submitted</h5>
               <p class="metric-value font-roboto" id="metric-reports-count">0</p>
@@ -290,7 +293,7 @@
                 <small style="color: #64748b; font-size: 0.72rem;">PDF, Excel (.xlsx/.csv), Word, or scanned photo of physical attendance sheet (Max 25MB)</small>
               </div>
               <div id="att-sheet-selected-msg" style="display: none; align-items: center; justify-content: center; gap: 0.5rem;">
-                <i class="ph ph-file-check" style="font-size: 1.4rem; color: #16a34a;"></i>
+                <i class="ph-bold ph-file-text" style="font-size: 1.4rem; color: #16a34a;"></i>
                 <span id="att-sheet-filename" style="font-size: 0.85rem; font-weight: 700; color: #0f172a;"></span>
                 <button type="button" onclick="clearAttendanceSheet(event)" style="background: none; border: none; color: #ef4444; font-size: 0.9rem; cursor: pointer; padding: 2px 6px;" title="Remove file"><i class="ph ph-x-circle"></i> Remove</button>
               </div>

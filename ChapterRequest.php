@@ -219,7 +219,7 @@
                         <input type="file" id="np-reference-poster" accept="image/*,application/pdf" onchange="handleNewPosterFile(this)">
                     </div>
                     <div id="np-file-display" style="display:none; margin-top: 0.4rem; font-size: 0.78rem; color: #16a34a; font-weight: 600;">
-                        <i class="ph-fill ph-file-check"></i> <span id="np-file-name"></span>
+                        <i class="ph-fill ph-check-circle"></i> <span id="np-file-name"></span>
                     </div>
                 </div>
 
@@ -355,7 +355,7 @@
                                     <input type="file" id="ch-video-file" accept="video/mp4,video/*" onchange="handleChapterVideoSelected(this)">
                                 </div>
                                 <div id="ch-video-display" style="display:none; margin-top: 0.35rem; font-size: 0.8125rem; color: #16a34a; font-weight: 600;">
-                                    <i class="ph-fill ph-file-check"></i> <span id="ch-video-name"></span>
+                                    <i class="ph-fill ph-check-circle"></i> <span id="ch-video-name"></span>
                                 </div>
 
                                 <div style="margin: 0.55rem 0;">
@@ -443,7 +443,7 @@
                                         <input type="file" id="doc-proof-file" accept="image/*,application/pdf" onchange="handleDocFileSelected(this)">
                                     </div>
                                     <div id="doc-file-display" style="display:none; margin-top: 0.35rem; font-size: 0.8125rem; color: #16a34a; font-weight: 600;">
-                                        <i class="ph-fill ph-file-check"></i> <span id="doc-file-name"></span>
+                                        <i class="ph-fill ph-check-circle"></i> <span id="doc-file-name"></span>
                                     </div>
                                 </div>
 

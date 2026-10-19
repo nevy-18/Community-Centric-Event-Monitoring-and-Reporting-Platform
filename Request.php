@@ -305,7 +305,7 @@
                                 <input type="file" id="verif-poster-file" accept="image/*" onchange="handleVerifPosterChange(this)">
                             </div>
                             <div id="verif-file-display" style="display: none; margin-top: 0.45rem; font-size: 0.78rem; color: #16a34a; font-weight: 600;">
-                                <i class="ph-fill ph-file-check"></i> <span id="verif-file-name"></span>
+                                <i class="ph-fill ph-check-circle"></i> <span id="verif-file-name"></span>
                             </div>
                         </div>
                     </div>
@@ -459,7 +459,7 @@
                                     <input type="file" id="ctl-proof-file" accept="image/*,video/mp4,application/pdf" onchange="handleProofFileChange(this)">
                                 </div>
                                 <div id="ctl-file-name-display" style="display: none; margin-top: 0.35rem; font-size: 0.8125rem; color: #16a34a; font-weight: 600;">
-                                    <i class="ph-fill ph-file-check"></i> <span id="ctl-file-name-text"></span>
+                                    <i class="ph-fill ph-check-circle"></i> <span id="ctl-file-name-text"></span>
                                 </div>
                                 <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.75rem; color: #475569; margin-top: 0.45rem; cursor: pointer;">
                                     <input type="checkbox" id="ctl-is-final-poster" checked style="width: 0.95rem; height: 0.95rem; accent-color: #2563eb;"> Set as official poster for Chapter download
