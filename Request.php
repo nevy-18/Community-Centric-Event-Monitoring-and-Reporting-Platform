@@ -1007,25 +1007,25 @@
                         }
 
                         auditDetails.innerHTML = `
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: clamp(0.95rem, 0.85rem + 0.3vw, 1.35rem); margin-bottom: 0.85rem; font-size: clamp(0.95rem, 0.88rem + 0.25vw, 1.18rem);">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem;">
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 0.85rem; margin-bottom: 0.65rem; font-size: clamp(0.92rem, 0.85rem + 0.2vw, 1.12rem);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
                                     <strong>Conducted Status:</strong>
                                     <span>${req.is_event_conducted ? '<span style="color:#16a34a; font-weight:700;"><i class="ph-bold ph-check"></i> Conducted (' + escapeHtml(conductedDateStr) + ')</span>' : '<span style="color:#64748b;">Not confirmed yet</span>'}</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
                                     <strong>Total Attendees:</strong>
                                     <span style="font-weight:700; color: #0f172a;">${req.attendees_count !== null && req.attendees_count !== undefined ? req.attendees_count : '--'}</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
                                     <strong>First-Timers:</strong>
                                     <span style="font-weight:600; color: #475569;">${req.first_timers_count !== null && req.first_timers_count !== undefined ? req.first_timers_count : '--'}</span>
                                 </div>
-                                <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #e2e8f0;">
-                                    <strong style="display: block; margin-bottom: 0.35rem;">Summary & Highlights:</strong>
-                                    <p style="margin: 0; color: #475569; font-size: clamp(0.92rem, 0.85rem + 0.2vw, 1.12rem); line-height: 1.6;">${escapeHtml(req.report_summary || 'No summary submitted yet.')}</p>
+                                <div style="margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px dashed #e2e8f0;">
+                                    <strong style="display: block; margin-bottom: 0.25rem;">Summary & Highlights:</strong>
+                                    <p style="margin: 0; color: #475569; font-size: clamp(0.9rem, 0.84rem + 0.15vw, 1.05rem); line-height: 1.5;">${escapeHtml(req.report_summary || 'No summary submitted yet.')}</p>
                                 </div>
-                                <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #e2e8f0;">
-                                    <strong style="display: block; margin-bottom: 0.35rem;">Photos / Attendance Sheet:</strong>
+                                <div style="margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px dashed #e2e8f0;">
+                                    <strong style="display: block; margin-bottom: 0.25rem;">Photos / Attendance Sheet:</strong>
                                     <div>${proofDownloadHtml}</div>
                                 </div>
                             </div>
