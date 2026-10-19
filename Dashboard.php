@@ -31,14 +31,6 @@
             <h1 class="font-roboto">Chapter Overview</h1>
             <p style="color: var(--text-muted); margin-top: 0.25rem;">Monitor real-time chapter metrics, compliance status, and active reporting streams across all branches.</p>
           </div>
-          <div style="display: flex; gap: 0.5rem;">
-            <a href="Proposal.php" class="btn btn-primary" style="text-decoration: none;">
-              <i class="ph ph-calendar-plus"></i> View Proposals
-            </a>
-            <a href="Report.php" class="btn btn-outline" style="text-decoration: none;">
-              <i class="ph ph-file-text"></i> View Reports
-            </a>
-          </div>
         </div>
 
         <!-- Pending Review Visual Banner -->
@@ -50,9 +42,6 @@
               <p style="margin: 0; color: #b45309; font-size: 0.85rem;" id="dash-alert-text">You have pending reports awaiting submission or review.</p>
             </div>
           </div>
-          <a href="Report.php" class="btn btn-primary" style="background: #d97706; border-color: #b45309; padding: 0.4rem 0.85rem; font-size: 0.825rem; text-decoration: none;">
-            Resolve Reports
-          </a>
         </div>
 
         <!-- Four Responsive Metric Cards -->

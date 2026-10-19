@@ -42,13 +42,6 @@
                 <option value="1">Laguna Chapter (YTR-LAG)</option>
               </select>
             </div>
-            
-            <a href="ChapterProposal.php" class="btn btn-outline" style="text-decoration: none;">
-              <i class="ph ph-file-plus"></i> Submit Proposal
-            </a>
-            <a href="ChapterReport.php" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; text-decoration: none;">
-              <i class="ph ph-file-arrow-up"></i> Submit Event Report
-            </a>
           </div>
         </div>
 
@@ -61,9 +54,6 @@
               <p style="margin: 0; color: #b45309; font-size: 0.85rem;" id="chapter-alert-text">You have completed events awaiting final attendance turnout submission and e-signature.</p>
             </div>
           </div>
-          <a href="ChapterReport.php" class="btn btn-primary" style="background: #d97706; border-color: #b45309; padding: 0.4rem 0.85rem; font-size: 0.825rem; text-decoration: none;">
-            Submit Report Now
-          </a>
         </div>
 
         <!-- Metric Cards Grid (Key Metrics & Pending Monitoring Status Cards) -->
@@ -191,30 +181,9 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN: Quick Action Cards & Live Announcements Feed -->
+          <!-- RIGHT COLUMN: Live Announcements Feed -->
           <div style="display: flex; flex-direction: column; gap: 1.5rem;">
             
-            <!-- Quick Action Shortcuts -->
-            <div style="background: #ffffff; border-radius: 10px; border: 1px solid #e2e8f0; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-              <h3 class="font-roboto" style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                <i class="ph-bold ph-lightning" style="color: #2563eb;"></i> Quick Chapter Actions
-              </h3>
-              <div style="display: flex; flex-direction: column; gap: 0.65rem;">
-                <a href="ChapterProposal.php" class="btn btn-outline" style="justify-content: flex-start; text-decoration: none; padding: 0.6rem 0.85rem; font-size: 0.85rem;">
-                  <i class="ph-fill ph-file-plus" style="color: #2563eb; font-size: 1.15rem;"></i>
-                  <span>1. Draft New Proposal</span>
-                </a>
-                <a href="ChapterRequest.php" class="btn btn-outline" style="justify-content: flex-start; text-decoration: none; padding: 0.6rem 0.85rem; font-size: 0.85rem;">
-                  <i class="ph-fill ph-image" style="color: #9333ea; font-size: 1.15rem;"></i>
-                  <span>2. Request Media Poster</span>
-                </a>
-                <a href="ChapterReport.php" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; justify-content: flex-start; text-decoration: none; padding: 0.6rem 0.85rem; font-size: 0.85rem;">
-                  <i class="ph-fill ph-file-arrow-up" style="color: #ffffff; font-size: 1.15rem;"></i>
-                  <span>3. Submit Post-Event Report</span>
-                </a>
-              </div>
-            </div>
-
             <!-- Announcements & Broadcasts Widget -->
             <div style="background: #ffffff; border-radius: 10px; border: 1px solid #e2e8f0; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
