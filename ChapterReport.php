@@ -11,6 +11,45 @@
   <!-- Centralized CSS -->
   <link rel="stylesheet" href="assets/Chapter.css">
   <script src="assets/api-client.js"></script>
+  <style>
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #print-modal, #print-modal *, #print-dossier-content, #print-dossier-content * {
+        visibility: visible !important;
+      }
+      #print-modal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+        box-shadow: none !important;
+        z-index: 99999 !important;
+      }
+      #print-modal > div {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .print-no-print,
+      #print-modal button {
+        display: none !important;
+      }
+      .printable-document {
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -254,13 +293,28 @@
           </div>
         </div>
 
-        <!-- Submitter Information Section (E-signature disabled for now) -->
+        <!-- Submitter Information Section with Signature Canvas Pad -->
         <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">
             <i class="ph ph-user-check"></i> Submitting Chapter Coordinator / Administrator Full Name *
           </label>
           <input type="text" id="rep-signer-name" required placeholder="e.g. Joan Dela Cruz (Chapter Admin)" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
           <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Official endorsement by authorized chapter personnel.</small>
+
+          <div style="margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <label style="font-size: 0.825rem; font-weight: 600; color: #1e293b; margin: 0;">
+                <i class="ph ph-pencil-line"></i> Submitter Signature (Sign on Pad)
+              </label>
+              <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="clearSignatureCanvas()" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">
+                <i class="ph ph-arrow-counter-clockwise"></i> Clear Pad
+              </button>
+            </div>
+            <div style="border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; padding: 2px;">
+              <canvas id="chapter-sig-canvas" width="600" height="130" style="width: 100%; height: 130px; display: block; cursor: crosshair; touch-action: none; border-radius: 4px;"></canvas>
+            </div>
+            <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Draw signature above using mouse, stylus, or touch screen.</small>
+          </div>
         </div>
 
         <!-- Form Actions -->
@@ -277,7 +331,7 @@
   <!-- MODAL: PRINT CHAPTER RECEIPT -->
   <div id="print-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1000; align-items: center; justify-content: center;">
     <div style="background: #ffffff; border-radius: 12px; max-width: 820px; width: 92%; max-height: 92vh; overflow-y: auto; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25);">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+      <div class="print-no-print" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
         <h3 class="font-roboto" style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700;">
           <i class="ph ph-printer"></i> Official Post-Event Evaluation Dossier
         </h3>
@@ -310,10 +364,14 @@
 
     // Signature Pad State
     let isDrawing = false;
+    let hasDrawnOnCanvas = false;
     let canvas, ctx;
+    let nationalExecSignature = null;
+    let nationalExecName = 'Hamilton Jones Dela';
 
     document.addEventListener('DOMContentLoaded', () => {
       initCanvas();
+      loadExecSignatories();
       loadChapterReports();
       loadUnreportedEvents();
 
@@ -329,6 +387,21 @@
         }, 600);
       }
     });
+
+    async function loadExecSignatories() {
+      try {
+        const res = await YTR_API.reports.getSignatories();
+        if (res.status === 'success' && res.data) {
+          nationalExecName = res.data.chief_executive_name || 'Hamilton Jones Dela';
+          if (res.data.chief_executive_signature) {
+            nationalExecSignature = res.data.chief_executive_signature;
+          }
+        }
+      } catch(e) {}
+      if (!nationalExecSignature) {
+        nationalExecSignature = localStorage.getItem('ytr_national_signature') || null;
+      }
+    }
 
     function initCanvas() {
       canvas = document.getElementById('chapter-sig-canvas');
@@ -352,6 +425,7 @@
       function startDraw(e) {
         e.preventDefault();
         isDrawing = true;
+        hasDrawnOnCanvas = true;
         const p = getPos(e);
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
@@ -382,6 +456,7 @@
     function clearSignatureCanvas() {
       if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasDrawnOnCanvas = false;
     }
 
     async function loadChapterReports() {
@@ -598,6 +673,7 @@
 
     function openSubmitReportModal() {
       document.getElementById('submit-report-modal').style.display = 'flex';
+      clearSignatureCanvas();
       if (currentUser && currentUser.full_name) {
         const signerInput = document.getElementById('rep-signer-name');
         if (signerInput && !signerInput.value) {
@@ -641,7 +717,7 @@
         challenges: document.getElementById('rep-challenges').value.trim(),
         recommendations: document.getElementById('rep-recommendations').value.trim(),
         attendee_roster: JSON.stringify(rosterList),
-        e_signature: '',
+        e_signature: (canvas && hasDrawnOnCanvas) ? canvas.toDataURL('image/png') : '',
         signed_by_name: document.getElementById('rep-signer-name').value.trim()
       };
 
@@ -683,6 +759,19 @@
       try {
         if (r.attendee_roster) roster = JSON.parse(r.attendee_roster);
       } catch (e) {}
+
+      const regDirName = (r.regional_director_name && r.regional_director_name.trim().length > 0)
+        ? r.regional_director_name
+        : 'Elena Reyes';
+      const chapterLabel = r.chapter_name || 'Specific Chapter';
+      const execName = nationalExecName || 'Hamilton Jones Dela';
+      const execSignatureHtml = nationalExecSignature
+        ? `<img src="${nationalExecSignature}" alt="Chief Executive Signature" style="max-height: 46px; max-width: 160px; object-fit: contain;">`
+        : `<span style="font-size: 0.72rem; color: #64748b; font-style: italic;"><i class="ph ph-check-circle"></i> National Executive Approved</span>`;
+      
+      const submitterSignatureHtml = (r.e_signature && r.e_signature.trim().length > 10)
+        ? `<img src="${r.e_signature}" alt="Chapter Signature" style="max-height: 44px; max-width: 140px; object-fit: contain;">`
+        : `<span style="font-size: 0.72rem; color: #16a34a; font-weight: 600;"><i class="ph ph-check-circle"></i> Digital Dossier Signed</span>`;
 
       const container = document.getElementById('print-dossier-content');
       container.innerHTML = `
@@ -766,17 +855,51 @@
           </div>
         ` : ''}
 
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
-          <div>
-            <div style="font-size: 0.8rem; color: #64748b;">Authenticated Chapter Submission</div>
-            <div style="font-size: 0.75rem; color: #94a3b8;">YTR Verified Audit Record · ${r.signed_at || r.submitted_at || 'Verified'}</div>
-          </div>
-          <div style="text-align: center;">
-            <div style="border-top: 2px solid #0f172a; width: 220px; padding-top: 0.4rem; font-weight: 700; font-size: 0.9rem;">
-              ${escapeHtml(r.signed_by_name || 'Chapter Administrator')}
+        <!-- 3-Tier Official Digital Signatures & Certifications -->
+        <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
+          
+          <!-- 1. PREPARED BY (Chapter Submitter) -->
+          <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
+            <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+              Prepared &amp; Submitted by:
             </div>
-            <div style="font-size: 0.8rem; color: #64748b;">Chapter Administrator / Submitter</div>
+            <div style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+              ${submitterSignatureHtml}
+            </div>
+            <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+            <p style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">${escapeHtml(r.signed_by_name || 'Chapter Administrator')}</p>
+            <p style="font-size: 0.72rem; color: #475569; margin: 1px 0 0;">Chapter Administrator / Submitter</p>
+            <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Verified Chapter Submission</p>
           </div>
+
+          <!-- 2. ENDORSED BY (Regional Director of specific chapter) -->
+          <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
+            <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+              Verified &amp; Endorsed by:
+            </div>
+            <div style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+              <span style="font-size: 0.72rem; color: #2563eb; font-weight: 600;"><i class="ph ph-seal-check"></i> Regional Oversight Endorsement</span>
+            </div>
+            <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+            <p style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">${escapeHtml(regDirName)}</p>
+            <p style="font-size: 0.72rem; color: #475569; margin: 1px 0 0;">Regional Director</p>
+            <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Regional Director of ${escapeHtml(chapterLabel)}</p>
+          </div>
+
+          <!-- 3. APPROVED BY (Chief Executive Operation) -->
+          <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
+            <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+              Approved for National Records:
+            </div>
+            <div style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+              ${execSignatureHtml}
+            </div>
+            <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+            <p style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">${escapeHtml(execName)}</p>
+            <p style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
+            <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Youth on the Rock National Movement</p>
+          </div>
+
         </div>
       `;
     }

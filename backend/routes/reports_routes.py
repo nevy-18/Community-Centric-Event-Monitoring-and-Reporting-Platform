@@ -45,7 +45,8 @@ def list_reports():
                r.recommendations, r.status AS report_status, r.submitted_at,
                e.id AS event_id, e.title AS event_title, e.start_datetime, e.end_datetime,
                e.venue, e.status AS event_status, e.target_turnout, e.budget_amount,
-               c.chapter_name, c.chapter_code,
+               c.id AS chapter_id, c.chapter_name, c.chapter_code,
+               c.regional_director_name, c.regional_director_id,
                u.full_name AS submitted_by_name
         FROM events e
         LEFT JOIN event_reports r ON r.event_id = e.id
@@ -77,12 +78,42 @@ def list_reports():
 
     return api_response(enriched)
 
+@reports_bp.route('/signatories', methods=['GET'])
+def get_report_signatories():
+    """Returns official executive signatories including Chief Executive Operation and signature."""
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            # Fetch chief executive / national admin
+            cur.execute("""
+                SELECT id, full_name, email, role, position, signature_image
+                FROM users
+                WHERE role = 'national_admin' AND account_status = 'active'
+                ORDER BY CASE 
+                    WHEN position LIKE '%Chief%' OR position LIKE '%Operation%' THEN 0
+                    WHEN position LIKE '%Executive%' THEN 1
+                    ELSE 2 
+                END, id ASC
+                LIMIT 1
+            """)
+            exec_user = cur.fetchone()
+
+    exec_name = exec_user['full_name'] if exec_user else 'Hamilton Jones Dela'
+    exec_pos = 'Chief Executive Operation'
+    exec_sig = exec_user.get('signature_image') if exec_user else None
+
+    return api_response({
+        'chief_executive_name': exec_name,
+        'chief_executive_title': exec_pos,
+        'chief_executive_signature': exec_sig
+    })
+
 @reports_bp.route('/<int:report_id>', methods=['GET'])
 def get_report(report_id):
     sql = """
         SELECT r.*, e.title AS event_title, e.start_datetime, e.end_datetime,
                e.venue, e.target_turnout, e.budget_amount,
                c.chapter_name, c.chapter_code,
+               c.regional_director_name, c.regional_director_id,
                u.full_name AS submitter_name
         FROM event_reports r
         JOIN events e ON e.id = r.event_id

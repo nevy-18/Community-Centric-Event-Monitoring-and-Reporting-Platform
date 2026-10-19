@@ -85,13 +85,14 @@
                 <button class="tab-btn active" onclick="switchAccountTab('pending', this)"><i class="ph ph-clock"></i> Pending Requests</button>
                 <button class="tab-btn" onclick="switchAccountTab('national_admins', this)"><i class="ph ph-shield-check"></i> National Admins</button>
                 <button class="tab-btn" onclick="switchAccountTab('chapter_admins', this)"><i class="ph ph-user-gear"></i> Chapter Admins</button>
+                <button class="tab-btn" onclick="switchAccountTab('chapter_directors', this)"><i class="ph ph-buildings"></i> Chapter Regional Directors</button>
                 <button class="tab-btn" onclick="switchAccountTab('disabled', this)"><i class="ph ph-prohibit"></i> Disabled</button>
               </div>
 
               <!-- Data Table -->
               <div class="table-responsive">
                 <table class="font-roboto">
-                  <thead>
+                  <thead id="accountsTableHead">
                     <tr>
                       <th>Applicant</th>
                       <th>Email</th>
@@ -183,6 +184,7 @@
                 <label class="form-label font-roboto">Specific Position / Title</label>
                 <select class="form-select font-roboto" id="assignPositionSelect">
                   <optgroup label="── NATIONAL POSITIONS ──" id="optGrpNational">
+                    <option value="Chief Executive Operation">Chief Executive Operation</option>
                     <option value="Executive Director">Executive Director</option>
                     <option value="Regional Director (National)">Regional Director (National)</option>
                     <option value="National Youth Officer">National Youth Officer</option>
@@ -215,6 +217,54 @@
           </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- ASSIGN REGIONAL DIRECTOR MODAL -->
+  <div id="assignDirectorModal" class="modal-overlay hidden" style="display: none;">
+    <div class="modal-md" style="max-width: 520px;">
+      <div class="modal-header-banner" style="background: #f0fdf4; border-bottom: 1px solid #bbf7d0;">
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <div style="background: #dcfce7; color: #16a34a; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-user-check"></i>
+          </div>
+          <div>
+            <h3 style="color: #166534; margin: 0; font-size: 1rem;">Assign Regional Director</h3>
+            <p style="color: #15803d; margin: 0; font-size: 0.75rem;">Designate official Regional Director for chapter report endorsement and print certification.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAssignDirectorModal()"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="modal-body-scroll" style="background: #ffffff; padding: 1.25rem;">
+        <input type="hidden" id="assignDirectorChapterId">
+        
+        <div style="margin-bottom: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+          <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Selected Chapter</div>
+          <div id="assignDirectorChapterTitle" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin-top: 0.2rem;">Laguna Chapter</div>
+          <div id="assignDirectorChapterRegion" style="font-size: 0.8rem; color: #475569;">Region IV-A · Laguna</div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label font-roboto" style="display: block; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.825rem;">Choose from Registered Officials or Enter Name</label>
+          <select id="quickSelectDirector" class="form-select font-roboto" onchange="onQuickSelectDirector(this.value)" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 0.65rem; font-size: 0.85rem;">
+            <option value="">── Choose registered leader or type name below ──</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label font-roboto" style="display: block; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.825rem;">Regional Director Full Name</label>
+          <input type="text" id="assignDirectorNameInput" class="form-control font-roboto" placeholder="e.g. Dr. Elena Reyes or Pastor Mark Bautista" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+          <small style="color: #64748b; font-size: 0.72rem; display: block; margin-top: 0.25rem;">This name will automatically appear on official post-event reports and print certifications for this chapter.</small>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.65rem;">
+          <button type="button" class="btn btn-outline font-roboto" onclick="closeAssignDirectorModal()">Cancel</button>
+          <button type="button" class="btn btn-primary font-roboto" id="btnSaveDirectorAssignment" onclick="saveDirectorAssignment()" style="background: #16a34a; border-color: #15803d;">
+            <i class="ph ph-check"></i> Save Assignment
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -341,13 +391,31 @@
       }
     }
 
+    let allAccountsCache = [];
+
     // Load and Render Accounts Table
     async function loadAccounts(filter = activeFilter) {
+      const thead = document.getElementById('accountsTableHead');
+      if (thead) {
+        thead.innerHTML = `
+          <tr>
+            <th>Applicant</th>
+            <th>Email</th>
+            <th>Chapter</th>
+            <th style="text-align: center;">Requested Role</th>
+            <th>Date Requested</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: center;">Actions</th>
+          </tr>
+        `;
+      }
+
       const tbody = document.getElementById('accountsTableBody');
       tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">Loading accounts...</td></tr>';
 
       const res = await YTR_API.accounts.list(filter);
       if (res.status === 'success' && Array.isArray(res.data)) {
+        allAccountsCache = res.data;
         if (res.data.length === 0) {
           tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">No accounts found for this filter.</td></tr>';
           return;
@@ -394,6 +462,135 @@
       }
     }
 
+    // Load and Render Chapter Regional Directors
+    async function loadChapterDirectors() {
+      const thead = document.getElementById('accountsTableHead');
+      const tbody = document.getElementById('accountsTableBody');
+      
+      if (thead) {
+        thead.innerHTML = `
+          <tr>
+            <th>Chapter Branch</th>
+            <th>Chapter Code</th>
+            <th>Region / Province</th>
+            <th>Assigned Regional Director</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: center;">Actions</th>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">Loading chapters and assigned directors...</td></tr>';
+
+      const res = await YTR_API.chapters.getAll();
+      if (res.status === 'success' && Array.isArray(res.data)) {
+        chaptersList = res.data;
+        if (res.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">No active chapters registered.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        res.data.forEach(ch => {
+          const row = document.createElement('tr');
+          const hasDirector = ch.regional_director_name && ch.regional_director_name.trim().length > 0;
+
+          row.innerHTML = `
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <div style="width: 32px; height: 32px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                  <i class="ph-fill ph-buildings"></i>
+                </div>
+                <strong class="font-roboto" style="color: #0f172a;">${escapeHtml(ch.chapter_name)}</strong>
+              </div>
+            </td>
+            <td><span class="badge font-roboto" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;">${escapeHtml(ch.chapter_code)}</span></td>
+            <td class="td-sub">${escapeHtml(ch.region || 'Region')} · ${escapeHtml(ch.province || '')}</td>
+            <td>
+              ${hasDirector 
+                ? `<div style="display: flex; align-items: center; gap: 0.4rem; color: #0f172a; font-weight: 700;">
+                     <i class="ph-fill ph-seal-check" style="color: #16a34a; font-size: 1.1rem;"></i>
+                     <span>${escapeHtml(ch.regional_director_name)}</span>
+                   </div>`
+                : `<span class="badge pending font-roboto"><i class="ph ph-clock"></i> Unassigned</span>`
+              }
+            </td>
+            <td style="text-align: center;"><span class="badge approved font-roboto">ACTIVE</span></td>
+            <td style="text-align: center;">
+              <button class="btn btn-outline font-roboto" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; margin: 0 auto; display: inline-flex; align-items: center; gap: 0.35rem;" onclick='openAssignDirectorModal(${JSON.stringify(ch)})'>
+                <i class="ph ph-pencil-simple"></i> Assign Director
+              </button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+    }
+
+    // Modal Handlers for Regional Director Assignment
+    function openAssignDirectorModal(ch) {
+      document.getElementById('assignDirectorChapterId').value = ch.id;
+      document.getElementById('assignDirectorChapterTitle').textContent = ch.chapter_name + ` (${ch.chapter_code})`;
+      document.getElementById('assignDirectorChapterRegion').textContent = `${ch.region || 'Region'} · ${ch.province || ''} · ${ch.city_municipality || ''}`;
+      document.getElementById('assignDirectorNameInput').value = ch.regional_director_name || '';
+
+      const quickSel = document.getElementById('quickSelectDirector');
+      quickSel.innerHTML = '<option value="">── Choose registered official or type name below ──</option>';
+      if (Array.isArray(allAccountsCache)) {
+        allAccountsCache.filter(u => u.account_status === 'active').forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u.full_name;
+          opt.textContent = `${u.full_name} (${u.position || u.role} · ${u.chapter_name || 'National HQ'})`;
+          quickSel.appendChild(opt);
+        });
+      }
+
+      const modal = document.getElementById('assignDirectorModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function onQuickSelectDirector(val) {
+      if (val) {
+        document.getElementById('assignDirectorNameInput').value = val;
+      }
+    }
+
+    function closeAssignDirectorModal() {
+      const modal = document.getElementById('assignDirectorModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+
+    async function saveDirectorAssignment() {
+      const chId = document.getElementById('assignDirectorChapterId').value;
+      const dirName = document.getElementById('assignDirectorNameInput').value.trim();
+      const btn = document.getElementById('btnSaveDirectorAssignment');
+
+      if (!dirName) {
+        alert('Please enter or select a Regional Director name.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+
+      try {
+        const res = await YTR_API.chapters.assignRegionalDirector(chId, dirName);
+        if (res.status === 'success' || res.ok) {
+          alert('Regional Director assigned successfully!');
+          closeAssignDirectorModal();
+          loadChapterDirectors();
+        } else {
+          alert(res.message || 'Error assigning Regional Director.');
+        }
+      } catch (err) {
+        alert('Network error communicating with Python API.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-check"></i> Save Assignment';
+      }
+    }
+
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
@@ -409,7 +606,11 @@
       activeFilter = filter;
       document.querySelectorAll('.tabs-container .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      loadAccounts(filter);
+      if (filter === 'chapter_directors') {
+        loadChapterDirectors();
+      } else {
+        loadAccounts(filter);
+      }
     }
 
     function syncRolePositionOptions(role) {

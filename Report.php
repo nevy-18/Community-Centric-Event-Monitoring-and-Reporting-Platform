@@ -62,11 +62,51 @@
     /* Print Preview Modal */
     .print-document-sheet {
       background: #ffffff;
-      padding: 2.5rem;
+      padding: 2.25rem;
       border-radius: 0.5rem;
       border: 1px solid #cbd5e1;
       color: #0f172a;
       font-family: 'Roboto', sans-serif;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printModal, #printModal .modal-box, #printModal .modal-body, #printableReportDocument, #printableReportDocument * {
+        visibility: visible !important;
+      }
+      #printModal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+        box-shadow: none !important;
+        z-index: 99999 !important;
+      }
+      #printModal .modal-box {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #printModal .modal-header,
+      #printModal .print-action-bar,
+      #printModal .print-status-banner,
+      #printModal button {
+        display: none !important;
+      }
+      .print-document-sheet {
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
     }
   </style>
 </head>
@@ -92,6 +132,9 @@
             </div>
           </div>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button type="button" class="btn btn-outline font-roboto" onclick="openSignatureManagerModal()" style="display: inline-flex; align-items: center; gap: 0.45rem; background: #ffffff;">
+              <i class="ph ph-signature"></i> Upload Executive Signature
+            </button>
             <a href="ChapterReport.php" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; text-decoration: none;" title="Open Chapter Submission Portal">
               <i class="ph ph-arrow-square-out"></i> Go to Chapter Submission View
             </a>
@@ -306,6 +349,29 @@
       </div>
 
       <div class="modal-body">
+        <!-- Executive Signature Status Toolbar -->
+        <div class="print-status-banner" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <div style="width: 32px; height: 32px; border-radius: 6px; background: #dbeafe; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+              <i class="ph-bold ph-signature"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #1e3a8a;">
+                Chief Executive Signature:
+                <span id="printSigStatusBadge" class="badge approved font-roboto" style="font-size: 0.7rem; margin-left: 0.4rem;">
+                  <i class="ph ph-check"></i> Loaded
+                </span>
+              </div>
+              <div style="font-size: 0.72rem; color: #475569;">Signatures will be placed automatically at the bottom with Chief Executive Operation and Regional Director.</div>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="btn btn-outline font-roboto btn-sm" onclick="openSignatureManagerModal()" style="background: #fff; font-size: 0.78rem;">
+              <i class="ph ph-upload-simple"></i> Upload / Update Signature
+            </button>
+          </div>
+        </div>
+
         <div id="printableReportDocument" class="print-document-sheet">
           <!-- Document Header with Official YTR Branding -->
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #1a2f63; padding-bottom: 1rem; margin-bottom: 1.5rem;">
@@ -373,17 +439,51 @@
             -
           </div>
 
-          <!-- Digital Signature & Certification Stamp -->
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2rem; padding-top: 1rem; border-top: 1px dashed #cbd5e1;">
-            <div style="font-size: 0.7rem; color: #64748b;">
-              <p>Certified Genuine and Approved by Chapter Leadership</p>
-              <p>Youth on the Rock National Secretariat Records</p>
+          <!-- 3-Tier Official Digital Signatures & Certifications -->
+          <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
+            
+            <!-- 1. PREPARED BY (Chapter Submitter) -->
+            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
+              <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+                Prepared &amp; Submitted by:
+              </div>
+              <div id="printSubmitterSigBox" style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+                <span style="font-size: 0.72rem; color: #16a34a; font-weight: 600;"><i class="ph ph-check-circle"></i> Digital Dossier Signed</span>
+              </div>
+              <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+              <p id="printSignerName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Signer Name</p>
+              <p id="printSignerTitle" style="font-size: 0.72rem; color: #475569; margin: 1px 0 0;">Chapter Administrator</p>
+              <p id="printSignerTimestamp" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Verified Chapter Submission</p>
             </div>
-            <div style="text-align: center; width: 220px;">
-              <div style="border-top: 2px solid #0f172a; width: 100%; margin: 1.5rem auto 4px;"></div>
-              <p id="printSignerName" style="font-size: 0.8rem; font-weight: bold; margin: 0; color: #0f172a;">Signer Name</p>
-              <p id="printSignerTimestamp" style="font-size: 0.65rem; color: #64748b; margin: 0;">Verified Submission</p>
+
+            <!-- 2. ENDORSED BY (Regional Director of specific chapter) -->
+            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
+              <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+                Verified &amp; Endorsed by:
+              </div>
+              <div id="printRegionalDirectorSigBox" style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+                <span style="font-size: 0.72rem; color: #2563eb; font-weight: 600;"><i class="ph ph-seal-check"></i> Regional Oversight Endorsement</span>
+              </div>
+              <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+              <p id="printRegionalDirectorName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Elena Reyes</p>
+              <p id="printRegionalDirectorTitle" style="font-size: 0.72rem; color: #475569; margin: 1px 0 0;">Regional Director</p>
+              <p id="printRegionalDirectorChapter" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Regional Director of Specific Chapter</p>
             </div>
+
+            <!-- 3. APPROVED BY (Chief Executive Operation) -->
+            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
+              <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
+                Approved for National Records:
+              </div>
+              <div id="printNationalSigBox" style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+                <!-- National Admin Uploaded Signature Placed Here -->
+              </div>
+              <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
+              <p id="printChiefExecName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hamilton Jones Dela</p>
+              <p id="printChiefExecTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
+              <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Youth on the Rock National Movement</p>
+            </div>
+
           </div>
         </div>
 
@@ -391,6 +491,79 @@
           <button type="button" class="btn btn-outline font-roboto" onclick="closePrintModal()">Close</button>
           <button type="button" class="btn btn-primary font-roboto" onclick="window.print()">
             <i class="ph ph-printer"></i> Print / Save as PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NATIONAL ADMIN SIGNATURE MODAL -->
+  <div id="signatureModal" class="modal-overlay hidden" style="display: none; z-index: 1050;">
+    <div class="modal-md" style="max-width: 520px;">
+      <div class="modal-header-banner" style="background: #eff6ff; border-bottom: 1px solid #bfdbfe;">
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <div style="background: #dbeafe; color: #2563eb; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-signature"></i>
+          </div>
+          <div>
+            <h3 style="color: #1e40af; margin: 0; font-size: 1rem;">National Administrator Signature</h3>
+            <p style="color: #3b82f6; margin: 0; font-size: 0.75rem;">Upload or draw your official signature for Chief Executive Operation reports endorsement.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeSignatureManagerModal()"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="modal-body-scroll" style="background: #ffffff; padding: 1.25rem;">
+        <!-- Signature Mode Switch -->
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+          <button type="button" id="tabUploadSig" class="btn btn-primary btn-sm font-roboto" onclick="switchSigMode('upload')">
+            <i class="ph ph-upload-simple"></i> Upload Image (PNG/JPG)
+          </button>
+          <button type="button" id="tabDrawSig" class="btn btn-outline btn-sm font-roboto" onclick="switchSigMode('draw')">
+            <i class="ph ph-pencil-line"></i> Draw Signature Pad
+          </button>
+        </div>
+
+        <!-- Mode 1: File Upload -->
+        <div id="sigUploadPanel">
+          <div class="proof-dropzone" style="padding: 1.25rem; text-align: center; border: 2px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: pointer; position: relative;">
+            <input type="file" id="sigFileInput" accept="image/png, image/jpeg, image/webp" onchange="handleSigFileSelect(event)" style="position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;">
+            <i class="ph-bold ph-cloud-arrow-up" style="font-size: 2rem; color: #2563eb;"></i>
+            <div style="font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-top: 0.35rem;">Click or drag signature image here</div>
+            <p style="font-size: 0.72rem; color: #64748b; margin: 0.15rem 0 0;">PNG with transparent background or clean white JPG recommended</p>
+          </div>
+        </div>
+
+        <!-- Mode 2: Draw Pad -->
+        <div id="sigDrawPanel" style="display: none;">
+          <div style="border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; padding: 4px; text-align: center;">
+            <canvas id="nationalSigCanvas" width="460" height="150" style="background: #ffffff; border-radius: 6px; cursor: crosshair; display: block; margin: 0 auto; max-width: 100%;"></canvas>
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 0.35rem;">
+            <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="clearNationalSigCanvas()" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">
+              <i class="ph ph-arrow-counter-clockwise"></i> Clear Canvas
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Preview Box -->
+        <div style="margin-top: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Active Signature Preview</div>
+          <div id="sigPreviewContainer" style="height: 70px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #0f172a; margin: 0.5rem 0 0.25rem;">
+            <span style="font-size: 0.75rem; color: #94a3b8; font-style: italic;">No signature loaded</span>
+          </div>
+          <div style="text-align: center; font-size: 0.8rem; font-weight: 800; color: #0f172a; margin-top: 2px;" id="sigPreviewName">
+            Hamilton Jones Dela
+          </div>
+          <div style="text-align: center; font-size: 0.72rem; color: #2563eb; font-weight: 700;">
+            Chief Executive Operation
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.65rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-outline font-roboto" onclick="closeSignatureManagerModal()">Close</button>
+          <button type="button" class="btn btn-primary font-roboto" id="btnSaveNationalSig" onclick="saveNationalSignature()" style="background: #2563eb; border-color: #1d4ed8;">
+            <i class="ph ph-check"></i> Save &amp; Apply Signature
           </button>
         </div>
       </div>
@@ -541,6 +714,221 @@
       reportSearchTimeout = setTimeout(loadReports, 300);
     }
 
+    let currentSignatories = {
+      chief_executive_name: 'Hamilton Jones Dela',
+      chief_executive_title: 'Chief Executive Operation',
+      chief_executive_signature: null
+    };
+
+    let activeSigMode = 'upload';
+    let natCanvas, natCtx, isNatDrawing = false;
+    let pendingSignatureBase64 = null;
+
+    // Load National Executive Signatories
+    async function loadSignatories() {
+      try {
+        const res = await YTR_API.reports.getSignatories();
+        if (res.status === 'success' && res.data) {
+          currentSignatories.chief_executive_name = res.data.chief_executive_name || 'Hamilton Jones Dela';
+          currentSignatories.chief_executive_title = res.data.chief_executive_title || 'Chief Executive Operation';
+          if (res.data.chief_executive_signature) {
+            currentSignatories.chief_executive_signature = res.data.chief_executive_signature;
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load signatories from API:', err);
+      }
+
+      // Check localStorage fallback
+      const cachedSig = localStorage.getItem('ytr_national_signature');
+      if (!currentSignatories.chief_executive_signature && cachedSig) {
+        currentSignatories.chief_executive_signature = cachedSig;
+      }
+
+      updateSignatureUI();
+    }
+
+    function updateSignatureUI() {
+      const container = document.getElementById('sigPreviewContainer');
+      const badge = document.getElementById('printSigStatusBadge');
+      const nameEl = document.getElementById('sigPreviewName');
+
+      if (nameEl) nameEl.textContent = currentSignatories.chief_executive_name;
+
+      if (currentSignatories.chief_executive_signature) {
+        if (container) {
+          container.innerHTML = `<img src="${currentSignatories.chief_executive_signature}" alt="National Signature" style="max-height: 60px; max-width: 220px; object-fit: contain;">`;
+        }
+        if (badge) {
+          badge.className = 'badge approved font-roboto';
+          badge.innerHTML = '<i class="ph ph-check"></i> Signature Attached';
+        }
+      } else {
+        if (container) {
+          container.innerHTML = '<span style="font-size: 0.75rem; color: #94a3b8; font-style: italic;">No signature loaded yet</span>';
+        }
+        if (badge) {
+          badge.className = 'badge pending font-roboto';
+          badge.innerHTML = '<i class="ph ph-clock"></i> No Signature Uploaded';
+        }
+      }
+    }
+
+    // Signature Manager Modal Handlers
+    function openSignatureManagerModal() {
+      const modal = document.getElementById('signatureModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      initNationalCanvas();
+      updateSignatureUI();
+    }
+
+    function closeSignatureManagerModal() {
+      const modal = document.getElementById('signatureModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      pendingSignatureBase64 = null;
+    }
+
+    function switchSigMode(mode) {
+      activeSigMode = mode;
+      const tabUpload = document.getElementById('tabUploadSig');
+      const tabDraw = document.getElementById('tabDrawSig');
+      const panelUpload = document.getElementById('sigUploadPanel');
+      const panelDraw = document.getElementById('sigDrawPanel');
+
+      if (mode === 'upload') {
+        tabUpload.className = 'btn btn-primary btn-sm font-roboto';
+        tabDraw.className = 'btn btn-outline btn-sm font-roboto';
+        panelUpload.style.display = 'block';
+        panelDraw.style.display = 'none';
+      } else {
+        tabUpload.className = 'btn btn-outline btn-sm font-roboto';
+        tabDraw.className = 'btn btn-primary btn-sm font-roboto';
+        panelUpload.style.display = 'none';
+        panelDraw.style.display = 'block';
+        initNationalCanvas();
+      }
+    }
+
+    function handleSigFileSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload a valid image file (PNG, JPG, or WEBP).');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        pendingSignatureBase64 = evt.target.result;
+        const container = document.getElementById('sigPreviewContainer');
+        container.innerHTML = `<img src="${pendingSignatureBase64}" alt="Uploaded Signature Preview" style="max-height: 60px; max-width: 220px; object-fit: contain;">`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function initNationalCanvas() {
+      natCanvas = document.getElementById('nationalSigCanvas');
+      if (!natCanvas) return;
+      natCtx = natCanvas.getContext('2d');
+      natCtx.strokeStyle = '#0f172a';
+      natCtx.lineWidth = 2.5;
+      natCtx.lineCap = 'round';
+      natCtx.lineJoin = 'round';
+
+      function getPos(e) {
+        const rect = natCanvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (natCanvas.width / rect.width),
+          y: (clientY - rect.top) * (natCanvas.height / rect.height)
+        };
+      }
+
+      function startDraw(e) {
+        isNatDrawing = true;
+        const pos = getPos(e);
+        natCtx.beginPath();
+        natCtx.moveTo(pos.x, pos.y);
+        e.preventDefault();
+      }
+
+      function moveDraw(e) {
+        if (!isNatDrawing) return;
+        const pos = getPos(e);
+        natCtx.lineTo(pos.x, pos.y);
+        natCtx.stroke();
+        e.preventDefault();
+      }
+
+      function stopDraw() {
+        if (!isNatDrawing) return;
+        isNatDrawing = false;
+        pendingSignatureBase64 = natCanvas.toDataURL('image/png');
+        const container = document.getElementById('sigPreviewContainer');
+        container.innerHTML = `<img src="${pendingSignatureBase64}" alt="Drawn Signature Preview" style="max-height: 60px; max-width: 220px; object-fit: contain;">`;
+      }
+
+      natCanvas.onmousedown = startDraw;
+      natCanvas.onmousemove = moveDraw;
+      window.addEventListener('mouseup', stopDraw);
+
+      natCanvas.ontouchstart = startDraw;
+      natCanvas.ontouchmove = moveDraw;
+      natCanvas.ontouchend = stopDraw;
+    }
+
+    function clearNationalSigCanvas() {
+      if (natCanvas && natCtx) {
+        natCtx.clearRect(0, 0, natCanvas.width, natCanvas.height);
+        pendingSignatureBase64 = null;
+        updateSignatureUI();
+      }
+    }
+
+    async function saveNationalSignature() {
+      const sigToSave = pendingSignatureBase64 || currentSignatories.chief_executive_signature;
+      if (!sigToSave) {
+        alert('Please upload an image or draw your signature on the pad before saving.');
+        return;
+      }
+
+      const btn = document.getElementById('btnSaveNationalSig');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+
+      try {
+        const res = await YTR_API.accounts.uploadSignature(sigToSave);
+        if (res.status === 'success' || res.ok) {
+          currentSignatories.chief_executive_signature = sigToSave;
+          localStorage.setItem('ytr_national_signature', sigToSave);
+          updateSignatureUI();
+          alert('National Administrator signature saved successfully! It will automatically appear on all official report print documents.');
+          closeSignatureManagerModal();
+
+          // Refresh print preview if currently open
+          if (document.getElementById('printModal').classList.contains('open')) {
+            openPrintPreview();
+          }
+        } else {
+          alert(res.message || 'Failed to save signature.');
+        }
+      } catch (err) {
+        // Fallback to localStorage if offline
+        currentSignatories.chief_executive_signature = sigToSave;
+        localStorage.setItem('ytr_national_signature', sigToSave);
+        updateSignatureUI();
+        alert('Signature cached locally. It will be placed on official report prints.');
+        closeSignatureManagerModal();
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-check"></i> Save &amp; Apply Signature';
+      }
+    }
+
     // Print Modal & Document Preview
     function openPrintPreview() {
       if (!selectedReportData) {
@@ -560,8 +948,44 @@
       document.getElementById('printThresholdRate').textContent = (r.turnout_percentage || 100) + '% Performance';
 
       document.getElementById('printSummaryText').textContent = r.report_summary || 'Activities successfully conducted with full chapter participation.';
+      
+      // 1. Submitter Signatory Block
       document.getElementById('printSignerName').textContent = r.signed_by_name || 'Chapter Administrator';
       document.getElementById('printSignerTimestamp').textContent = 'Verified on ' + (r.signed_at || r.submitted_at || new Date().toLocaleDateString());
+      const submitterSigBox = document.getElementById('printSubmitterSigBox');
+      if (r.e_signature && r.e_signature.trim().length > 10) {
+        submitterSigBox.innerHTML = `<img src="${r.e_signature}" alt="Chapter Signature" style="max-height: 44px; max-width: 140px; object-fit: contain;">`;
+      } else {
+        submitterSigBox.innerHTML = `<span style="font-size: 0.72rem; color: #16a34a; font-weight: 600;"><i class="ph ph-check-circle"></i> Digital Dossier Signed</span>`;
+      }
+
+      // 2. Regional Director of Specific Chapter Signatory Block
+      const regDirName = r.regional_director_name && r.regional_director_name.trim().length > 0 
+        ? r.regional_director_name 
+        : 'Elena Reyes';
+      document.getElementById('printRegionalDirectorName').textContent = regDirName;
+      document.getElementById('printRegionalDirectorTitle').textContent = 'Regional Director';
+      document.getElementById('printRegionalDirectorChapter').textContent = 'Regional Director of ' + (r.chapter_name || 'Specific Chapter');
+
+      // 3. Chief Executive Operation Signatory Block
+      document.getElementById('printChiefExecName').textContent = currentSignatories.chief_executive_name || 'Hamilton Jones Dela';
+      document.getElementById('printChiefExecTitle').textContent = currentSignatories.chief_executive_title || 'Chief Executive Operation';
+      
+      const natSigBox = document.getElementById('printNationalSigBox');
+      const sigStatusBadge = document.getElementById('printSigStatusBadge');
+      if (currentSignatories.chief_executive_signature) {
+        natSigBox.innerHTML = `<img src="${currentSignatories.chief_executive_signature}" alt="Chief Executive Signature" style="max-height: 46px; max-width: 160px; object-fit: contain;">`;
+        if (sigStatusBadge) {
+          sigStatusBadge.className = 'badge approved font-roboto';
+          sigStatusBadge.innerHTML = '<i class="ph ph-check"></i> Signature Attached';
+        }
+      } else {
+        natSigBox.innerHTML = `<span style="font-size: 0.72rem; color: #d97706; font-style: italic;"><i class="ph ph-warning"></i> Signature Pending Upload</span>`;
+        if (sigStatusBadge) {
+          sigStatusBadge.className = 'badge pending font-roboto';
+          sigStatusBadge.innerHTML = '<i class="ph ph-clock"></i> No Signature Uploaded';
+        }
+      }
 
       document.getElementById('printModal').classList.add('open');
     }
@@ -572,6 +996,7 @@
 
     // Initialize on DOM load
     window.addEventListener('DOMContentLoaded', () => {
+      loadSignatories();
       loadReportMetrics();
       loadReports();
     });

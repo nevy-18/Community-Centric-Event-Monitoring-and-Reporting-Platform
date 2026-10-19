@@ -18,20 +18,20 @@ def seed_database():
         with conn.cursor() as cur:
             # 1. Seed Chapters
             chapters = [
-                ('YTR-LAG', 'Laguna Chapter', 'Gen One', 'Region IV-A', 'Laguna', 'Los Baños'),
-                ('YTR-NCR', 'NCR Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Quezon City'),
-                ('YTR-CAV', 'Cavite Chapter', 'Gen One', 'Region IV-A', 'Cavite', 'Tagaytay'),
-                ('YTR-PAM', 'Pampanga Chapter', 'Gen Three', 'Region III', 'Pampanga', 'San Fernando'),
-                ('YTR-BAT', 'Batangas Chapter', 'Gen Two', 'Region IV-A', 'Batangas', 'Batangas City'),
-                ('YTR-UMAK', 'University of Makati Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Makati City'),
+                ('YTR-LAG', 'Laguna Chapter', 'Gen One', 'Region IV-A', 'Laguna', 'Los Baños', 'Elena Reyes'),
+                ('YTR-NCR', 'NCR Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Quezon City', 'Admin Host'),
+                ('YTR-CAV', 'Cavite Chapter', 'Gen One', 'Region IV-A', 'Cavite', 'Tagaytay', 'Elena Reyes'),
+                ('YTR-PAM', 'Pampanga Chapter', 'Gen Three', 'Region III', 'Pampanga', 'San Fernando', 'Carlos Santos'),
+                ('YTR-BAT', 'Batangas Chapter', 'Gen Two', 'Region IV-A', 'Batangas', 'Batangas City', 'Mateo Hernandez'),
+                ('YTR-UMAK', 'University of Makati Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Makati City', 'Admin Host'),
             ]
 
-            for code, name, gen, reg, prov, city in chapters:
+            for code, name, gen, reg, prov, city, rd in chapters:
                 cur.execute("""
-                    INSERT INTO chapters (chapter_code, chapter_name, generation_name, region, province, city_municipality, status)
-                    VALUES (%s, %s, %s, %s, %s, %s, 'active')
-                    ON DUPLICATE KEY UPDATE chapter_name = VALUES(chapter_name)
-                """, (code, name, gen, reg, prov, city))
+                    INSERT INTO chapters (chapter_code, chapter_name, generation_name, region, province, city_municipality, regional_director_name, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, 'active')
+                    ON DUPLICATE KEY UPDATE chapter_name = VALUES(chapter_name), regional_director_name = VALUES(regional_director_name)
+                """, (code, name, gen, reg, prov, city, rd))
 
             # Fetch Laguna ID
             cur.execute("SELECT id FROM chapters WHERE chapter_code = 'YTR-LAG'")

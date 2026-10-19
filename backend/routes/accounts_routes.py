@@ -134,3 +134,51 @@ def decline_account(user_id):
             """, (note, reviewer_id, user_id))
 
     return api_response({}, 'Account request has been declined.')
+
+@accounts_bp.route('/signature', methods=['GET', 'POST'])
+def handle_signature():
+    """Upload or retrieve national administrator signature image."""
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or request.form.to_dict() or {}
+        sig = data.get('signature_image', '').strip()
+        user_id = data.get('user_id') or session.get('user_id')
+
+        if not sig:
+            return api_error('Signature image data is required.', 400)
+
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                if not user_id:
+                    # Target primary national admin / chief executive
+                    cur.execute("SELECT id FROM users WHERE role = 'national_admin' ORDER BY id ASC LIMIT 1")
+                    row = cur.fetchone()
+                    user_id = row['id'] if row else 1
+
+                cur.execute("UPDATE users SET signature_image = %s WHERE id = %s", (sig, user_id))
+                cur.execute("SELECT id, full_name, role, position, signature_image FROM users WHERE id = %s", (user_id,))
+                updated_user = cur.fetchone()
+
+        return api_response(serialize_row(updated_user), 'National administrator signature saved successfully.')
+
+    # GET
+    user_id = request.args.get('user_id') or session.get('user_id')
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            if user_id:
+                cur.execute("SELECT id, full_name, role, position, signature_image FROM users WHERE id = %s", (user_id,))
+                user = cur.fetchone()
+            else:
+                # Find active national admin with a signature first
+                cur.execute("""
+                    SELECT id, full_name, role, position, signature_image
+                    FROM users
+                    WHERE role = 'national_admin' AND signature_image IS NOT NULL AND signature_image != ''
+                    LIMIT 1
+                """)
+                user = cur.fetchone()
+                if not user:
+                    cur.execute("SELECT id, full_name, role, position, signature_image FROM users WHERE role = 'national_admin' LIMIT 1")
+                    user = cur.fetchone()
+
+    return api_response(serialize_row(user) if user else {'signature_image': None})
+

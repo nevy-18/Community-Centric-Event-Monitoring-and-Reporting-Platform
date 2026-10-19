@@ -7,7 +7,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 EMAIL_REGEX = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 
-NATIONAL_ROLES = ['Executive Director', 'Regional Director (National)', 'National Youth Officer']
+NATIONAL_ROLES = ['Chief Executive Operation', 'Executive Director', 'Regional Director (National)', 'National Youth Officer']
 CHAPTER_ROLES = ['Chapter Coordinator', 'Chapter President', 'Regional Director (Chapter)']
 
 @auth_bp.route('/login', methods=['POST'])
@@ -26,7 +26,7 @@ def login():
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.role, u.position, u.account_status,
-                       c.chapter_name
+                       u.signature_image, c.chapter_name
                 FROM users u
                 LEFT JOIN chapters c ON c.id = u.chapter_id
                 WHERE LOWER(u.email) = %s
@@ -63,9 +63,10 @@ def login():
         'full_name': user['full_name'],
         'email': user['email'],
         'role': user['role'],
-        'position': user.get('position') or ('Executive Director' if user['role'] == 'national_admin' else 'Chapter Coordinator'),
+        'position': user.get('position') or ('Chief Executive Operation' if user['role'] == 'national_admin' else 'Chapter Coordinator'),
         'chapter_id': user['chapter_id'],
-        'chapter_name': user['chapter_name']
+        'chapter_name': user['chapter_name'],
+        'signature_image': user.get('signature_image')
     }
 
     redirect_url = 'ChapterDashboard.php' if user['role'] == 'chapter_admin' else 'Dashboard.php'
@@ -152,7 +153,7 @@ def get_current_user():
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
-                       c.chapter_name
+                       u.signature_image, c.chapter_name
                 FROM users u
                 LEFT JOIN chapters c ON c.id = u.chapter_id
                 WHERE u.id = %s

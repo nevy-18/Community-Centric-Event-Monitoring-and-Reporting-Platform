@@ -53,7 +53,8 @@ def list_chapters():
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, chapter_code, chapter_name, generation_name, region, province, city_municipality, status
+                SELECT id, chapter_code, chapter_name, generation_name, region, province, city_municipality, status,
+                       regional_director_id, regional_director_name
                 FROM chapters
                 WHERE status = 'active'
                 ORDER BY chapter_name ASC
@@ -61,6 +62,46 @@ def list_chapters():
             chapters = cur.fetchall()
 
     return api_response(serialize_rows(chapters))
+
+@chapters_bp.route('/<int:chapter_id>/regional-director', methods=['PUT', 'POST'])
+def assign_regional_director(chapter_id):
+    """Assign or update the Regional Director for a specific chapter."""
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    director_name = data.get('regional_director_name', '').strip()
+    director_id = data.get('regional_director_id')
+
+    if director_id:
+        try:
+            director_id = int(director_id)
+        except (ValueError, TypeError):
+            director_id = None
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, chapter_name FROM chapters WHERE id = %s", (chapter_id,))
+            ch = cur.fetchone()
+            if not ch:
+                return api_error('Chapter not found.', 404)
+
+            # If director_id is provided but director_name is empty, fetch user's full_name
+            if director_id and not director_name:
+                cur.execute("SELECT full_name FROM users WHERE id = %s", (director_id,))
+                u = cur.fetchone()
+                if u:
+                    director_name = u['full_name']
+
+            cur.execute("""
+                UPDATE chapters
+                SET regional_director_id = %s,
+                    regional_director_name = %s
+                WHERE id = %s
+            """, (director_id, director_name, chapter_id))
+
+            cur.execute("SELECT * FROM chapters WHERE id = %s", (chapter_id,))
+            updated_ch = cur.fetchone()
+
+    return api_response(serialize_row(updated_ch), f'Regional Director for {ch["chapter_name"]} assigned successfully.')
+
 
 @chapters_bp.route('/<int:chapter_id>', methods=['GET'])
 def get_chapter(chapter_id):

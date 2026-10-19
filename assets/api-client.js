@@ -77,6 +77,12 @@ const YTR_API = {
     },
     getUnreportedEvents(id) {
       return YTR_API.request(`/chapters/${id}/unreported-events`);
+    },
+    assignRegionalDirector(chapter_id, regional_director_name, regional_director_id = null) {
+      return YTR_API.request(`/chapters/${chapter_id}/regional-director`, {
+        method: 'POST',
+        body: JSON.stringify({ regional_director_name, regional_director_id })
+      });
     }
   },
 
@@ -103,6 +109,16 @@ const YTR_API = {
         method: 'POST',
         body: JSON.stringify({ review_note })
       });
+    },
+    uploadSignature(signature_image, user_id = null) {
+      return YTR_API.request('/accounts/signature', {
+        method: 'POST',
+        body: JSON.stringify({ signature_image, user_id })
+      });
+    },
+    getSignature(user_id = null) {
+      const q = user_id ? `?user_id=${user_id}` : '';
+      return YTR_API.request(`/accounts/signature${q}`);
     }
   },
 
@@ -149,6 +165,9 @@ const YTR_API = {
         method: 'POST',
         body: JSON.stringify(payload)
       });
+    },
+    getSignatories() {
+      return YTR_API.request('/reports/signatories');
     }
   },
 

@@ -60,18 +60,18 @@ def run_flush(mode='activity', verbose=True):
 
                 # Chapters
                 chapters = [
-                    (1, 'YTR-LAG', 'Laguna Chapter', 'Gen One', 'Region IV-A', 'Laguna', 'Los Baños'),
-                    (2, 'YTR-NCR', 'NCR Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Quezon City'),
-                    (3, 'YTR-CAV', 'Cavite Chapter', 'Gen One', 'Region IV-A', 'Cavite', 'Tagaytay'),
-                    (4, 'YTR-PAM', 'Pampanga Chapter', 'Gen Three', 'Region III', 'Pampanga', 'San Fernando'),
-                    (5, 'YTR-BAT', 'Batangas Chapter', 'Gen Two', 'Region IV-A', 'Batangas', 'Batangas City'),
-                    (6, 'YTR-UMAK', 'University of Makati Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Makati City'),
+                    (1, 'YTR-LAG', 'Laguna Chapter', 'Gen One', 'Region IV-A', 'Laguna', 'Los Baños', 'Elena Reyes'),
+                    (2, 'YTR-NCR', 'NCR Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Quezon City', 'Admin Host'),
+                    (3, 'YTR-CAV', 'Cavite Chapter', 'Gen One', 'Region IV-A', 'Cavite', 'Tagaytay', 'Elena Reyes'),
+                    (4, 'YTR-PAM', 'Pampanga Chapter', 'Gen Three', 'Region III', 'Pampanga', 'San Fernando', 'Carlos Santos'),
+                    (5, 'YTR-BAT', 'Batangas Chapter', 'Gen Two', 'Region IV-A', 'Batangas', 'Batangas City', 'Mateo Hernandez'),
+                    (6, 'YTR-UMAK', 'University of Makati Chapter', 'Gen Two', 'NCR', 'Metro Manila', 'Makati City', 'Admin Host'),
                 ]
-                for cid, code, name, gen, reg, prov, city in chapters:
+                for cid, code, name, gen, reg, prov, city, rd in chapters:
                     cur.execute("""
-                        INSERT INTO chapters (id, chapter_code, chapter_name, generation_name, region, province, city_municipality, status)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, 'active')
-                    """, (cid, code, name, gen, reg, prov, city))
+                        INSERT INTO chapters (id, chapter_code, chapter_name, generation_name, region, province, city_municipality, regional_director_name, status)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'active')
+                    """, (cid, code, name, gen, reg, prov, city, rd))
 
                 # Users
                 pw_hash = hash_password('Password123!')
