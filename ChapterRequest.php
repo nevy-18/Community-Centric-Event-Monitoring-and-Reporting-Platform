@@ -293,26 +293,26 @@
 
                         <!-- 2-Week Post-Event Compliance Countdown Timer -->
                         <div id="chapter-timer-card" class="chapter-timer-card" style="display: none;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                                 <span style="font-size: 0.8125rem; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.04em;">
                                     <i class="ph-bold ph-timer"></i> Post-Event 2-Week Timer
                                 </span>
                                 <span id="chapter-timer-badge" class="badge timer" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 6px;">14d left</span>
                             </div>
-                            <p id="chapter-timer-message" style="margin: 0.35rem 0 0; font-size: 0.875rem; line-height: 1.5; color: #334155;">
+                            <p id="chapter-timer-message" style="margin: 0.2rem 0 0; font-size: 0.8125rem; line-height: 1.4; color: #334155;">
                                 2-week reporting countdown active.
                             </p>
                         </div>
 
                         <!-- Dynamic Next Step Notice Box -->
                         <div id="chapter-action-box" class="chapter-next-step-box">
-                            <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                                <i class="ph-bold ph-info" style="font-size: 1.4rem; color: #16a34a; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                                <i class="ph-bold ph-info" style="font-size: 1.25rem; color: #16a34a; flex-shrink: 0; margin-top: 2px;"></i>
                                 <div>
-                                    <h5 style="margin: 0 0 0.25rem; color: #14532d; font-size: 1rem; font-weight: 700;" id="chapter-step-headline">
+                                    <h5 style="margin: 0 0 0.15rem; color: #14532d; font-size: 0.9375rem; font-weight: 700;" id="chapter-step-headline">
                                         Current Stage
                                     </h5>
-                                    <p style="margin: 0; color: #166534; font-size: 0.875rem; line-height: 1.5;" id="chapter-step-instructions">
+                                    <p style="margin: 0; color: #166534; font-size: 0.8125rem; line-height: 1.4;" id="chapter-step-instructions">
                                         Your request is currently being handled by National Creative.
                                     </p>
                                 </div>
@@ -321,11 +321,11 @@
 
                         <!-- SECTION A: Promotional Video (Stage 3) - Explicitly marked OPTIONAL -->
                         <div id="section-chapter-promo" style="display: none;">
-                            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.85rem; font-size: 0.875rem; line-height: 1.5; color: #92400e;">
+                            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 0.55rem 0.75rem; margin-bottom: 0.55rem; font-size: 0.8125rem; line-height: 1.4; color: #92400e;">
                                 <strong><i class="ph ph-info"></i> Notice:</strong> Promotional video is <strong>optional</strong> and not required to advance to post-event documentation.
                             </div>
                             <form id="chapter-submit-video-form" onsubmit="submitChapterVideoProof(event)">
-                                <div class="tl-form-label" style="margin-bottom: 0.5rem;">
+                                <div class="tl-form-label" style="margin-bottom: 0.35rem;">
                                     Upload Promotional Video (Optional)
                                 </div>
                                 <div class="proof-dropzone" onclick="document.getElementById('ch-video-file').click()">
@@ -334,11 +334,11 @@
                                     <p class="dropzone-sub">Max 50MB</p>
                                     <input type="file" id="ch-video-file" accept="video/mp4,video/*" onchange="handleChapterVideoSelected(this)">
                                 </div>
-                                <div id="ch-video-display" style="display:none; margin-top: 0.5rem; font-size: 0.875rem; color: #16a34a; font-weight: 600;">
+                                <div id="ch-video-display" style="display:none; margin-top: 0.35rem; font-size: 0.8125rem; color: #16a34a; font-weight: 600;">
                                     <i class="ph-fill ph-file-check"></i> <span id="ch-video-name"></span>
                                 </div>
 
-                                <div style="margin: 0.85rem 0;">
+                                <div style="margin: 0.55rem 0;">
                                     <label class="tl-form-label">Or Cloud Video Link (YouTube / Drive / FB):</label>
                                     <input type="url" id="ch-video-url" class="tl-form-control" placeholder="https://...">
                                 </div>
@@ -346,7 +346,7 @@
                                 <button type="submit" class="btn btn-primary tl-action-btn" id="btn-submit-video">
                                     <i class="ph ph-paper-plane-tilt"></i> Submit Promotional Video
                                 </button>
-                                <button type="button" class="btn btn-outline tl-action-btn" style="margin-top: 0.5rem;" onclick="skipChapterPromoVideo()">
+                                <button type="button" class="btn btn-outline tl-action-btn" style="margin-top: 0.45rem;" onclick="skipChapterPromoVideo()">
                                     <i class="ph ph-fast-forward"></i> Proceed to Post-Event (Skip Video)
                                 </button>
                             </form>
@@ -355,40 +355,39 @@
                         <!-- SECTION B: Documentation & Report (Stage 4) -->
                         <div id="section-chapter-docs" style="display: none;">
                             <!-- Mandatory Report Tab Submission Notice -->
-                            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: #166534; font-size: 0.95rem;">
-                                    <i class="ph-bold ph-file-text" style="font-size: 1.25rem; color: #16a34a;"></i> Event Concluded: Official Reporting Required
+                            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 0.55rem 0.75rem; margin-bottom: 0.55rem;">
+                                <div style="display: flex; align-items: center; gap: 0.45rem; font-weight: 700; color: #166534; font-size: 0.875rem;">
+                                    <i class="ph-bold ph-file-text" style="font-size: 1.15rem; color: #16a34a;"></i> Event Concluded: Official Reporting Required
                                 </div>
-                                <p style="font-size: 0.875rem; color: #15803d; margin: 0.5rem 0 0.85rem; line-height: 1.5;">
+                                <p style="font-size: 0.8125rem; color: #15803d; margin: 0.25rem 0 0.45rem; line-height: 1.4;">
                                     Once your event is completed, submit the official accomplishment report via the Report tab. The event timeline concludes once National Admin reviews and approves your submission.
                                 </p>
-                                <a id="btn-chapter-report-tab" href="ChapterReport.php" class="btn btn-primary tl-action-btn" style="background: #16a34a; border-color: #15803d; text-decoration: none;">
+                                <a id="btn-chapter-report-tab" href="ChapterReport.php" class="btn btn-primary tl-action-btn" style="background: #16a34a; border-color: #15803d; text-decoration: none; padding: 0.4rem 0.75rem;">
                                     <i class="ph-bold ph-file-arrow-up"></i> Submit Official Report via Report Tab &rarr;
                                 </a>
                             </div>
 
                             <!-- Mark Event Conducted Quick Button -->
-                            <div id="box-mark-conducted" style="margin-bottom: 1rem; padding: 0.85rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                            <div id="box-mark-conducted" style="margin-bottom: 0.55rem; padding: 0.45rem 0.65rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
                                 <div class="tl-form-label">
                                     Has this event been conducted?
                                 </div>
-                                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <div style="display: flex; gap: 0.45rem; margin-top: 0.35rem;">
                                     <input type="date" id="doc-conducted-date" class="tl-form-control" style="flex: 1;">
-                                    <button type="button" class="btn btn-outline tl-action-btn" style="width: auto; padding: 0.55rem 1rem;" onclick="triggerMarkConducted()">
+                                    <button type="button" class="btn btn-outline tl-action-btn" style="width: auto; padding: 0.45rem 0.85rem; margin-top: 0;" onclick="triggerMarkConducted()">
                                         <i class="ph ph-check"></i> Mark Conducted
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Submitted Status Summary if already sent -->
-                            <div id="box-doc-submitted-status" style="display: none; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; color: #1e40af; font-weight: 700; font-size: 0.95rem;">
+                            <div id="box-doc-submitted-status" style="display: none; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 6px; padding: 0.55rem 0.75rem; margin-bottom: 0.55rem;">
+                                <div style="display: flex; align-items: center; gap: 0.45rem; color: #1e40af; font-weight: 700; font-size: 0.875rem;">
                                     <i class="ph-fill ph-clock"></i> Report Submitted — Awaiting National Review
                                 </div>
-                                <div style="font-size: 0.875rem; color: #2563eb; margin-top: 0.5rem; line-height: 1.5;">
-                                    Attendees Reported: <strong id="lbl-submitted-attendees">0</strong> delegates<br>
-                                    Proof Attached: <span id="lbl-submitted-proof">Yes</span><br>
-                                    <span style="display: inline-block; margin-top: 0.5rem; font-weight: 600; color: #1e3a8a;">
+                                <div style="font-size: 0.8125rem; color: #2563eb; margin-top: 0.35rem; line-height: 1.4;">
+                                    Attendees Reported: <strong id="lbl-submitted-attendees">0</strong> delegates | Proof Attached: <span id="lbl-submitted-proof">Yes</span><br>
+                                    <span style="display: inline-block; margin-top: 0.35rem; font-weight: 600; color: #1e3a8a;">
                                         The event timeline will be marked completed once National Admin reviews and validates your submitted report.
                                     </span>
                                 </div>
@@ -396,10 +395,10 @@
 
                             <!-- Submission Form -->
                             <form id="chapter-submit-docs-form" onsubmit="submitChapterDocumentation(event)">
-                                <div class="tl-form-label" style="margin-bottom: 0.5rem;">
+                                <div class="tl-form-label" style="margin-bottom: 0.35rem;">
                                     Or Quick-Submit Attendance Figures & Photo Proof Here
                                 </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.85rem;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.45rem;">
                                     <div>
                                         <label class="tl-form-label">Total Attendees *</label>
                                         <input type="number" id="doc-attendees" required min="1" placeholder="e.g. 150" class="tl-form-control">
@@ -410,12 +409,12 @@
                                     </div>
                                 </div>
 
-                                <div style="margin-bottom: 0.85rem;">
+                                <div style="margin-bottom: 0.45rem;">
                                     <label class="tl-form-label">Event Summary / Key Highlights *</label>
-                                    <textarea id="doc-summary" required rows="2" placeholder="Brief accomplishment notes, testimonies, or program outcomes..." class="tl-form-control"></textarea>
+                                    <textarea id="doc-summary" required rows="1" style="min-height: 34px; resize: vertical;" placeholder="Brief accomplishment notes, testimonies..." class="tl-form-control"></textarea>
                                 </div>
 
-                                <div style="margin-bottom: 1rem;">
+                                <div style="margin-bottom: 0.55rem;">
                                     <label class="tl-form-label">Upload Event Photos / Attendance Sheet *</label>
                                     <div class="proof-dropzone" onclick="document.getElementById('doc-proof-file').click()">
                                         <i class="ph ph-images" style="color: #16a34a;"></i>
@@ -423,7 +422,7 @@
                                         <p class="dropzone-sub">JPG, PNG, PDF up to 50MB</p>
                                         <input type="file" id="doc-proof-file" accept="image/*,application/pdf" onchange="handleDocFileSelected(this)">
                                     </div>
-                                    <div id="doc-file-display" style="display:none; margin-top: 0.5rem; font-size: 0.875rem; color: #16a34a; font-weight: 600;">
+                                    <div id="doc-file-display" style="display:none; margin-top: 0.35rem; font-size: 0.8125rem; color: #16a34a; font-weight: 600;">
                                         <i class="ph-fill ph-file-check"></i> <span id="doc-file-name"></span>
                                     </div>
                                 </div>
@@ -435,20 +434,20 @@
                         </div>
 
                         <!-- SECTION C: Concluded Notice (Stage 5) -->
-                        <div id="section-chapter-concluded" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                            <i class="ph-fill ph-check-circle" style="font-size: 2.5rem; color: #16a34a;"></i>
-                            <h5 style="margin: 0.5rem 0 0.25rem; color: #14532d; font-weight: 700; font-size: 1.125rem;">Event Completed</h5>
-                            <p style="margin: 0; font-size: 0.875rem; color: #166534; line-height: 1.5;">
+                        <div id="section-chapter-concluded" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.85rem 1rem; text-align: center;">
+                            <i class="ph-fill ph-check-circle" style="font-size: 2rem; color: #16a34a;"></i>
+                            <h5 style="margin: 0.35rem 0 0.15rem; color: #14532d; font-weight: 700; font-size: 1rem;">Event Completed</h5>
+                            <p style="margin: 0; font-size: 0.8125rem; color: #166534; line-height: 1.4;">
                                 All event documentation, attendance records, and accomplishment reports have been verified and archived.
                             </p>
                         </div>
 
                         <!-- Attached Deliverables List -->
-                        <div style="border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 1rem;">
-                            <h5 class="font-roboto" style="margin: 0 0 0.5rem; color: #0f172a; font-weight: 700; font-size: 1rem;">
+                        <div style="border-top: 1px solid #f1f5f9; padding-top: 0.65rem; margin-top: 0.65rem;">
+                            <h5 class="font-roboto" style="margin: 0 0 0.45rem; color: #0f172a; font-weight: 700; font-size: 0.95rem;">
                                 Released Media & Proofs
                             </h5>
-                            <div id="chapter-recent-proofs-list" style="max-height: 220px; overflow-y: auto;">
+                            <div id="chapter-recent-proofs-list" style="max-height: 105px; overflow-y: auto;">
                                 <!-- Dynamically populated -->
                             </div>
                         </div>

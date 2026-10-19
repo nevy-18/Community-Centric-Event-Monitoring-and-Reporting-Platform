@@ -413,31 +413,28 @@
                         </div>
 
                         <form id="admin-timeline-form" onsubmit="submitTimelineUpdate(event)">
-                            <div style="margin-bottom: 0.85rem;">
-                                <label class="tl-form-label">
-                                    Update Timeline Status
-                                </label>
-                                <select id="ctl-stage-select" class="tl-form-control" onchange="handleStageSelectChange()">
-                                    <option value="1">1. Poster Request</option>
-                                    <option value="2">2. Posted on Page</option>
-                                    <option value="3">3. Promotional Video</option>
-                                    <option value="4">4. Documentation and Report</option>
-                                    <option value="5">5. Event Concluded and Reported</option>
-                                </select>
+                            <div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 0.5rem; margin-bottom: 0.55rem;">
+                                <div>
+                                    <label class="tl-form-label">Stage</label>
+                                    <select id="ctl-stage-select" class="tl-form-control" onchange="handleStageSelectChange()">
+                                        <option value="1">1. Poster Request</option>
+                                        <option value="2">2. Posted on Page</option>
+                                        <option value="3">3. Promotional Video</option>
+                                        <option value="4">4. Documentation & Report</option>
+                                        <option value="5">5. Event Concluded</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="tl-form-label">Status</label>
+                                    <select id="ctl-status-select" class="tl-form-control">
+                                        <option value="completed">Completed</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="pending">Pending</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div style="margin-bottom: 0.85rem;">
-                                <label class="tl-form-label">
-                                    Status
-                                </label>
-                                <select id="ctl-status-select" class="tl-form-control">
-                                    <option value="completed">Completed</option>
-                                    <option value="in_progress">In Progress</option>
-                                    <option value="pending">Pending</option>
-                                </select>
-                            </div>
-
-                            <div style="margin-bottom: 0.85rem;">
+                            <div style="margin-bottom: 0.55rem;">
                                 <label class="tl-form-label">
                                     Upload Proof / Supporting File
                                 </label>
@@ -447,19 +444,19 @@
                                     <p class="dropzone-sub">JPG, PNG, PDF, or MP4 up to 50MB</p>
                                     <input type="file" id="ctl-proof-file" accept="image/*,video/mp4,application/pdf" onchange="handleProofFileChange(this)">
                                 </div>
-                                <div id="ctl-file-name-display" style="display: none; margin-top: 0.5rem; font-size: 0.875rem; color: #16a34a; font-weight: 600;">
+                                <div id="ctl-file-name-display" style="display: none; margin-top: 0.35rem; font-size: 0.8125rem; color: #16a34a; font-weight: 600;">
                                     <i class="ph-fill ph-file-check"></i> <span id="ctl-file-name-text"></span>
                                 </div>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: #475569; margin-top: 0.65rem; cursor: pointer;">
-                                    <input type="checkbox" id="ctl-is-final-poster" checked style="width: 1rem; height: 1rem; accent-color: #2563eb;"> Set as official poster for Chapter download
+                                <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.75rem; color: #475569; margin-top: 0.45rem; cursor: pointer;">
+                                    <input type="checkbox" id="ctl-is-final-poster" checked style="width: 0.95rem; height: 0.95rem; accent-color: #2563eb;"> Set as official poster for Chapter download
                                 </label>
                             </div>
 
-                            <div style="margin-bottom: 1.15rem;">
+                            <div style="margin-bottom: 0.65rem;">
                                 <label class="tl-form-label">
                                     Add Notes (Optional)
                                 </label>
-                                <textarea id="ctl-notes" class="tl-form-control" rows="2" placeholder="e.g. Published to official FB page, post link: https://..."></textarea>
+                                <textarea id="ctl-notes" class="tl-form-control" rows="1" style="min-height: 34px; resize: vertical;" placeholder="e.g. Published to official FB page, post link: https://..."></textarea>
                             </div>
 
                             <button type="submit" class="btn btn-primary tl-action-btn" id="ctl-submit-btn">
@@ -468,12 +465,12 @@
                         </form>
 
                         <!-- Recent Proofs Ledger -->
-                        <div style="border-top: 1px solid #f1f5f9; padding-top: 1.15rem; margin-top: 1.15rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
-                                <h5 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 700; font-size: clamp(1.05rem, 0.95rem + 0.3vw, 1.3rem);">Recent Proofs</h5>
-                                <span id="ctl-proofs-count" style="font-size: clamp(0.85rem, 0.78rem + 0.2vw, 1.05rem); color: #64748b; font-weight: 600;">0 attached</span>
+                        <div style="border-top: 1px solid #f1f5f9; padding-top: 0.65rem; margin-top: 0.65rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                                <h5 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 700; font-size: 0.95rem;">Recent Proofs</h5>
+                                <span id="ctl-proofs-count" style="font-size: 0.75rem; color: #64748b; font-weight: 600;">0 attached</span>
                             </div>
-                            <div id="ctl-recent-proofs-list" style="max-height: 260px; overflow-y: auto;">
+                            <div id="ctl-recent-proofs-list" style="max-height: 105px; overflow-y: auto;">
                                 <!-- Populated dynamically -->
                             </div>
                         </div>

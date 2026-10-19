@@ -437,39 +437,40 @@ tr:hover td { background-color: #f9fafb; }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
+  padding: 1.25rem 1.5rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .modal-xl {
-  width: calc(100vw - 1rem);
-  max-width: 100vw;
-  height: calc(100vh - 1rem);
-  max-height: calc(100vh - 1rem);
+  width: min(1320px, 94vw);
+  max-width: 1320px;
+  height: auto;
+  max-height: 90vh;
   margin: auto;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 0;
   background: #ffffff;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.35);
+  border: 1px solid #e2e8f0;
   flex-shrink: 0;
   position: relative;
 }
 
 /* Modal Header */
 .modal-header-banner {
-  padding: 0.75rem 1.25rem;
+  padding: 0.6rem 1.15rem;
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
@@ -479,20 +480,20 @@ tr:hover td { background-color: #f9fafb; }
 }
 
 .modal-header-banner h3 {
-  font-size: 1.2rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: #0f172a;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   margin: 0;
 }
 
 .modal-header-banner p {
   color: #64748b;
-  font-size: 0.85rem;
-  margin: 0.15rem 0 0;
-  line-height: 1.4;
+  font-size: 0.8125rem;
+  margin: 0.1rem 0 0;
+  line-height: 1.35;
 }
 
 .modal-header-banner button {
@@ -513,7 +514,7 @@ tr:hover td { background-color: #f9fafb; }
 
 /* Modal Body */
 .modal-body-scroll {
-  padding: 1rem;
+  padding: 0.85rem 1rem;
   overflow-y: auto;
   flex: 1;
   background: #f8fafc;
@@ -685,9 +686,9 @@ tr:hover td { background-color: #f9fafb; }
 /* --- Event Details & Timeline Modal --- */
 .timeline-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 320px) 1.5fr minmax(360px, 440px);
-  gap: 1rem;
-  align-items: stretch;
+  grid-template-columns: minmax(260px, 290px) 1.5fr minmax(320px, 400px);
+  gap: 0.85rem;
+  align-items: start;
 }
 
 .timeline-left-card,
@@ -696,19 +697,19 @@ tr:hover td { background-color: #f9fafb; }
   background: #ffffff;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  padding: 1rem 1.15rem;
+  padding: 0.85rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.55rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 /* Column 1: Poster Preview */
 .timeline-left-card .poster-media-box {
   width: 100%;
-  height: 220px;
-  min-height: 180px;
-  max-height: 240px;
+  height: 175px;
+  min-height: 160px;
+  max-height: 190px;
   border-radius: 6px;
   overflow: hidden;
   background: #1e293b;
@@ -734,13 +735,13 @@ tr:hover td { background-color: #f9fafb; }
   color: #ffffff;
   border: none;
   border-radius: 4px;
-  padding: 0.35rem 0.65rem;
-  font-size: 0.75rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.725rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   backdrop-filter: blur(4px);
   transition: background-color 0.15s;
 }
@@ -753,16 +754,16 @@ tr:hover td { background-color: #f9fafb; }
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
-  margin-top: 0.5rem;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
 }
 
 .timeline-pipeline::before {
   content: '';
   position: absolute;
-  top: 18px;
-  bottom: 18px;
-  left: 18px;
+  top: 15px;
+  bottom: 15px;
+  left: 15px;
   width: 2px;
   background: #e2e8f0;
   z-index: 1;
@@ -771,20 +772,20 @@ tr:hover td { background-color: #f9fafb; }
 .timeline-step {
   position: relative;
   display: flex;
-  gap: 0.875rem;
+  gap: 0.75rem;
   z-index: 2;
   align-items: flex-start;
 }
 
 .step-marker {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #ffffff;
   border: 2px solid #cbd5e1;
   color: #64748b;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -806,28 +807,28 @@ tr:hover td { background-color: #f9fafb; }
 
 .step-content {
   flex: 1;
-  padding-bottom: 0.25rem;
+  padding-bottom: 0.15rem;
 }
 
 .step-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
-  gap: 0.5rem;
+  margin-bottom: 0.15rem;
+  gap: 0.45rem;
 }
 
 .step-title {
-  font-size: 1.05rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #0f172a;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .step-badge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 0.2rem 0.6rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 6px;
   text-transform: capitalize;
   white-space: nowrap;
@@ -851,22 +852,22 @@ tr:hover td { background-color: #f9fafb; }
 }
 
 .step-subtext {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #475569;
-  line-height: 1.5;
-  margin-top: 0.25rem;
+  line-height: 1.35;
+  margin-top: 0.15rem;
 }
 
 .step-attachment-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.5rem;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
   background: #f8fafc;
   border: 1px solid #cbd5e1;
-  padding: 0.35rem 0.75rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 6px;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: #2563eb;
   text-decoration: none;
   font-weight: 600;
@@ -880,8 +881,8 @@ tr:hover td { background-color: #f9fafb; }
 /* Upload & Proofs */
 .proof-dropzone {
   border: 2px dashed #cbd5e1;
-  border-radius: 8px;
-  padding: 1rem 0.75rem;
+  border-radius: 6px;
+  padding: 0.65rem 0.5rem;
   text-align: center;
   background: #f8fafc;
   cursor: pointer;
@@ -895,8 +896,21 @@ tr:hover td { background-color: #f9fafb; }
 }
 
 .proof-dropzone i {
-  font-size: 2rem;
+  font-size: 1.4rem;
   color: #2563eb;
+}
+
+.dropzone-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0.15rem 0 0;
+}
+
+.dropzone-sub {
+  font-size: 0.68rem;
+  color: #64748b;
+  margin: 0;
 }
 
 .proof-dropzone input[type="file"] {
@@ -912,18 +926,18 @@ tr:hover td { background-color: #f9fafb; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
+  padding: 0.35rem 0.55rem;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.8125rem;
+  margin-bottom: 0.35rem;
 }
 
 .recent-proof-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   overflow: hidden;
 }
 
@@ -933,51 +947,51 @@ tr:hover td { background-color: #f9fafb; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 190px;
 }
 
 /* Timeline Typography & Elements */
 .tl-status-pill {
   font-weight: 600;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.3rem;
   display: inline-block;
   font-size: 0.75rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 6px;
   letter-spacing: 0.02em;
 }
 
 .tl-event-title {
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   color: #0f172a;
   font-weight: 700;
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.25rem;
   line-height: 1.3;
 }
 
 .tl-event-theme {
   color: #64748b;
-  font-size: 0.9375rem;
-  margin-bottom: 0.75rem;
-  line-height: 1.45;
+  font-size: 0.8125rem;
+  margin-bottom: 0.45rem;
+  line-height: 1.4;
 }
 
 .tl-meta-box {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #334155;
-  line-height: 1.55;
+  line-height: 1.45;
   border-top: 1px solid #f1f5f9;
-  padding-top: 0.65rem;
+  padding-top: 0.45rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.2rem;
 }
 
 .tl-action-btn {
   width: 100%;
-  margin-top: auto;
-  padding: 0.65rem 1rem;
-  font-size: 0.875rem;
+  margin-top: 0.65rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   border-radius: 6px;
   display: inline-flex;
@@ -988,41 +1002,41 @@ tr:hover td { background-color: #f9fafb; }
 
 .tl-card-header {
   border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 
 .tl-card-title {
   margin: 0;
   color: #0f172a;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
 .tl-card-subtitle {
-  margin: 0.2rem 0 0;
+  margin: 0.15rem 0 0;
   color: #64748b;
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .tl-form-label {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: #1e293b;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 
 .tl-form-control {
   width: 100%;
-  padding: 0.55rem 0.75rem;
+  padding: 0.45rem 0.65rem;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   background: #fff;
   color: #0f172a;
   line-height: 1.4;
@@ -1037,14 +1051,14 @@ tr:hover td { background-color: #f9fafb; }
 .tl-audit-card {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.85rem 1rem;
-  margin-bottom: 0.75rem;
+  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 0.65rem;
 }
 
 .tl-audit-card h5 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #0f172a;
 }
@@ -1063,14 +1077,15 @@ tr:hover td { background-color: #f9fafb; }
 
 @media (max-width: 992px) {
   .modal-overlay {
-    padding: 0.25rem;
-    align-items: flex-start;
+    padding: 0.75rem;
+    align-items: center;
   }
   .modal-xl {
-    width: calc(100vw - 0.5rem);
-    height: calc(100vh - 0.5rem);
-    max-height: calc(100vh - 0.5rem);
-    margin: 0.25rem auto;
+    width: 96vw;
+    height: auto;
+    max-height: 94vh;
+    margin: auto;
+    border-radius: 10px;
   }
   .timeline-grid {
     grid-template-columns: 1fr 1.35fr;
@@ -1092,37 +1107,37 @@ tr:hover td { background-color: #f9fafb; }
 
 @media (max-width: 768px) {
   .modal-overlay {
-    padding: 0;
-    align-items: flex-start;
+    padding: 0.5rem;
+    align-items: center;
   }
   .modal-xl {
-    width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
-    margin: 0;
-    border-radius: 0;
+    width: 98vw;
+    height: auto;
+    max-height: 96vh;
+    margin: auto;
+    border-radius: 8px;
   }
   .modal-header-banner {
-    padding: 0.65rem 0.85rem;
+    padding: 0.5rem 0.75rem;
   }
   .modal-header-banner h3 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
   }
   .modal-body-scroll {
-    padding: 0.75rem;
+    padding: 0.65rem;
   }
   .timeline-grid {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.65rem;
   }
   .timeline-left-card,
   .timeline-center-card,
   .timeline-right-card {
     grid-column: auto;
-    padding: 0.85rem;
+    padding: 0.75rem;
   }
   .timeline-left-card .poster-media-box {
-    height: 180px;
+    height: 160px;
   }
   .verification-grid {
     grid-template-columns: 1fr;
@@ -1132,16 +1147,17 @@ tr:hover td { background-color: #f9fafb; }
 /* Ultra Short Viewports / Landscape Mobile (<= 640px height) */
 @media (max-height: 640px) {
   .modal-overlay {
-    padding: 0.25rem;
-    align-items: flex-start;
+    padding: 0.5rem;
+    align-items: center;
   }
   .modal-xl {
-    max-height: 98vh !important;
+    height: auto;
+    max-height: 96vh !important;
   }
   .timeline-left-card .poster-media-box {
-    height: 130px !important;
-    min-height: 130px !important;
-    max-height: 130px !important;
+    height: 120px !important;
+    min-height: 120px !important;
+    max-height: 120px !important;
   }
 }
 
