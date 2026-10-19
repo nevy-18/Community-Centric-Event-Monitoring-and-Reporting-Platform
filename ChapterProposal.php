@@ -134,6 +134,19 @@
                     <input type="text" id="p-title" required placeholder="e.g. Metro Youth Leadership Summit 2026" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
                 </div>
 
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
+                        <i class="ph-bold ph-compass" style="color: #2563eb;"></i> YTR Program Pillar *
+                    </label>
+                    <select id="p-program" required style="width: 100%; padding: 0.6rem; border: 1.5px solid #3b82f6; border-radius: 6px; font-size: 0.9rem; background: #eff6ff; font-weight: 600; color: #1e40af;">
+                        <option value="Lead up (Youth Leadership)">Lead up (Youth Leadership)</option>
+                        <option value="Rise up (Youth Excellence)">Rise up (Youth Excellence)</option>
+                        <option value="Build up (Youth Personality Development)">Build up (Youth Personality Development)</option>
+                        <option value="Gear up (Youth preparation and empowerment)">Gear up (Youth preparation and empowerment)</option>
+                    </select>
+                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; display: block;">Designate which of the 4 core YTR initiative frameworks this event fulfills.</small>
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Type *</label>
@@ -300,12 +313,29 @@
                 } else {
                     actions = `<button class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" onclick="alert('Proposal currently in national review queue. Decision notes will appear here.')">Details</button>`;
                 }
+                let progBadge = '';
+                if (p.ytr_program) {
+                    let pBg = '#eff6ff', pCol = '#1d4ed8', pBorder = '#bfdbfe';
+                    if (p.ytr_program.startsWith('Rise up')) {
+                        pBg = '#fffbeb'; pCol = '#b45309'; pBorder = '#fde68a';
+                    } else if (p.ytr_program.startsWith('Build up')) {
+                        pBg = '#f0fdf4'; pCol = '#15803d'; pBorder = '#bbf7d0';
+                    } else if (p.ytr_program.startsWith('Gear up')) {
+                        pBg = '#faf5ff'; pCol = '#7e22ce'; pBorder = '#e9d5ff';
+                    }
+                    progBadge = `<span class="badge" style="background: ${pBg}; color: ${pCol}; border: 1px solid ${pBorder}; font-size: 0.72rem; padding: 2px 7px; font-weight: 700;">
+                        <i class="ph-bold ph-compass"></i> ${escapeHtml(p.ytr_program)}
+                    </span>`;
+                }
 
                 return `
                     <tr>
                         <td>
                             <div style="font-weight: 700; color: #0f172a;">${escapeHtml(p.title)}</div>
-                            <small style="color: #64748b; text-transform: uppercase;">${escapeHtml(p.event_type || 'Event')}</small>
+                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px;">
+                                <small style="color: #64748b; text-transform: uppercase;">${escapeHtml(p.event_type || 'Event')}</small>
+                                ${progBadge}
+                            </div>
                         </td>
                         <td>
                             <div style="font-size: 0.85rem; color: #1e293b;">${escapeHtml(p.start_datetime ? p.start_datetime.substring(0, 10) : 'Date TBD')}</div>
@@ -348,6 +378,7 @@
             const payload = {
                 chapter_id: chapterId,
                 title: document.getElementById('p-title').value.trim(),
+                ytr_program: document.getElementById('p-program').value,
                 event_type: document.getElementById('p-type').value,
                 venue: document.getElementById('p-venue').value.trim(),
                 start_datetime: document.getElementById('p-start').value,

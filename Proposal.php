@@ -209,6 +209,15 @@
                   <div id="detailProposalBadges" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;"></div>
 
                   <div class="review-detail-group">
+                    <label class="font-roboto"><i class="ph-fill ph-compass"></i> YTR Program Pillar</label>
+                    <div style="margin-top: 3px;">
+                      <span id="detailProposalProgram" class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.78rem; font-weight: 700; padding: 4px 8px;">
+                        Lead up (Youth Leadership)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="review-detail-group">
                     <label class="font-roboto"><i class="ph-fill ph-calendar-blank"></i> Proposed Schedule & Venue</label>
                     <p id="detailProposalSchedule" class="font-roboto" style="font-size: 0.8rem; color: #0f172a; font-weight: bold;">-</p>
                     <p id="detailApprovalTimer" style="font-size: 0.75rem; color: #166534; font-weight: 700; margin-top: 2px;"></p>
@@ -391,7 +400,10 @@
                 </div>
                 <div>
                   <span class="proposal-name font-roboto" style="font-weight: 800; color: #0f172a; font-size: 0.9rem; display: block;">${p.title}</span>
-                  <span class="td-sub font-roboto" style="font-weight: 600; color: #2563eb;">${p.event_type.toUpperCase()} EVENT</span>
+                  <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin: 2px 0;">
+                    <span class="td-sub font-roboto" style="font-weight: 600; color: #2563eb;">${p.event_type.toUpperCase()} EVENT</span>
+                    ${p.ytr_program ? `<span class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.7rem; padding: 1px 6px; font-weight: 700;"><i class="ph-bold ph-compass"></i> ${p.ytr_program}</span>` : ''}
+                  </div>
                   <div>${timerBadgeHtml} ${dueBadgeHtml}</div>
                 </div>
               </div>
@@ -429,6 +441,21 @@
 
       document.getElementById('detailProposalTitle').textContent = p.title;
       document.getElementById('detailProposalChapter').textContent = p.chapter_name || 'National HQ';
+      
+      const programEl = document.getElementById('detailProposalProgram');
+      if (programEl) {
+        const prog = p.ytr_program || 'Lead up (Youth Leadership)';
+        programEl.textContent = prog;
+        if (prog.startsWith('Rise up')) {
+          programEl.style.background = '#fffbeb'; programEl.style.color = '#b45309'; programEl.style.borderColor = '#fde68a';
+        } else if (prog.startsWith('Build up')) {
+          programEl.style.background = '#f0fdf4'; programEl.style.color = '#15803d'; programEl.style.borderColor = '#bbf7d0';
+        } else if (prog.startsWith('Gear up')) {
+          programEl.style.background = '#faf5ff'; programEl.style.color = '#7e22ce'; programEl.style.borderColor = '#e9d5ff';
+        } else {
+          programEl.style.background = '#eff6ff'; programEl.style.color = '#1d4ed8'; programEl.style.borderColor = '#bfdbfe';
+        }
+      }
       document.getElementById('detailProposalSchedule').textContent = (p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (p.venue || 'TBD');
       document.getElementById('detailProposalNotes').textContent = p.description || 'No description provided.';
 

@@ -213,7 +213,7 @@ def get_unreported_events(chapter_id):
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT e.id, e.title, e.event_type, e.start_datetime, e.end_datetime,
+                SELECT e.id, e.title, e.event_type, e.ytr_program, e.start_datetime, e.end_datetime,
                        e.venue, e.target_turnout, e.budget_amount, e.due_date
                 FROM events e
                 LEFT JOIN event_reports er ON er.event_id = e.id

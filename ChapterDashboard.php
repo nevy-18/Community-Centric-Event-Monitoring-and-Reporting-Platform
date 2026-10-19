@@ -503,7 +503,10 @@
           <tr>
             <td>
               <div style="font-weight: 700; color: #0f172a;">${escapeHtml(e.title)}</div>
-              <small style="color: #64748b; text-transform: uppercase; font-size: 0.72rem;">${escapeHtml(e.event_type || 'Gathering')}</small>
+              <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 2px;">
+                <small style="color: #64748b; text-transform: uppercase; font-size: 0.72rem;">${escapeHtml(e.event_type || 'Gathering')}</small>
+                ${e.ytr_program ? `<span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.68rem; padding: 1px 5px; font-weight: 700; border: 1px solid #bfdbfe;"><i class="ph-bold ph-compass"></i> ${escapeHtml(e.ytr_program)}</span>` : ''}
+              </div>
             </td>
             <td>
               <div style="font-size: 0.85rem; color: #1e293b; font-weight: 500;">${escapeHtml(e.start_datetime ? e.start_datetime.substring(0, 10) : 'Date TBD')}</div>

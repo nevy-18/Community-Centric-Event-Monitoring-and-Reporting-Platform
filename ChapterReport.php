@@ -498,6 +498,21 @@
       document.getElementById('metric-awaiting-reports').textContent = awaiting;
     }
 
+    function getProgramBadge(program) {
+      if (!program) return '';
+      let pBg = '#eff6ff', pCol = '#1d4ed8', pBorder = '#bfdbfe';
+      if (program.startsWith('Rise up')) {
+        pBg = '#fffbeb'; pCol = '#b45309'; pBorder = '#fde68a';
+      } else if (program.startsWith('Build up')) {
+        pBg = '#f0fdf4'; pCol = '#15803d'; pBorder = '#bbf7d0';
+      } else if (program.startsWith('Gear up')) {
+        pBg = '#faf5ff'; pCol = '#7e22ce'; pBorder = '#e9d5ff';
+      }
+      return `<span class="badge" style="background: ${pBg}; color: ${pCol}; border: 1px solid ${pBorder}; font-size: 0.72rem; padding: 2px 7px; font-weight: 700;">
+        <i class="ph-bold ph-compass"></i> ${escapeHtml(program)}
+      </span>`;
+    }
+
     function renderUnreportedSection() {
       const section = document.getElementById('unreported-section');
       const list = document.getElementById('unreported-list');
@@ -512,7 +527,12 @@
       list.innerHTML = unreportedEvents.map(e => `
         <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <h4 style="margin: 0 0 0.35rem; color: #92400e; font-size: 0.95rem;">${escapeHtml(e.title)}</h4>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem;">
+              <h4 style="margin: 0; color: #92400e; font-size: 0.95rem;">${escapeHtml(e.title)}</h4>
+            </div>
+            <div style="margin-bottom: 0.5rem;">
+              ${getProgramBadge(e.ytr_program || 'Lead up (Youth Leadership)')}
+            </div>
             <div style="font-size: 0.8rem; color: #78350f; margin-bottom: 0.5rem;">
               <i class="ph ph-calendar"></i> ${escapeHtml(e.start_datetime ? e.start_datetime.substring(0, 10) : 'Date TBD')}<br>
               <i class="ph ph-map-pin"></i> ${escapeHtml(e.venue || 'Venue TBD')}<br>
@@ -532,7 +552,8 @@
       unreportedEvents.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.id;
-        opt.textContent = `${e.title} (Target: ${e.target_turnout || 100})`;
+        const progShort = e.ytr_program ? e.ytr_program.split('(')[0].trim() : 'Lead up';
+        opt.textContent = `${e.title} [${progShort}] (Target: ${e.target_turnout || 100})`;
         opt.dataset.target = e.target_turnout || 100;
         sel.appendChild(opt);
       });
@@ -645,6 +666,9 @@
           <tr>
             <td>
               <div style="font-weight: 700; color: #0f172a;">${escapeHtml(r.event_title)}</div>
+              <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px; margin-bottom: 3px;">
+                ${getProgramBadge(r.ytr_program || 'Lead up (Youth Leadership)')}
+              </div>
               <small style="color: #64748b;"><i class="ph ph-calendar"></i> ${escapeHtml(r.submitted_at ? r.submitted_at.substring(0, 10) : 'Recent')}</small>
             </td>
             <td>
@@ -787,11 +811,17 @@
             <td style="padding: 0.5rem 0; width: 140px; color: #64748b;"><strong>Chapter:</strong></td>
             <td style="padding: 0.5rem 0; font-weight: 700;">${escapeHtml(r.chapter_name)} (${escapeHtml(r.chapter_code)})</td>
             <td style="padding: 0.5rem 0; width: 140px; color: #64748b;"><strong>Event Type:</strong></td>
-            <td style="padding: 0.5rem 0;">Gathering</td>
+            <td style="padding: 0.5rem 0;">${escapeHtml(r.event_type || 'Gathering')}</td>
           </tr>
           <tr style="border-bottom: 1px solid #e2e8f0;">
             <td style="padding: 0.5rem 0; color: #64748b;"><strong>Event Title:</strong></td>
             <td style="padding: 0.5rem 0; font-weight: 700; color: #0f172a;">${escapeHtml(r.event_title)}</td>
+            <td style="padding: 0.5rem 0; color: #64748b;"><strong>YTR Program:</strong></td>
+            <td style="padding: 0.5rem 0; font-weight: 700; color: #1e40af;">${escapeHtml(r.ytr_program || 'Lead up (Youth Leadership)')}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 0.5rem 0; color: #64748b;"><strong>Date / Time:</strong></td>
+            <td style="padding: 0.5rem 0;">${escapeHtml(r.start_datetime ? r.start_datetime.substring(0, 16).replace('T', ' ') : 'N/A')}</td>
             <td style="padding: 0.5rem 0; color: #64748b;"><strong>Venue:</strong></td>
             <td style="padding: 0.5rem 0;">${escapeHtml(r.venue || 'N/A')}</td>
           </tr>

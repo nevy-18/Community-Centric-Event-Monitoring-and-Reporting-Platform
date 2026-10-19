@@ -396,14 +396,18 @@
                 <td id="printEventTitle" style="padding: 6px 12px; font-weight: bold; color: #1a2f63; font-size: 0.85rem; border: 1px solid #cbd5e1;">-</td>
               </tr>
               <tr>
+                <td style="padding: 6px 12px; font-weight: bold; font-size: 0.8rem; border: 1px solid #cbd5e1;">YTR Program Pillar</td>
+                <td id="printProgramPillar" style="padding: 6px 12px; font-size: 0.8rem; border: 1px solid #cbd5e1; font-weight: 700; color: #1e40af;">-</td>
+              </tr>
+              <tr style="background: #f8fafc;">
                 <td style="padding: 6px 12px; font-weight: bold; font-size: 0.8rem; border: 1px solid #cbd5e1;">Host Chapter</td>
                 <td id="printChapterName" style="padding: 6px 12px; font-size: 0.8rem; border: 1px solid #cbd5e1;">-</td>
               </tr>
-              <tr style="background: #f8fafc;">
+              <tr>
                 <td style="padding: 6px 12px; font-weight: bold; font-size: 0.8rem; border: 1px solid #cbd5e1;">Date & Venue</td>
                 <td id="printScheduleVenue" style="padding: 6px 12px; font-size: 0.8rem; border: 1px solid #cbd5e1;">-</td>
               </tr>
-              <tr>
+              <tr style="background: #f8fafc;">
                 <td style="padding: 6px 12px; font-weight: bold; font-size: 0.8rem; border: 1px solid #cbd5e1;">Budget Utilized</td>
                 <td id="printBudgetSpent" style="padding: 6px 12px; font-size: 0.8rem; border: 1px solid #cbd5e1;">-</td>
               </tr>
@@ -923,6 +927,10 @@
       }
       const r = selectedReportData;
       document.getElementById('printEventTitle').textContent = r.event_title;
+      const printProgEl = document.getElementById('printProgramPillar');
+      if (printProgEl) {
+        printProgEl.textContent = r.ytr_program || 'Lead up (Youth Leadership)';
+      }
       document.getElementById('printChapterName').textContent = r.chapter_name || 'National Secretariat';
       document.getElementById('printScheduleVenue').textContent = (r.start_datetime ? r.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (r.venue || 'TBD');
       document.getElementById('printBudgetSpent').textContent = '₱' + Number(r.budget_spent || 0).toLocaleString();

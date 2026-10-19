@@ -101,7 +101,7 @@ def list_proposals():
     search = request.args.get('search', '').strip()
 
     sql = """
-        SELECT e.id, e.chapter_id, e.title, e.description, e.event_type,
+        SELECT e.id, e.chapter_id, e.title, e.description, e.event_type, e.ytr_program,
                e.start_datetime, e.end_datetime, e.venue, e.status,
                e.created_at, e.review_note, e.target_turnout, e.budget_amount,
                e.budget_threshold, e.due_date, e.approved_at,
@@ -172,11 +172,12 @@ def create_proposal():
     data = request.get_json(silent=True) or request.form.to_dict() or {}
     title = data.get('title', '').strip()
     chapter_id = data.get('chapter_id') or session.get('chapter_id')
-    start_date = data.get('start_date')
-    end_date = data.get('end_date') or start_date
+    start_date = data.get('start_date') or data.get('start_datetime')
+    end_date = data.get('end_date') or data.get('end_datetime') or start_date
     venue = data.get('venue', '').strip()
     description = data.get('description', '').strip()
     event_type = data.get('event_type', 'chapter')
+    ytr_program = data.get('ytr_program') or data.get('program') or 'Lead up (Youth Leadership)'
     target_turnout = int(data.get('target_turnout') or 100)
     budget_amount = float(data.get('budget_amount') or 0.0)
     budget_threshold = float(data.get('budget_threshold') or 25000.0)
@@ -185,6 +186,17 @@ def create_proposal():
 
     if not title or not start_date or not venue or not description:
         return api_error('Title, start date, venue, and description are required.', 400)
+
+    def _format_dt(val, default_time='09:00:00'):
+        if not val:
+            return None
+        val_str = str(val).replace('T', ' ')
+        if len(val_str) == 10:
+            return f"{val_str} {default_time}"
+        return val_str
+
+    formatted_start = _format_dt(start_date, '09:00:00')
+    formatted_end = _format_dt(end_date, '17:00:00')
 
     with get_db() as conn:
         with conn.cursor() as cur:
@@ -202,15 +214,16 @@ def create_proposal():
                 chapter_id = ch['id'] if ch else None
 
             cur.execute("""
-                INSERT INTO events (chapter_id, title, description, event_type, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, status, created_by, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
+                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, status, created_by, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
             """, (
                 chapter_id,
                 title,
                 description,
                 event_type,
-                f"{start_date} 09:00:00",
-                f"{end_date} 17:00:00",
+                ytr_program,
+                formatted_start,
+                formatted_end,
                 venue,
                 target_turnout,
                 budget_amount,

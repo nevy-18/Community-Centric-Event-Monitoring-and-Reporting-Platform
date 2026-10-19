@@ -312,6 +312,21 @@
                <i class="ph ph-bell"></i> Remind / View
              </a>`;
 
+        let progBadge = '';
+        if (item.ytr_program) {
+          let pBg = '#eff6ff', pCol = '#1d4ed8', pBorder = '#bfdbfe';
+          if (item.ytr_program.startsWith('Rise up')) {
+            pBg = '#fffbeb'; pCol = '#b45309'; pBorder = '#fde68a';
+          } else if (item.ytr_program.startsWith('Build up')) {
+            pBg = '#f0fdf4'; pCol = '#15803d'; pBorder = '#bbf7d0';
+          } else if (item.ytr_program.startsWith('Gear up')) {
+            pBg = '#faf5ff'; pCol = '#7e22ce'; pBorder = '#e9d5ff';
+          }
+          progBadge = `<span class="badge" style="background: ${pBg}; color: ${pCol}; border: 1px solid ${pBorder}; font-size: 0.68rem; padding: 1px 6px; font-weight: 700;">
+            <i class="ph-bold ph-compass"></i> ${escapeHtml(item.ytr_program)}
+          </span>`;
+        }
+
         return `
           <tr>
             <td>
@@ -323,6 +338,7 @@
             </td>
             <td>
               <div style="font-weight: 700; color: #1e3a8a; font-size: 0.9rem;">${escapeHtml(item.event_title)}</div>
+              ${progBadge ? `<div style="margin-top: 3px; margin-bottom: 2px;">${progBadge}</div>` : ''}
               <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
                 <i class="ph ph-calendar-blank"></i> Conducted: <strong>${item.event_date_formatted || item.event_date}</strong>
                 ${item.venue ? ` &bull; <span>${escapeHtml(item.venue)}</span>` : ''}

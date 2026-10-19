@@ -119,19 +119,19 @@ def run_flush(mode='activity', verbose=True):
 
             if mode == 'demo':
                 demo_events = [
-                    (1, 1, 'Youth Camp 2026: Unshakeable Faith', 'Annual 3-day spiritual retreat and leadership workshop for youth members across Laguna.', 'chapter', '2026-11-20 08:00:00', '2026-11-22 17:00:00', 'Camp John Hay Eco Trail, Los Baños', 'approved', 2, 1, 'Officially cleared by National Secretariat.'),
-                    (2, 2, 'Metro Youth Leadership Summit 2026', 'Gathering campus leaders from universities across Metro Manila for empowerment and ministry training.', 'national', '2026-12-05 09:00:00', '2026-12-05 18:00:00', 'SMX Convention Center, Pasay City', 'approved', 1, 1, 'Cleared by National Council.'),
-                    (3, 3, 'Tagaytay Prayer & Praise Night', 'Evening of worship, testimony, and community fellowship at the ridge.', 'chapter', '2026-10-28 18:00:00', '2026-10-28 21:30:00', 'Tagaytay Highlands Amphitheater', 'draft', 2, None, None),
-                    (4, 4, 'Central Luzon Youth Sportsfest', 'Inter-church basketball, volleyball, and team-building games promoting fellowship.', 'community', '2026-10-02 07:00:00', '2026-10-02 17:00:00', 'Bren Z. Guiao Sports Complex, San Fernando', 'approved', 1, None, None),
-                    (5, 3, 'Cavite Youth Leadership Workshop', 'Regional leadership intensive for campus coordinators.', 'chapter', '2026-10-01 11:34:36', '2026-10-01 17:34:36', 'Tagaytay Retreat Center', 'completed', 1, None, None),
-                    (6, 5, 'Batangas Youth Worship & Arts Summit', 'Annual creative arts, music, and media training.', 'chapter', '2026-10-05 11:34:36', '2026-10-05 19:34:36', 'Batangas City Sports Coliseum', 'completed', 1, None, None),
-                    (7, 6, 'UMAK Campus Evangelism & Fellowship', 'Collegiate campus outreach and discipleship gathering.', 'chapter', '2026-10-11 11:34:36', '2026-10-11 16:34:36', 'UMAK Grand Auditorium', 'completed', 1, None, None)
+                    (1, 1, 'Youth Camp 2026: Unshakeable Faith', 'Annual 3-day spiritual retreat and leadership workshop for youth members across Laguna.', 'chapter', 'Build up (Youth Personality Development)', '2026-11-20 08:00:00', '2026-11-22 17:00:00', 'Camp John Hay Eco Trail, Los Baños', 'approved', 2, 1, 'Officially cleared by National Secretariat.'),
+                    (2, 2, 'Metro Youth Leadership Summit 2026', 'Gathering campus leaders from universities across Metro Manila for empowerment and ministry training.', 'national', 'Lead up (Youth Leadership)', '2026-12-05 09:00:00', '2026-12-05 18:00:00', 'SMX Convention Center, Pasay City', 'approved', 1, 1, 'Cleared by National Council.'),
+                    (3, 3, 'Tagaytay Prayer & Praise Night', 'Evening of worship, testimony, and community fellowship at the ridge.', 'chapter', 'Build up (Youth Personality Development)', '2026-10-28 18:00:00', '2026-10-28 21:30:00', 'Tagaytay Highlands Amphitheater', 'draft', 2, None, None),
+                    (4, 4, 'Central Luzon Youth Sportsfest', 'Inter-church basketball, volleyball, and team-building games promoting fellowship.', 'community', 'Rise up (Youth Excellence)', '2026-10-02 07:00:00', '2026-10-02 17:00:00', 'Bren Z. Guiao Sports Complex, San Fernando', 'approved', 1, None, None),
+                    (5, 3, 'Cavite Youth Leadership Workshop', 'Regional leadership intensive for campus coordinators.', 'chapter', 'Lead up (Youth Leadership)', '2026-10-01 11:34:36', '2026-10-01 17:34:36', 'Tagaytay Retreat Center', 'completed', 1, None, None),
+                    (6, 5, 'Batangas Youth Worship & Arts Summit', 'Annual creative arts, music, and media training.', 'chapter', 'Rise up (Youth Excellence)', '2026-10-05 11:34:36', '2026-10-05 19:34:36', 'Batangas City Sports Coliseum', 'completed', 1, None, None),
+                    (7, 6, 'UMAK Campus Evangelism & Fellowship', 'Collegiate campus outreach and discipleship gathering.', 'chapter', 'Gear up (Youth preparation and empowerment)', '2026-10-11 11:34:36', '2026-10-11 16:34:36', 'UMAK Grand Auditorium', 'completed', 1, None, None)
                 ]
-                for eid, chid, title, desc, etype, sdt, edt, ven, stat, cby, rby, rnote in demo_events:
+                for eid, chid, title, desc, etype, yprog, sdt, edt, ven, stat, cby, rby, rnote in demo_events:
                     cur.execute("""
-                        INSERT INTO events (id, chapter_id, title, description, event_type, start_datetime, end_datetime, venue, status, created_by, reviewed_by, review_note)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (eid, chid, title, desc, etype, sdt, edt, ven, stat, cby, rby, rnote))
+                        INSERT INTO events (id, chapter_id, title, description, event_type, ytr_program, start_datetime, end_datetime, venue, status, created_by, reviewed_by, review_note)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (eid, chid, title, desc, etype, yprog, sdt, edt, ven, stat, cby, rby, rnote))
 
                 demo_requests = [
                     (1, 1, 1, 2, 'Youth Camp 2026: Unshakeable Faith', '2026-10-25', '8:00 AM - 5:00 PM', 'LSPU Los Baños Campus', 'Unshakeable Faith', 'Ignite your faith! Join us for Youth Camp 2026.', '2026-10-18', 'in_progress', 'assets/images/background.jpg', 4, 1, '2026-10-15 00:00:00', '2026-10-29', 'submitted'),

@@ -43,7 +43,7 @@ def list_reports():
                r.youth_leaders_count, r.attendee_roster, r.e_signature, r.signed_by_name,
                r.signed_at, r.budget_spent, r.report_summary, r.highlights, r.challenges,
                r.recommendations, r.status AS report_status, r.submitted_at,
-               e.id AS event_id, e.title AS event_title, e.start_datetime, e.end_datetime,
+               e.id AS event_id, e.title AS event_title, e.event_type, e.ytr_program, e.start_datetime, e.end_datetime,
                e.venue, e.status AS event_status, e.target_turnout, e.budget_amount,
                c.id AS chapter_id, c.chapter_name, c.chapter_code,
                c.regional_director_name, c.regional_director_id,
@@ -110,7 +110,7 @@ def get_report_signatories():
 @reports_bp.route('/<int:report_id>', methods=['GET'])
 def get_report(report_id):
     sql = """
-        SELECT r.*, e.title AS event_title, e.start_datetime, e.end_datetime,
+        SELECT r.*, e.title AS event_title, e.event_type, e.ytr_program, e.start_datetime, e.end_datetime,
                e.venue, e.target_turnout, e.budget_amount,
                c.chapter_name, c.chapter_code,
                c.regional_director_name, c.regional_director_id,
