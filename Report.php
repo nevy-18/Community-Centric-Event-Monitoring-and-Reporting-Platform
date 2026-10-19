@@ -362,7 +362,7 @@
                   <i class="ph ph-check"></i> Loaded
                 </span>
               </div>
-              <div style="font-size: 0.72rem; color: #475569;">Signatures will be placed automatically at the bottom with Chief Executive Operation and Regional Director.</div>
+              <div style="font-size: 0.72rem; color: #475569;">National Administrator signature will be placed automatically above Chief Executive Operation for official report endorsement.</div>
             </div>
           </div>
           <div>
@@ -439,8 +439,8 @@
             -
           </div>
 
-          <!-- 3-Tier Official Digital Signatures & Certifications -->
-          <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
+          <!-- Official Digital Signatures & Certifications (2-Column Layout) -->
+          <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
             
             <!-- 1. PREPARED BY (Chapter Submitter) -->
             <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
@@ -456,21 +456,7 @@
               <p id="printSignerTimestamp" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Verified Chapter Submission</p>
             </div>
 
-            <!-- 2. ENDORSED BY (Regional Director of specific chapter) -->
-            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
-              <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
-                Verified &amp; Endorsed by:
-              </div>
-              <div id="printRegionalDirectorSigBox" style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
-                <span style="font-size: 0.72rem; color: #2563eb; font-weight: 600;"><i class="ph ph-seal-check"></i> Regional Oversight Endorsement</span>
-              </div>
-              <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
-              <p id="printRegionalDirectorName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Elena Reyes</p>
-              <p id="printRegionalDirectorTitle" style="font-size: 0.72rem; color: #475569; margin: 1px 0 0;">Regional Director</p>
-              <p id="printRegionalDirectorChapter" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Regional Director of Specific Chapter</p>
-            </div>
-
-            <!-- 3. APPROVED BY (Chief Executive Operation) -->
+            <!-- 2. APPROVED BY (Chief Executive Operation) -->
             <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
               <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
                 Approved for National Records:
@@ -959,15 +945,7 @@
         submitterSigBox.innerHTML = `<span style="font-size: 0.72rem; color: #16a34a; font-weight: 600;"><i class="ph ph-check-circle"></i> Digital Dossier Signed</span>`;
       }
 
-      // 2. Regional Director of Specific Chapter Signatory Block
-      const regDirName = r.regional_director_name && r.regional_director_name.trim().length > 0 
-        ? r.regional_director_name 
-        : 'Elena Reyes';
-      document.getElementById('printRegionalDirectorName').textContent = regDirName;
-      document.getElementById('printRegionalDirectorTitle').textContent = 'Regional Director';
-      document.getElementById('printRegionalDirectorChapter').textContent = 'Regional Director of ' + (r.chapter_name || 'Specific Chapter');
-
-      // 3. Chief Executive Operation Signatory Block
+      // 2. Chief Executive Operation Signatory Block
       document.getElementById('printChiefExecName').textContent = currentSignatories.chief_executive_name || 'Hamilton Jones Dela';
       document.getElementById('printChiefExecTitle').textContent = currentSignatories.chief_executive_title || 'Chief Executive Operation';
       

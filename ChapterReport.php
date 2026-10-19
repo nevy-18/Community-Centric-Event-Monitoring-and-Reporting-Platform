@@ -760,10 +760,6 @@
         if (r.attendee_roster) roster = JSON.parse(r.attendee_roster);
       } catch (e) {}
 
-      const regDirName = (r.regional_director_name && r.regional_director_name.trim().length > 0)
-        ? r.regional_director_name
-        : 'Elena Reyes';
-      const chapterLabel = r.chapter_name || 'Specific Chapter';
       const execName = nationalExecName || 'Hamilton Jones Dela';
       const execSignatureHtml = nationalExecSignature
         ? `<img src="${nationalExecSignature}" alt="Chief Executive Signature" style="max-height: 46px; max-width: 160px; object-fit: contain;">`
@@ -855,8 +851,8 @@
           </div>
         ` : ''}
 
-        <!-- 3-Tier Official Digital Signatures & Certifications -->
-        <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
+        <!-- Official Digital Signatures & Certifications (2-Column Layout) -->
+        <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
           
           <!-- 1. PREPARED BY (Chapter Submitter) -->
           <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
@@ -872,21 +868,7 @@
             <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Verified Chapter Submission</p>
           </div>
 
-          <!-- 2. ENDORSED BY (Regional Director of specific chapter) -->
-          <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
-            <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
-              Verified &amp; Endorsed by:
-            </div>
-            <div style="height: 48px; display: flex; align-items: flex-end; margin-bottom: 4px;">
-              <span style="font-size: 0.72rem; color: #2563eb; font-weight: 600;"><i class="ph ph-seal-check"></i> Regional Oversight Endorsement</span>
-            </div>
-            <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
-            <p style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">${escapeHtml(regDirName)}</p>
-            <p style="font-size: 0.72rem; color: #475569; margin: 1px 0 0;">Regional Director</p>
-            <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Regional Director of ${escapeHtml(chapterLabel)}</p>
-          </div>
-
-          <!-- 3. APPROVED BY (Chief Executive Operation) -->
+          <!-- 2. APPROVED BY (Chief Executive Operation) -->
           <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
             <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
               Approved for National Records:
