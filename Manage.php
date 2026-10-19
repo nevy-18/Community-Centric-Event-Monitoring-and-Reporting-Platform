@@ -83,6 +83,10 @@
               <div class="tabs-container font-roboto">
                 <button class="tab-btn" onclick="switchAccountTab('all', this)"><i class="ph ph-users"></i> All Accounts</button>
                 <button class="tab-btn active" onclick="switchAccountTab('pending', this)"><i class="ph ph-clock"></i> Pending Requests</button>
+                <button class="tab-btn" onclick="switchAccountTab('password_resets', this)" id="tabPasswordResets">
+                  <i class="ph-bold ph-key"></i> Password Resets
+                  <span class="badge rose font-roboto" id="badgeResetCount" style="margin-left: 6px; font-size: 0.72rem; padding: 2px 7px; display: none;">0</span>
+                </button>
                 <button class="tab-btn" onclick="switchAccountTab('national_admins', this)"><i class="ph ph-shield-check"></i> National Admins</button>
                 <button class="tab-btn" onclick="switchAccountTab('chapter_admins', this)"><i class="ph ph-user-gear"></i> Chapter Admins</button>
                 <button class="tab-btn" onclick="switchAccountTab('chapter_directors', this)"><i class="ph ph-buildings"></i> Chapter Regional Directors</button>
@@ -212,6 +216,12 @@
                   <i class="ph ph-check"></i> Approve
                 </button>
               </div>
+
+              <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #e2e8f0;">
+                <button type="button" class="btn btn-outline font-roboto" id="btnOpenResetModal" onclick="openResetPasswordModalForSelected()" style="width: 100%; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.2s;">
+                  <i class="ph-bold ph-key"></i> <span>Provide Reset Password</span>
+                </button>
+              </div>
             </div>
 
           </div>
@@ -262,6 +272,93 @@
           <button type="button" class="btn btn-outline font-roboto" onclick="closeAssignDirectorModal()">Cancel</button>
           <button type="button" class="btn btn-primary font-roboto" id="btnSaveDirectorAssignment" onclick="saveDirectorAssignment()" style="background: #16a34a; border-color: #15803d;">
             <i class="ph ph-check"></i> Save Assignment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET PASSWORD MODAL -->
+  <div id="resetPasswordModal" class="modal-overlay hidden" style="display: none;">
+    <div class="modal-md" style="max-width: 520px;">
+      <div class="modal-header-banner" style="background: #fff1f2; border-bottom: 1px solid #fecdd3;">
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <div style="background: #fee2e2; color: #dc2626; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-key"></i>
+          </div>
+          <div>
+            <h3 style="color: #991b1b; margin: 0; font-size: 1rem;">Provide Reset Password</h3>
+            <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;">Issue a new temporary or custom password for this account.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeResetPasswordModal()"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="modal-body-scroll" style="background: #ffffff; padding: 1.25rem;">
+        <input type="hidden" id="resetUserId">
+
+        <!-- User Summary Card -->
+        <div style="margin-bottom: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Account Selected</div>
+              <div id="resetModalUserName" style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin-top: 0.15rem;">--</div>
+              <div id="resetModalUserEmail" style="font-size: 0.825rem; color: #2563eb; font-weight: 600;">--</div>
+            </div>
+            <span class="badge chapter-admin font-roboto" id="resetModalUserRole">--</span>
+          </div>
+          <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #475569;" id="resetModalUserChapter">
+            <i class="ph ph-buildings"></i> Chapter: --
+          </div>
+          <div id="resetModalNoteBox" style="margin-top: 0.5rem; background: #fff7ed; border: 1px solid #fed7aa; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #9a3412; display: none;">
+            <strong style="display: block; margin-bottom: 2px;"><i class="ph-bold ph-chat-circle-dots"></i> User Request Note:</strong>
+            <span id="resetModalNoteText"></span>
+          </div>
+        </div>
+
+        <!-- Password Inputs -->
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label class="form-label font-roboto" style="margin: 0; font-weight: 700; font-size: 0.825rem;">New Temporary Password</label>
+            <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="generateRandomTempPassword()" style="padding: 2px 8px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px; border-color: #cbd5e1; background: #f8fafc; color: #1e293b;">
+              <i class="ph ph-arrows-clockwise"></i> Auto-Generate
+            </button>
+          </div>
+          <div style="position: relative;">
+            <input type="text" id="resetNewPasswordInput" class="form-control font-roboto" placeholder="Minimum 8 characters" style="width: 100%; padding: 0.55rem 2.5rem 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.95rem; font-family: monospace; letter-spacing: 0.5px; font-weight: 700; color: #0f172a;">
+            <button type="button" onclick="copyInputPassword()" title="Copy password" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #64748b; cursor: pointer; padding: 4px; font-size: 1rem;">
+              <i class="ph ph-copy" id="iconCopyInput"></i>
+            </button>
+          </div>
+          <small style="color: #64748b; font-size: 0.73rem; display: block; margin-top: 0.25rem;">You can use this auto-generated secure password or enter a custom one (min. 8 characters).</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label font-roboto" style="display: block; font-weight: 700; margin-bottom: 0.35rem; font-size: 0.825rem;">Administrative Note (Optional)</label>
+          <input type="text" id="resetAdminNotesInput" class="form-control font-roboto" placeholder="e.g. Issued temporary password to user via phone/email" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem;">
+        </div>
+
+        <!-- Success Notification Box (Initially Hidden) -->
+        <div id="resetSuccessCallout" style="display: none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 0.85rem; margin-bottom: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: #065f46; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.4rem;">
+            <i class="ph-fill ph-check-circle" style="font-size: 1.15rem; color: #059669;"></i>
+            <span>Password Reset Successfully Issued!</span>
+          </div>
+          <p style="font-size: 0.78rem; color: #047857; margin: 0 0 0.5rem;">Copy and convey the temporary password below to the user:</p>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <div id="issuedPasswordDisplay" style="flex: 1; background: #ffffff; border: 1px dashed #059669; padding: 0.45rem 0.75rem; border-radius: 6px; font-family: monospace; font-size: 1rem; font-weight: 800; color: #064e3b; letter-spacing: 1px;">
+              --
+            </div>
+            <button type="button" class="btn btn-primary font-roboto btn-sm" id="btnCopyIssuedPassword" onclick="copyIssuedPassword()" style="background: #059669; border-color: #047857; display: inline-flex; align-items: center; gap: 4px; padding: 0.45rem 0.85rem;">
+              <i class="ph ph-copy"></i> <span id="copyIssuedText">Copy</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.65rem;">
+          <button type="button" class="btn btn-outline font-roboto" onclick="closeResetPasswordModal()">Close</button>
+          <button type="button" class="btn btn-danger font-roboto" id="btnConfirmResetPassword" onclick="confirmResetPassword()" style="background: #dc2626; border-color: #b91c1c; color: #ffffff; display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600;">
+            <i class="ph-bold ph-key"></i> <span id="textConfirmReset">Issue Password</span>
           </button>
         </div>
       </div>
@@ -372,6 +469,13 @@
         document.getElementById('metricPending').textContent = res.data.pending_requests || 0;
         document.getElementById('metricNational').textContent = res.data.national_admins || 0;
         document.getElementById('metricChapter').textContent = res.data.chapter_admins || 0;
+
+        const badgeReset = document.getElementById('badgeResetCount');
+        if (badgeReset) {
+          const count = res.data.password_resets || 0;
+          badgeReset.textContent = count;
+          badgeReset.style.display = count > 0 ? 'inline-block' : 'none';
+        }
       }
     }
 
@@ -417,7 +521,10 @@
       if (res.status === 'success' && Array.isArray(res.data)) {
         allAccountsCache = res.data;
         if (res.data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">No accounts found for this filter.</td></tr>';
+          const emptyMsg = filter === 'password_resets'
+            ? 'No pending password reset requests. All user accounts are up to date.'
+            : 'No accounts found for this filter.';
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">${emptyMsg}</td></tr>`;
           return;
         }
 
@@ -432,12 +539,27 @@
           else if (user.account_status === 'rejected') statusBadgeClass = 'badge rose';
 
           const reqDate = user.requested_at ? user.requested_at.replace('T', '<br>') : 'N/A';
+          const hasPendingReset = Number(user.password_reset_pending) === 1;
 
           row.innerHTML = `
             <td>
               <div class="td-user">
                 <img src="https://placehold.co/32x32/e2e8f0/64748b" alt="Avatar">
-                <span class="font-roboto">${escapeHtml(user.full_name)}</span>
+                <div>
+                  <span class="font-roboto">${escapeHtml(user.full_name)}</span>
+                  ${hasPendingReset ? `
+                    <div style="margin-top: 3px;">
+                      <span class="badge rose font-roboto" style="display: inline-flex; align-items: center; gap: 3px; font-size: 0.68rem; padding: 2px 6px;">
+                        <i class="ph-bold ph-key"></i> Reset Requested
+                      </span>
+                    </div>
+                  ` : ''}
+                  ${user.reset_notes ? `
+                    <div style="font-size: 0.72rem; color: #991b1b; font-style: italic; margin-top: 2px; max-width: 200px;">
+                      "${escapeHtml(user.reset_notes)}"
+                    </div>
+                  ` : ''}
+                </div>
               </div>
             </td>
             <td class="td-sub">${escapeHtml(user.email)}</td>
@@ -449,7 +571,12 @@
             <td class="td-sub" style="font-size: 0.8rem;">${reqDate}</td>
             <td style="text-align: center;"><span class="${statusBadgeClass} font-roboto">${user.account_status.toUpperCase()}</span></td>
             <td style="text-align: center;">
-              <button class="btn btn-primary btn-sm font-roboto" style="margin: 0 auto;" onclick='selectUserForReview(${JSON.stringify(user)})'>Review</button>
+              <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;">
+                <button class="btn btn-primary btn-sm font-roboto" onclick='selectUserForReview(${JSON.stringify(user)})'>Review</button>
+                <button class="btn btn-outline btn-sm font-roboto" title="Provide Reset Password" onclick='openResetPasswordModal(${JSON.stringify(user)})' style="padding: 0.32rem 0.55rem; color: #b91c1c; border-color: #fca5a5; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center;">
+                  <i class="ph-bold ph-key"></i>
+                </button>
+              </div>
             </td>
           `;
           tbody.appendChild(row);
@@ -711,6 +838,139 @@
       } else {
         alert(res.message || 'Error declining account.');
       }
+    }
+
+    // ==========================================
+    // Password Reset Handlers
+    // ==========================================
+    let selectedResetUser = null;
+
+    function generateRandomTempPassword() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let rand = '';
+      for (let i = 0; i < 4; i++) {
+        rand += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const pwd = `YTR-${rand}#26`;
+      const input = document.getElementById('resetNewPasswordInput');
+      if (input) input.value = pwd;
+      return pwd;
+    }
+
+    function openResetPasswordModal(user) {
+      if (!user) return;
+      selectedResetUser = user;
+      document.getElementById('resetUserId').value = user.id;
+      document.getElementById('resetModalUserName').textContent = user.full_name;
+      document.getElementById('resetModalUserEmail').textContent = user.email;
+      document.getElementById('resetModalUserRole').textContent = (user.position ? user.position + ' • ' : '') + (user.role === 'national_admin' ? 'National Admin' : 'Chapter Admin');
+      document.getElementById('resetModalUserChapter').innerHTML = `<i class="ph ph-buildings"></i> Chapter: <strong>${escapeHtml(user.chapter_name || 'National HQ')}</strong>`;
+      
+      const noteBox = document.getElementById('resetModalNoteBox');
+      const noteText = document.getElementById('resetModalNoteText');
+      if (user.reset_notes && user.reset_notes.trim().length > 0) {
+        noteText.textContent = user.reset_notes;
+        noteBox.style.display = 'block';
+      } else {
+        noteBox.style.display = 'none';
+      }
+
+      document.getElementById('resetAdminNotesInput').value = '';
+      document.getElementById('resetSuccessCallout').style.display = 'none';
+      document.getElementById('textConfirmReset').textContent = 'Issue Password';
+      document.getElementById('btnConfirmResetPassword').disabled = false;
+      document.getElementById('copyIssuedText').textContent = 'Copy';
+
+      generateRandomTempPassword();
+
+      const modal = document.getElementById('resetPasswordModal');
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+
+    function openResetPasswordModalForSelected() {
+      if (!selectedUserId) {
+        alert('Please select an account from the table first.');
+        return;
+      }
+      const user = allAccountsCache.find(u => Number(u.id) === Number(selectedUserId));
+      if (user) {
+        openResetPasswordModal(user);
+      } else {
+        alert('Could not find account details for the selected user.');
+      }
+    }
+
+    function closeResetPasswordModal() {
+      const modal = document.getElementById('resetPasswordModal');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      selectedResetUser = null;
+    }
+
+    async function confirmResetPassword() {
+      if (!selectedResetUser) return;
+      const pwdInput = document.getElementById('resetNewPasswordInput');
+      const notesInput = document.getElementById('resetAdminNotesInput');
+      const newPassword = (pwdInput.value || '').trim();
+      const notes = (notesInput.value || '').trim();
+
+      if (!newPassword || newPassword.length < 8) {
+        alert('Password must be at least 8 characters long.');
+        pwdInput.focus();
+        return;
+      }
+
+      const btn = document.getElementById('btnConfirmResetPassword');
+      const textSpan = document.getElementById('textConfirmReset');
+      btn.disabled = true;
+      textSpan.textContent = 'Saving...';
+
+      try {
+        const res = await YTR_API.accounts.resetPassword(selectedResetUser.id, newPassword, notes);
+        if (res.status === 'success' || res.ok) {
+          const issued = res.data?.temporary_password || newPassword;
+          document.getElementById('issuedPasswordDisplay').textContent = issued;
+          document.getElementById('resetSuccessCallout').style.display = 'block';
+          textSpan.textContent = 'Issued!';
+          
+          // Refresh accounts list and metrics in background
+          loadMetrics();
+          loadAccounts(activeFilter);
+        } else {
+          alert(res.message || 'Error resetting password.');
+          btn.disabled = false;
+          textSpan.textContent = 'Issue Password';
+        }
+      } catch (err) {
+        alert('Network error connecting to Python backend.');
+        btn.disabled = false;
+        textSpan.textContent = 'Issue Password';
+      }
+    }
+
+    function copyInputPassword() {
+      const input = document.getElementById('resetNewPasswordInput');
+      if (!input || !input.value) return;
+      navigator.clipboard.writeText(input.value).then(() => {
+        const icon = document.getElementById('iconCopyInput');
+        if (icon) {
+          icon.className = 'ph-bold ph-check';
+          setTimeout(() => { icon.className = 'ph ph-copy'; }, 1500);
+        }
+      });
+    }
+
+    function copyIssuedPassword() {
+      const text = document.getElementById('issuedPasswordDisplay').textContent.trim();
+      if (!text || text === '--') return;
+      navigator.clipboard.writeText(text).then(() => {
+        const span = document.getElementById('copyIssuedText');
+        if (span) {
+          span.textContent = 'Copied!';
+          setTimeout(() => { span.textContent = 'Copy'; }, 1800);
+        }
+      });
     }
 
     // ==========================================

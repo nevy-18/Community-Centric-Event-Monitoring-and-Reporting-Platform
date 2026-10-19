@@ -61,6 +61,12 @@ const YTR_API = {
     },
     me() {
       return YTR_API.request('/auth/me');
+    },
+    forgotPassword(email, notes = '') {
+      return YTR_API.request('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email, notes })
+      });
     }
   },
 
@@ -119,6 +125,16 @@ const YTR_API = {
     getSignature(user_id = null) {
       const q = user_id ? `?user_id=${user_id}` : '';
       return YTR_API.request(`/accounts/signature${q}`);
+    },
+    resetPassword(userId, newPassword = '', notes = '') {
+      return YTR_API.request(`/accounts/${userId}/reset-password`, {
+        method: 'POST',
+        body: JSON.stringify({ new_password: newPassword, notes })
+      });
+    },
+    getPasswordResets(status = 'all') {
+      const q = status ? `?status=${encodeURIComponent(status)}` : '';
+      return YTR_API.request(`/accounts/password-resets${q}`);
     }
   },
 

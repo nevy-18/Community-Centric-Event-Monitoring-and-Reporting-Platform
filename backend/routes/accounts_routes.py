@@ -1,6 +1,8 @@
 from flask import Blueprint, request, session
 from backend.db import get_db, serialize_rows, serialize_row
-from backend.auth_helpers import api_response, api_error
+from backend.auth_helpers import api_response, api_error, hash_password
+import secrets
+import string
 
 accounts_bp = Blueprint('accounts', __name__, url_prefix='/api/accounts')
 
@@ -20,11 +22,15 @@ def get_metrics():
             cur.execute("SELECT COUNT(*) AS c FROM users WHERE role = 'chapter_admin' AND account_status = 'active'")
             chapter = cur.fetchone()['c']
 
+            cur.execute("SELECT COUNT(*) AS c FROM users WHERE password_reset_pending = 1")
+            resets = cur.fetchone()['c']
+
     return api_response({
         'total_accounts': total,
         'pending_requests': pending,
         'national_admins': national,
-        'chapter_admins': chapter
+        'chapter_admins': chapter,
+        'password_resets': resets
     })
 
 @accounts_bp.route('', methods=['GET'])
@@ -35,6 +41,8 @@ def list_accounts():
     sql = """
         SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
                u.requested_at, u.reviewed_at, u.review_note,
+               u.password_reset_pending, u.password_reset_requested_at, u.temporary_password, u.password_reset_at,
+               (SELECT notes FROM password_resets WHERE user_id = u.id AND status = 'pending' ORDER BY id DESC LIMIT 1) AS reset_notes,
                c.chapter_name, c.chapter_code
         FROM users u
         LEFT JOIN chapters c ON c.id = u.chapter_id
@@ -44,6 +52,8 @@ def list_accounts():
 
     if filter_type == 'pending':
         sql += " AND u.account_status = 'pending'"
+    elif filter_type == 'password_resets':
+        sql += " AND (u.password_reset_pending = 1 OR u.id IN (SELECT user_id FROM password_resets WHERE status = 'pending'))"
     elif filter_type == 'national_admins':
         sql += " AND u.role = 'national_admin'"
     elif filter_type == 'chapter_admins':
@@ -72,6 +82,7 @@ def get_account(user_id):
             cur.execute("""
                 SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
                        u.requested_at, u.reviewed_at, u.review_note,
+                       u.password_reset_pending, u.password_reset_requested_at, u.temporary_password, u.password_reset_at,
                        c.chapter_name, c.chapter_code,
                        r.full_name AS reviewer_name
                 FROM users u
@@ -181,4 +192,102 @@ def handle_signature():
                     user = cur.fetchone()
 
     return api_response(serialize_row(user) if user else {'signature_image': None})
+
+@accounts_bp.route('/<int:user_id>/reset-password', methods=['POST'])
+def reset_password(user_id):
+    """National Administrator endpoint to issue/provide a reset password for a user account."""
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    new_password = (data.get('new_password') or data.get('password') or '').strip()
+    notes = (data.get('notes') or '').strip()
+    reviewer_id = session.get('user_id')
+
+    if not new_password:
+        chars = string.ascii_letters + string.digits
+        random_suffix = ''.join(secrets.choice(chars) for _ in range(4))
+        new_password = f"YTR-{random_suffix}#26"
+
+    if len(new_password) < 8:
+        return api_error('New password must be at least 8 characters long.', 400)
+
+    pw_hash = hash_password(new_password)
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT u.id, u.full_name, u.email, u.role, u.position, c.chapter_name
+                FROM users u
+                LEFT JOIN chapters c ON c.id = u.chapter_id
+                WHERE u.id = %s
+                LIMIT 1
+            """, (user_id,))
+            user = cur.fetchone()
+
+            if not user:
+                return api_error('Account not found.', 404)
+
+            # Update user password and clear reset flag
+            cur.execute("""
+                UPDATE users
+                SET password_hash = %s,
+                    temporary_password = %s,
+                    password_reset_pending = 0,
+                    password_reset_at = NOW()
+                WHERE id = %s
+            """, (pw_hash, new_password, user_id))
+
+            # Mark any pending password reset requests for this user as resolved
+            cur.execute("""
+                UPDATE password_resets
+                SET status = 'resolved',
+                    resolved_at = NOW(),
+                    resolved_by = %s,
+                    temporary_password = %s,
+                    notes = CASE WHEN %s != '' THEN %s ELSE notes END
+                WHERE user_id = %s AND status = 'pending'
+            """, (reviewer_id, new_password, notes, notes, user_id))
+
+            # Record audit log
+            cur.execute("""
+                INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details)
+                VALUES (%s, 'reset_password', 'user', %s, %s)
+            """, (reviewer_id, user_id, f"National Administrator issued reset password for {user['full_name']} ({user['email']})"))
+
+    return api_response({
+        'user_id': user_id,
+        'full_name': user['full_name'],
+        'email': user['email'],
+        'temporary_password': new_password
+    }, f"Password for {user['full_name']} has been reset successfully. Temporary password issued.")
+
+@accounts_bp.route('/password-resets', methods=['GET'])
+def list_password_resets():
+    """List password reset requests with user and chapter details."""
+    status_filter = request.args.get('status', 'all')
+    sql = """
+        SELECT pr.id, pr.user_id, pr.email, pr.status, pr.notes, pr.temporary_password,
+               pr.requested_at, pr.resolved_at,
+               u.full_name, u.role, u.position, u.account_status,
+               c.chapter_name, c.chapter_code,
+               r.full_name AS resolved_by_name
+        FROM password_resets pr
+        JOIN users u ON u.id = pr.user_id
+        LEFT JOIN chapters c ON c.id = u.chapter_id
+        LEFT JOIN users r ON r.id = pr.resolved_by
+        WHERE 1=1
+    """
+    params = []
+    if status_filter == 'pending':
+        sql += " AND pr.status = 'pending'"
+    elif status_filter == 'resolved':
+        sql += " AND pr.status = 'resolved'"
+
+    sql += " ORDER BY pr.requested_at DESC, pr.id DESC"
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, tuple(params))
+            resets = cur.fetchall()
+
+    return api_response(serialize_rows(resets))
+
 

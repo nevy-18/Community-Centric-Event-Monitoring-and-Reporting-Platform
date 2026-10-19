@@ -267,8 +267,88 @@ const loginTab = document.getElementById('loginTab');
 
 
 
-    document.getElementById('forgotPassword').addEventListener('click', () => {
+    // Forgot Password Recovery Modal
+    const forgotModal = document.getElementById('forgotPasswordModal');
+    const forgotForm = document.getElementById('forgotPasswordForm');
+    const forgotEmail = document.getElementById('forgotEmail');
+    const forgotNotes = document.getElementById('forgotNotes');
+    const forgotError = document.getElementById('forgotError');
+    const forgotSuccess = document.getElementById('forgotSuccess');
+    const btnCloseForgotModal = document.getElementById('btnCloseForgotModal');
+    const btnCancelForgotModal = document.getElementById('btnCancelForgotModal');
+    const btnSubmitForgot = document.getElementById('btnSubmitForgot');
 
-      showToast('Password recovery', 'Connect this control to your account recovery flow or contact your YTR administrator.', true);
+    function openForgotModal() {
+      const loginEmailVal = (document.getElementById('loginEmail')?.value || '').trim();
+      if (loginEmailVal && validEmail(loginEmailVal)) {
+        forgotEmail.value = loginEmailVal;
+      }
+      forgotError.textContent = '';
+      forgotError.classList.remove('visible');
+      forgotSuccess.innerHTML = '';
+      forgotSuccess.classList.add('hidden');
+      forgotModal.classList.remove('hidden');
+      setTimeout(() => (forgotEmail.value ? forgotNotes.focus() : forgotEmail.focus()), 100);
+    }
 
+    function closeForgotModal() {
+      forgotModal.classList.add('hidden');
+    }
+
+    document.getElementById('forgotPassword').addEventListener('click', openForgotModal);
+    if (btnCloseForgotModal) btnCloseForgotModal.addEventListener('click', closeForgotModal);
+    if (btnCancelForgotModal) btnCancelForgotModal.addEventListener('click', closeForgotModal);
+
+    forgotModal.addEventListener('click', (e) => {
+      if (e.target === forgotModal) closeForgotModal();
+    });
+
+    forgotForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      forgotError.textContent = '';
+      forgotError.classList.remove('visible');
+      forgotSuccess.innerHTML = '';
+      forgotSuccess.classList.add('hidden');
+
+      const emailVal = forgotEmail.value.trim();
+      const notesVal = forgotNotes.value.trim();
+
+      if (!emailVal || !validEmail(emailVal)) {
+        forgotError.textContent = 'Please enter a valid registered email address.';
+        forgotError.classList.add('visible');
+        forgotEmail.focus();
+        return;
+      }
+
+      try {
+        btnSubmitForgot.disabled = true;
+        btnSubmitForgot.style.opacity = '0.7';
+
+        const result = window.YTR_API
+          ? await YTR_API.auth.forgotPassword(emailVal, notesVal)
+          : await (await fetch('http://127.0.0.1:5000/api/auth/forgot-password', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: emailVal, notes: notesVal })
+            })).json();
+
+        if (result.status === 'success') {
+          forgotSuccess.innerHTML = `<strong>Request Submitted!</strong><br>${result.message || 'National Administration has been notified and can issue a temporary password for your account.'}`;
+          forgotSuccess.classList.remove('hidden');
+          showToast('Password Reset Requested', 'National Administration has been notified. They can now provide a temporary password for your account.');
+          setTimeout(() => {
+            closeForgotModal();
+            forgotForm.reset();
+          }, 3200);
+        } else {
+          forgotError.textContent = result.message || 'Unable to submit password reset request.';
+          forgotError.classList.add('visible');
+        }
+      } catch (err) {
+        forgotError.textContent = 'Could not reach the Python backend API (http://127.0.0.1:5000). Please ensure it is running.';
+        forgotError.classList.add('visible');
+      } finally {
+        btnSubmitForgot.disabled = false;
+        btnSubmitForgot.style.opacity = '1';
+      }
     });

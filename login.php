@@ -238,6 +238,55 @@
 
   </main>
 
+  <!-- Forgot Password Recovery Modal -->
+  <div class="auth-modal-overlay hidden" id="forgotPasswordModal" role="dialog" aria-modal="true" aria-labelledby="forgotModalTitle">
+    <div class="auth-modal-card">
+      <div class="auth-modal-header">
+        <div class="auth-modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="auth-modal-title" id="forgotModalTitle">Reset Account Password</h3>
+          <p class="auth-modal-subtitle">Submit your email address. The National Administration can issue a temporary password for your account.</p>
+        </div>
+        <button type="button" class="auth-modal-close" id="btnCloseForgotModal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="forgotPasswordForm" class="auth-modal-form" novalidate>
+        <div class="field full">
+          <label for="forgotEmail">Registered Email Address</label>
+          <input type="email" id="forgotEmail" name="email" placeholder="name@ytr.org" autocomplete="email" required />
+        </div>
+
+        <div class="field full">
+          <label for="forgotNotes">Additional Note (Optional)</label>
+          <textarea id="forgotNotes" name="notes" rows="2" placeholder="e.g. Locked out of device, please provide temporary password" class="auth-modal-textarea"></textarea>
+        </div>
+
+        <div class="auth-modal-info">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M12 16v-4m0-4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Once submitted, your request will appear in the National Admin reset queue. The National Admin will provide a temporary password for your account.</span>
+        </div>
+
+        <p class="form-error" id="forgotError" role="alert"></p>
+        <div class="form-success hidden" id="forgotSuccess" role="status"></div>
+
+        <div class="auth-modal-actions">
+          <button type="button" class="btn-cancel" id="btnCancelForgotModal">Cancel</button>
+          <button type="submit" class="primary-button" id="btnSubmitForgot" style="min-height: 42px; width: auto; padding: 0 20px;">
+            <span>Submit Request</span>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
 

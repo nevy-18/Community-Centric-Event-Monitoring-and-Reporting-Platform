@@ -165,3 +165,72 @@ def get_current_user():
         return api_error('User not found.', 404)
 
     return api_response({'user': serialize_row(user)})
+
+@auth_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    email = (data.get('email') or '').strip().lower()
+    notes = (data.get('notes') or '').strip()
+
+    if not email:
+        return api_error('Email address is required.', 400)
+
+    if not re.match(EMAIL_REGEX, email):
+        return api_error('Please provide a valid email address.', 400)
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT u.id, u.full_name, u.email, u.role, u.position, c.chapter_name
+                FROM users u
+                LEFT JOIN chapters c ON c.id = u.chapter_id
+                WHERE LOWER(u.email) = %s
+                LIMIT 1
+            """, (email,))
+            user = cur.fetchone()
+
+            if not user:
+                return api_error('No registered account found with that email address. Please verify your email or request an account.', 404)
+
+            # Check if there is already an active pending reset request
+            cur.execute("""
+                SELECT id FROM password_resets
+                WHERE user_id = %s AND status = 'pending'
+                ORDER BY id DESC LIMIT 1
+            """, (user['id'],))
+            existing_reset = cur.fetchone()
+
+            if existing_reset:
+                cur.execute("""
+                    UPDATE password_resets
+                    SET requested_at = NOW(), notes = %s
+                    WHERE id = %s
+                """, (notes or 'Password reset requested via login page.', existing_reset['id']))
+            else:
+                cur.execute("""
+                    INSERT INTO password_resets (user_id, email, status, notes, requested_at)
+                    VALUES (%s, %s, 'pending', %s, NOW())
+                """, (user['id'], user['email'], notes or 'Password reset requested via login page.'))
+
+            cur.execute("""
+                UPDATE users
+                SET password_reset_pending = 1,
+                    password_reset_requested_at = NOW()
+                WHERE id = %s
+            """, (user['id'],))
+
+            # Send Notification to National Admins
+            notif_msg = f"{user['full_name']} ({user['chapter_name'] or 'National Admin'}) submitted a password reset request."
+            cur.execute("""
+                INSERT INTO notifications (user_id, title, message, related_type, related_id, target_url, is_read, created_at)
+                SELECT id, 'Password Reset Requested', %s, 'account', %s, 'Manage.php', 0, NOW()
+                FROM users
+                WHERE role = 'national_admin' AND account_status = 'active'
+            """, (notif_msg, user['id']))
+
+    return api_response({
+        'user_id': user['id'],
+        'email': user['email'],
+        'full_name': user['full_name']
+    }, 'Password reset request submitted successfully. National Administration has been notified and can issue a temporary password for your account.')
+

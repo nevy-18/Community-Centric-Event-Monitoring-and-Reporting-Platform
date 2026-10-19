@@ -722,6 +722,95 @@ class TestYTRBackendAPI(unittest.TestCase):
 
         print("[PASS] Report attendance sheet and signature upload & download tests passed.")
 
+    def test_34_password_reset_workflow(self):
+        # 1. Test validation on forgot password
+        res_empty = self.client.post('/api/auth/forgot-password', json={'email': ''})
+        self.assertEqual(res_empty.status_code, 400)
+
+        res_invalid = self.client.post('/api/auth/forgot-password', json={'email': 'not-an-email'})
+        self.assertEqual(res_invalid.status_code, 400)
+
+        res_notfound = self.client.post('/api/auth/forgot-password', json={'email': 'ghost_user@ytr.org'})
+        self.assertEqual(res_notfound.status_code, 404)
+
+        # 2. Test valid password reset request for chapter admin
+        res_request = self.client.post('/api/auth/forgot-password', json={
+            'email': 'joan.dela@gmail.com',
+            'notes': 'Locked out on mobile device. Requesting new temporary credentials.'
+        })
+        self.assertEqual(res_request.status_code, 200)
+        req_data = res_request.get_json()
+        self.assertEqual(req_data.get('status'), 'success')
+        self.assertEqual(req_data['data']['email'], 'joan.dela@gmail.com')
+        user_id = req_data['data']['user_id']
+
+        # 3. Check accounts metrics includes pending password reset
+        res_metrics = self.client.get('/api/accounts/metrics')
+        self.assertEqual(res_metrics.status_code, 200)
+        metrics = res_metrics.get_json()['data']
+        self.assertGreaterEqual(metrics.get('password_resets', 0), 1)
+
+        # 4. Check accounts list filter=password_resets
+        res_list = self.client.get('/api/accounts?filter=password_resets')
+        self.assertEqual(res_list.status_code, 200)
+        reset_accounts = res_list.get_json()['data']
+        target_acc = next((u for u in reset_accounts if u['id'] == user_id), None)
+        self.assertIsNotNone(target_acc)
+        self.assertEqual(target_acc.get('password_reset_pending'), 1)
+        self.assertIn('Locked out', target_acc.get('reset_notes', ''))
+
+        # 5. Check password resets log endpoint
+        res_log = self.client.get('/api/accounts/password-resets?status=pending')
+        self.assertEqual(res_log.status_code, 200)
+        pending_resets = res_log.get_json()['data']
+        self.assertTrue(any(pr['user_id'] == user_id for pr in pending_resets))
+
+        # 6. Admin issues new temporary password
+        custom_temp_pw = "TempPass#2026!"
+        res_reset = self.client.post(f'/api/accounts/{user_id}/reset-password', json={
+            'new_password': custom_temp_pw,
+            'notes': 'Admin generated temp password during test'
+        })
+        self.assertEqual(res_reset.status_code, 200)
+        reset_result = res_reset.get_json()
+        self.assertEqual(reset_result.get('status'), 'success')
+        self.assertEqual(reset_result['data']['temporary_password'], custom_temp_pw)
+
+        # 7. Verify user state is cleared of pending reset
+        res_after = self.client.get(f'/api/accounts/{user_id}')
+        self.assertEqual(res_after.status_code, 200)
+        user_data = res_after.get_json()['data']
+        self.assertEqual(user_data.get('password_reset_pending'), 0)
+
+        # 8. Verify user can now log in with the new temporary password
+        res_login_temp = self.client.post('/api/auth/login', json={
+            'email': 'joan.dela@gmail.com',
+            'password': custom_temp_pw
+        })
+        self.assertEqual(res_login_temp.status_code, 200)
+        login_data = res_login_temp.get_json()
+        self.assertEqual(login_data.get('status'), 'success')
+        self.assertEqual(login_data['data']['user']['email'], 'joan.dela@gmail.com')
+
+        # 9. Test auto-generating password when none is specified
+        res_auto = self.client.post(f'/api/accounts/{user_id}/reset-password', json={})
+        self.assertEqual(res_auto.status_code, 200)
+        auto_pwd = res_auto.get_json()['data']['temporary_password']
+        self.assertTrue(auto_pwd.startswith('YTR-'))
+        self.assertTrue(len(auto_pwd) >= 8)
+
+        # 10. Login with auto-generated password
+        res_login_auto = self.client.post('/api/auth/login', json={
+            'email': 'joan.dela@gmail.com',
+            'password': auto_pwd
+        })
+        self.assertEqual(res_login_auto.status_code, 200)
+
+        # Restore original password for joan.dela@gmail.com so subsequent tests stay predictable
+        self.client.post(f'/api/accounts/{user_id}/reset-password', json={'new_password': 'Password123!'})
+
+        print("[PASS] Full password reset workflow (request, review, issue, and login) passed.")
+
 if __name__ == '__main__':
     unittest.main()
 
