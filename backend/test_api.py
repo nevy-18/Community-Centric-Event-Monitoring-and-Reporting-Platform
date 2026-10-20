@@ -866,6 +866,47 @@ class TestYTRBackendAPI(unittest.TestCase):
 
         print("[PASS] Report event pictures Google Drive link submission & retrieval verified.")
 
+    def test_36_proposal_drive_link(self):
+        sample_drive_url = "https://drive.google.com/drive/folders/1prop-ytr-drive-folder"
+        payload = {
+            'chapter_id': 1,
+            'title': 'Test Drive Link Youth Empowerment Summit',
+            'ytr_program': 'Gear up (Youth preparation and empowerment)',
+            'target_audience': 'BSIT Students',
+            'event_type': 'leadership_training',
+            'venue': 'LSPU Main Auditorium',
+            'start_datetime': '2026-11-20 09:00:00',
+            'end_datetime': '2026-11-20 17:00:00',
+            'target_turnout': 160,
+            'budget_amount': 22000,
+            'due_date': '2026-11-25',
+            'description': 'Event proposal testing Google Drive link integration for presentation and soft copies.',
+            'drive_link': sample_drive_url
+        }
+
+        # 1. Submit proposal
+        res = self.client.post('/api/proposals', data=payload)
+        self.assertEqual(res.status_code, 201)
+        data = res.get_json()['data']
+        self.assertEqual(data.get('drive_link'), sample_drive_url)
+        event_id = data['event_id']
+
+        # 2. Retrieve proposal details by ID
+        res_get = self.client.get(f'/api/proposals/{event_id}')
+        self.assertEqual(res_get.status_code, 200)
+        p_data = res_get.get_json()['data']
+        self.assertEqual(p_data.get('drive_link'), sample_drive_url)
+
+        # 3. Retrieve proposals list
+        res_list = self.client.get('/api/proposals')
+        self.assertEqual(res_list.status_code, 200)
+        proposals = res_list.get_json()['data']
+        matching = [p for p in proposals if p['id'] == event_id]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(matching[0].get('drive_link'), sample_drive_url)
+
+        print("[PASS] Proposal Google Drive link submission, storage, and retrieval verified.")
+
 if __name__ == '__main__':
     unittest.main()
 

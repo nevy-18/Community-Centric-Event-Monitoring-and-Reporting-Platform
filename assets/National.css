@@ -525,7 +525,11 @@ body.sidebar-mobile-open {
   .app-wrapper { display: block !important; width: 100% !important; height: auto !important; }
   .main-wrapper { overflow: visible !important; }
   .page-content { overflow: visible !important; padding: 0 !important; }
-  .sidebar, .topbar, .tabs-container, .table-header, .page-header, .search-bar, .modal-overlay, .btn, .icon-btn, .pending-alert-banner, .layout-sidebar {
+  @page {
+    size: auto;
+    margin: 12mm 15mm;
+  }
+  .sidebar, .topbar, .tabs-container, .table-header, .page-header, .search-bar, .modal-overlay:not(#proposalDossierModal):not(#printModal), .btn, .icon-btn, .pending-alert-banner, .layout-sidebar {
     display: none !important;
   }
   .printable-document {

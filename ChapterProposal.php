@@ -9,42 +9,160 @@
     <script src="assets/api-client.js"></script>
     <style>
     @media print {
-      body * {
-        visibility: hidden !important;
+      @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
       }
-      #proposalDossierModal, #proposalDossierModal .modal-box, #proposalDossierModal .modal-body, #printableProposalDossier, #printableProposalDossier * {
-        visibility: visible !important;
-      }
-      #proposalDossierModal {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
+      html, body {
         background: #ffffff !important;
+        color: #000000 !important;
+        height: auto !important;
+        min-height: 100% !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .app-wrapper,
+      .sidebar,
+      .topbar,
+      .page-header,
+      .tabs-container,
+      .search-bar,
+      .print-no-print,
+      button,
+      .btn {
+        display: none !important;
+      }
+
+      /* Unhide the proposal dossier modal container and render it as normal document flow */
+      #proposalDossierModal {
+        display: block !important;
+        position: static !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: transparent !important;
         padding: 0 !important;
         margin: 0 !important;
-        display: block !important;
         box-shadow: none !important;
-        z-index: 99999 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        z-index: auto !important;
       }
-      #proposalDossierModal .modal-box {
+      #proposalDossierModal > div {
+        display: block !important;
         max-width: 100% !important;
         width: 100% !important;
-        box-shadow: none !important;
-        border: none !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
         padding: 0 !important;
         margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
       }
-      #proposalDossierModal .modal-header,
+      #proposalDossierModal > div > div:first-child,
       #proposalDossierModal .print-action-bar,
       #proposalDossierModal .print-status-banner,
       #proposalDossierModal button {
         display: none !important;
       }
-      .print-document-sheet {
+
+      #printableProposalDossier {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
         border: none !important;
-        padding: 0 !important;
         box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        font-family: 'Roboto', sans-serif !important;
+        page-break-inside: auto;
+      }
+      #printableProposalDossier,
+      #printableProposalDossier * {
+        visibility: visible !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      #printableProposalDossier table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto;
+      }
+      #printableProposalDossier tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      #printableProposalDossier th,
+      #printableProposalDossier td {
+        border: 1px solid #94a3b8 !important;
+        color: #000000 !important;
+        padding: 6px 10px !important;
+      }
+      #printableProposalDossier th {
+        background: #1a2f63 !important;
+        color: #ffffff !important;
+      }
+      #dossierTitle,
+      #dossierProgram,
+      #dossierAudience,
+      #dossierChapter,
+      #dossierEventType,
+      #dossierSchedule,
+      #dossierVenue,
+      #dossierTurnout,
+      #dossierBudget,
+      #dossierThreshold,
+      #dossierDueDate,
+      #dossierDescription {
+        color: #000000 !important;
+        visibility: visible !important;
+        font-weight: 700 !important;
+      }
+      .print-signatures-row {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        gap: 3rem !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-top: 2rem !important;
+        padding-top: 1.25rem !important;
+        border-top: 2px solid #000000 !important;
+        visibility: visible !important;
+      }
+      .print-signatures-row > div {
+        width: 45% !important;
+        min-height: auto !important;
+        visibility: visible !important;
+      }
+      #dossierSubmitterName,
+      #dossierSubmitterTitle,
+      #dossierSubmitterStamp,
+      #dossierReviewerName,
+      #dossierReviewerTitle,
+      #dossierReviewNotes {
+        display: block !important;
+        visibility: visible !important;
+        color: #000000 !important;
+      }
+      #dossierSubmitterName,
+      #dossierReviewerName {
+        font-size: 0.95rem !important;
+        font-weight: 900 !important;
+      }
+      #dossierSubmitterTitle,
+      #dossierReviewerTitle {
+        font-size: 0.8rem !important;
+        font-weight: 700 !important;
       }
     }
     </style>
@@ -262,13 +380,30 @@
                     <textarea id="p-desc" rows="3" required placeholder="Describe the purpose, theme, speaker, and spiritual or community objectives of the event..." style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;"></textarea>
                 </div>
 
-                <div style="margin-bottom: 1.5rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 1rem;">
+                <div style="margin-bottom: 1rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 1rem;">
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">
                         <i class="ph ph-file-arrow-up" style="color: #2563eb;"></i> Upload Proposal Document / Soft Copy (Optional)
                     </label>
                     <input type="file" id="p-attachment" accept=".pdf,.doc,.docx,.pptx,.xlsx,.png,.jpg,.jpeg" style="width: 100%; font-size: 0.85rem; color: #475569;">
                     <small style="color: #64748b; font-size: 0.72rem; display: block; margin-top: 0.25rem;">
                         Attach an official proposal dossier, program flow, presentation, or budget breakdown (PDF, DOCX, etc.). The National Secretariat will be able to download this soft copy directly.
+                    </small>
+                </div>
+
+                <!-- Google Drive / Cloud Soft Copy Link -->
+                <div style="margin-bottom: 1.5rem; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 8px; padding: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; font-weight: 700; color: #0369a1; margin-bottom: 0.35rem;">
+                        <i class="ph-bold ph-google-drive-logo" style="font-size: 1.2rem; color: #0284c7;"></i>
+                        <span>Google Drive / Cloud Proposal Link (Optional)</span>
+                    </label>
+                    <div style="position: relative;">
+                        <input type="url" id="p-drive-link" placeholder="https://drive.google.com/drive/folders/... (Google Drive, Docs, Slides, or Sheets)" style="width: 100%; padding: 0.6rem 0.75rem 0.6rem 2.4rem; border: 1px solid #7dd3fc; border-radius: 6px; font-size: 0.875rem; background: #ffffff; color: #0f172a;">
+                        <div style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #0284c7; pointer-events: none;">
+                            <i class="ph-bold ph-link"></i>
+                        </div>
+                    </div>
+                    <small style="color: #0369a1; font-size: 0.75rem; margin-top: 0.35rem; display: block;">
+                        Provide a shared Google Drive folder, Google Doc proposal, or presentation deck link. Accessible to the National Secretariat for evaluation.
                     </small>
                 </div>
 
@@ -575,6 +710,14 @@
                     <i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}
                 </span>`;
 
+                let docBadges = '';
+                if (p.attachment_path) {
+                    docBadges += `<span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 0.7rem; padding: 2px 6px;" title="Proposal Soft Copy Attached"><i class="ph-bold ph-paperclip"></i> Soft Copy</span>`;
+                }
+                if (p.drive_link) {
+                    docBadges += `<a href="${escapeHtml(p.drive_link)}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.7rem; padding: 2px 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Open Cloud / Google Drive Proposal"><i class="ph-bold ph-google-drive-logo"></i> Drive</a>`;
+                }
+
                 return `
                     <tr>
                         <td>
@@ -583,6 +726,7 @@
                                 <small style="color: #64748b; text-transform: uppercase;">${escapeHtml(p.event_type || 'Event')}</small>
                                 ${progBadge}
                                 ${audienceBadge}
+                                ${docBadges}
                             </div>
                         </td>
                         <td>
@@ -661,6 +805,11 @@
                 formData.append('attachment', fileInput.files[0]);
             }
 
+            const driveLinkVal = (document.getElementById('p-drive-link')?.value || '').trim();
+            if (driveLinkVal) {
+                formData.append('drive_link', driveLinkVal);
+            }
+
             try {
                 const res = await YTR_API.proposals.create(formData);
                 if (res.ok) {
@@ -718,32 +867,54 @@
 
             const attInfo = document.getElementById('dossierAttachmentInfo');
             const bannerAttContainer = document.getElementById('dossierAttachmentDownloadBtnContainer');
+            let attHtml = '';
+
             if (p.attachment_path) {
-                const filename = p.attachment_path.split('/').pop();
-                attInfo.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                attHtml += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: ${p.drive_link ? '0.75rem' : '0'};">
                         <div>
-                            <div style="font-weight: 700; color: #166534;"><i class="ph-bold ph-paperclip"></i> Uploaded Document: ${escapeHtml(filename)}</div>
-                            <div style="font-size: 0.72rem; color: #475569; margin-top: 2px;">Official uploaded proposal soft copy.</div>
+                            <div style="font-weight: 700; color: #166534;"><i class="ph-bold ph-file-check"></i> Official Proposal Soft Copy Attached</div>
+                            <div style="font-size: 0.72rem; color: #475569; margin-top: 2px;">Verified digital proposal dossier filed with chapter submission.</div>
                         </div>
-                        <a href="${p.attachment_path}" download class="btn btn-primary btn-sm font-roboto" style="background: #16a34a; border-color: #15803d; text-decoration: none; padding: 0.4rem 0.75rem;">
+                        <a href="${p.attachment_path}" download class="btn btn-primary btn-sm font-roboto print-no-print" style="background: #16a34a; border-color: #15803d; text-decoration: none; padding: 0.4rem 0.75rem;">
                             <i class="ph-bold ph-download-simple"></i> Download File
                         </a>
                     </div>
                 `;
                 bannerAttContainer.innerHTML = `
-                    <a href="${p.attachment_path}" download class="btn btn-outline font-roboto btn-sm" style="background: #fff; font-size: 0.78rem; text-decoration: none; color: #16a34a; border-color: #86efac;">
+                    <a href="${p.attachment_path}" download class="btn btn-outline font-roboto btn-sm print-no-print" style="background: #fff; font-size: 0.78rem; text-decoration: none; color: #16a34a; border-color: #86efac;">
                         <i class="ph ph-file-arrow-down"></i> Download Uploaded File
                     </a>
                 `;
             } else {
-                attInfo.innerHTML = `
-                    <div style="color: #475569; font-style: italic;">
-                        <i class="ph ph-info"></i> No external document attached. This electronic dossier comprises your complete official proposal record.
-                    </div>
-                `;
                 bannerAttContainer.innerHTML = '';
             }
+
+            if (p.drive_link) {
+                attHtml += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #ffffff; padding: 0.65rem 0.75rem; border-radius: 6px; border: 1px solid #bae6fd;">
+                        <div>
+                            <div style="font-weight: 700; color: #0369a1;"><i class="ph-bold ph-google-drive-logo"></i> Proposal Cloud / Google Drive Link</div>
+                            <div style="font-size: 0.72rem; color: #0284c7; word-break: break-all; margin-top: 2px;">
+                                <a href="${escapeHtml(p.drive_link)}" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">${escapeHtml(p.drive_link)}</a>
+                            </div>
+                        </div>
+                        <a href="${escapeHtml(p.drive_link)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm font-roboto print-no-print" style="background: #ffffff; color: #0369a1; border-color: #7dd3fc; text-decoration: none; padding: 0.35rem 0.65rem; font-size: 0.75rem;">
+                            <i class="ph-bold ph-arrow-square-out"></i> Open Link
+                        </a>
+                    </div>
+                `;
+            }
+
+            if (!p.attachment_path && !p.drive_link) {
+                attHtml = `
+                    <div style="color: #475569; font-style: italic;">
+                        <i class="ph ph-info"></i> No external document or drive link attached. This electronic dossier comprises your complete official proposal record.
+                    </div>
+                `;
+            }
+
+            attInfo.innerHTML = attHtml;
 
             document.getElementById('dossierSubmitterName').textContent = (currentUser && currentUser.full_name) ? currentUser.full_name : (p.requester_name || 'Chapter Coordinator');
             document.getElementById('dossierSubmitterTitle').textContent = 'Chapter Administrator';

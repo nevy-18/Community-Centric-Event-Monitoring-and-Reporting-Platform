@@ -16,40 +16,118 @@
   <script src="assets/api-client.js"></script>
   <style>
     @media print {
-      body * {
-        visibility: hidden !important;
+      @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
       }
-      #print-modal, #print-modal *, #print-dossier-content, #print-dossier-content * {
-        visibility: visible !important;
-      }
-      #print-modal {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
+      html, body {
         background: #ffffff !important;
+        color: #000000 !important;
+        height: auto !important;
+        min-height: 100% !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .app-wrapper,
+      .sidebar,
+      .topbar,
+      .page-header,
+      .tabs-container,
+      .search-bar,
+      .print-no-print,
+      button,
+      .btn {
+        display: none !important;
+      }
+
+      /* Unhide the print receipt modal and render it as flat normal document flow */
+      #print-modal {
+        display: block !important;
+        position: static !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: transparent !important;
         padding: 0 !important;
         margin: 0 !important;
-        display: block !important;
         box-shadow: none !important;
-        z-index: 99999 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        z-index: auto !important;
       }
       #print-modal > div {
+        display: block !important;
         max-width: 100% !important;
         width: 100% !important;
-        box-shadow: none !important;
-        border: none !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
         padding: 0 !important;
         margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
       }
-      .print-no-print,
+      #print-modal .print-no-print,
       #print-modal button {
         display: none !important;
       }
+
       .printable-document {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
         border: none !important;
-        padding: 0 !important;
         box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        font-family: 'Roboto', sans-serif !important;
+        page-break-inside: auto;
+      }
+      .printable-document,
+      .printable-document * {
+        visibility: visible !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .printable-document table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto;
+      }
+      .printable-document tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .printable-document th,
+      .printable-document td {
+        border: 1px solid #94a3b8 !important;
+        color: #000000 !important;
+        padding: 6px 10px !important;
+      }
+      .print-signatures-row {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        gap: 3rem !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-top: 2rem !important;
+        padding-top: 1.25rem !important;
+        border-top: 2px solid #000000 !important;
+        visibility: visible !important;
+      }
+      .print-signatures-row > div {
+        width: 45% !important;
+        min-height: auto !important;
+        visibility: visible !important;
       }
     }
   </style>

@@ -109,7 +109,7 @@ def list_proposals():
         SELECT e.id, e.chapter_id, e.title, e.description, e.event_type, e.ytr_program, e.target_audience,
                e.start_datetime, e.end_datetime, e.venue, e.status,
                e.created_at, e.review_note, e.target_turnout, e.budget_amount,
-               e.budget_threshold, e.due_date, e.approved_at, e.attachment_path,
+               e.budget_threshold, e.due_date, e.approved_at, e.attachment_path, e.drive_link,
                c.chapter_name, c.chapter_code,
                u.full_name AS requester_name
         FROM events e
@@ -223,6 +223,8 @@ def create_proposal():
     elif data.get('attachment_path'):
         attachment_path = data.get('attachment_path')
 
+    drive_link = (data.get('drive_link') or data.get('proposal_drive_link') or '').strip() or None
+
     def _format_dt(val, default_time='09:00:00'):
         if not val:
             return None
@@ -250,8 +252,8 @@ def create_proposal():
                 chapter_id = ch['id'] if ch else None
 
             cur.execute("""
-                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, target_audience, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, attachment_path, status, created_by, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
+                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, target_audience, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, attachment_path, drive_link, status, created_by, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
             """, (
                 chapter_id,
                 title,
@@ -267,11 +269,12 @@ def create_proposal():
                 budget_threshold,
                 due_date,
                 attachment_path,
+                drive_link,
                 created_by
             ))
             new_id = cur.lastrowid
 
-    return api_response({'event_id': new_id, 'attachment_path': attachment_path}, 'Event proposal submitted successfully and added to review queue!', 201)
+    return api_response({'event_id': new_id, 'attachment_path': attachment_path, 'drive_link': drive_link}, 'Event proposal submitted successfully and added to review queue!', 201)
 
 @proposals_bp.route('/<int:proposal_id>/review', methods=['POST'])
 def review_proposal(proposal_id):
