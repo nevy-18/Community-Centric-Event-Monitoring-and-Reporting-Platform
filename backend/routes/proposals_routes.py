@@ -1,10 +1,13 @@
 import os
 import uuid
+import logging
 from pathlib import Path
 from flask import Blueprint, request, session, send_file
 from backend.db import get_db, serialize_rows, serialize_row
 from backend.auth_helpers import api_response, api_error
 from datetime import datetime, date
+
+logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -190,91 +193,111 @@ def download_proposal_attachment(proposal_id):
 
 @proposals_bp.route('', methods=['POST'])
 def create_proposal():
-    data = request.get_json(silent=True) or request.form.to_dict() or {}
-    title = data.get('title', '').strip()
-    chapter_id = data.get('chapter_id') or session.get('chapter_id')
-    start_date = data.get('start_date') or data.get('start_datetime')
-    end_date = data.get('end_date') or data.get('end_datetime') or start_date
-    venue = data.get('venue', '').strip()
-    description = data.get('description', '').strip()
-    event_type = data.get('event_type', 'chapter')
-    ytr_program = data.get('ytr_program') or data.get('program') or 'Lead up (Youth Leadership)'
-    target_audience = (data.get('target_audience') or 'Open for All').strip() or 'Open for All'
-    target_turnout = int(data.get('target_turnout') or 100)
-    budget_amount = float(data.get('budget_amount') or 0.0)
-    budget_threshold = float(data.get('budget_threshold') or 25000.0)
-    due_date = data.get('due_date') or start_date
-    created_by = session.get('user_id')
+    try:
+        data = request.get_json(silent=True) or request.form.to_dict() or {}
+        title = data.get('title', '').strip()
+        chapter_id = data.get('chapter_id') or session.get('chapter_id')
+        start_date = data.get('start_date') or data.get('start_datetime')
+        end_date = data.get('end_date') or data.get('end_datetime') or start_date
+        venue = data.get('venue', '').strip()
+        description = data.get('description', '').strip()
+        event_type = (data.get('event_type') or 'chapter').strip()
+        ytr_program = data.get('ytr_program') or data.get('program') or 'Lead up (Youth Leadership)'
+        target_audience = (data.get('target_audience') or 'Open for All').strip() or 'Open for All'
 
-    if not title or not start_date or not venue or not description:
-        return api_error('Title, start date, venue, and description are required.', 400)
+        try:
+            target_turnout = int(data.get('target_turnout') or 100)
+        except (ValueError, TypeError):
+            target_turnout = 100
 
-    # Process uploaded attachment file if present
-    attachment_path = None
-    file = request.files.get('attachment') or request.files.get('proposal_file') or request.files.get('proposal_doc')
-    if file and file.filename != '':
-        ext = os.path.splitext(file.filename)[1].lower()
-        unique_fname = f"proposal_{uuid.uuid4().hex[:10]}{ext}"
-        target_dir = os.path.join(PROJECT_ROOT, 'assets', 'uploads', 'proposals')
-        os.makedirs(target_dir, exist_ok=True)
-        save_path = os.path.join(target_dir, unique_fname)
-        file.save(save_path)
-        attachment_path = f"assets/uploads/proposals/{unique_fname}"
-    elif data.get('attachment_path'):
-        attachment_path = data.get('attachment_path')
+        try:
+            budget_amount = float(data.get('budget_amount') or 0.0)
+        except (ValueError, TypeError):
+            budget_amount = 0.0
 
-    drive_link = (data.get('drive_link') or data.get('proposal_drive_link') or '').strip() or None
+        try:
+            budget_threshold = float(data.get('budget_threshold') or 25000.0)
+        except (ValueError, TypeError):
+            budget_threshold = 25000.0
 
-    def _format_dt(val, default_time='09:00:00'):
-        if not val:
-            return None
-        val_str = str(val).replace('T', ' ')
-        if len(val_str) == 10:
-            return f"{val_str} {default_time}"
-        return val_str
+        due_date = data.get('due_date') or start_date
+        if due_date:
+            due_date = str(due_date).split('T')[0].split(' ')[0]
 
-    formatted_start = _format_dt(start_date, '09:00:00')
-    formatted_end = _format_dt(end_date, '17:00:00')
+        created_by = session.get('user_id')
 
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            if not created_by:
-                cur.execute("SELECT id, chapter_id FROM users WHERE account_status = 'active' LIMIT 1")
-                first_user = cur.fetchone()
-                if first_user:
-                    created_by = first_user['id']
-                    if not chapter_id:
-                        chapter_id = first_user['chapter_id']
+        if not title or not start_date or not venue or not description:
+            return api_error('Title, start date, venue, and description are required.', 400)
 
-            if not chapter_id:
-                cur.execute("SELECT id FROM chapters LIMIT 1")
-                ch = cur.fetchone()
-                chapter_id = ch['id'] if ch else None
+        # Process uploaded attachment file if present
+        attachment_path = None
+        file = request.files.get('attachment') or request.files.get('proposal_file') or request.files.get('proposal_doc')
+        if file and file.filename != '':
+            ext = os.path.splitext(file.filename)[1].lower()
+            unique_fname = f"proposal_{uuid.uuid4().hex[:10]}{ext}"
+            target_dir = os.path.join(PROJECT_ROOT, 'assets', 'uploads', 'proposals')
+            os.makedirs(target_dir, exist_ok=True)
+            save_path = os.path.join(target_dir, unique_fname)
+            file.save(save_path)
+            attachment_path = f"assets/uploads/proposals/{unique_fname}"
+        elif data.get('attachment_path'):
+            attachment_path = data.get('attachment_path')
 
-            cur.execute("""
-                INSERT INTO events (chapter_id, title, description, event_type, ytr_program, target_audience, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, attachment_path, drive_link, status, created_by, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
-            """, (
-                chapter_id,
-                title,
-                description,
-                event_type,
-                ytr_program,
-                target_audience,
-                formatted_start,
-                formatted_end,
-                venue,
-                target_turnout,
-                budget_amount,
-                budget_threshold,
-                due_date,
-                attachment_path,
-                drive_link,
-                created_by
-            ))
-            new_id = cur.lastrowid
+        drive_link = (data.get('drive_link') or data.get('proposal_drive_link') or '').strip() or None
 
-    return api_response({'event_id': new_id, 'attachment_path': attachment_path, 'drive_link': drive_link}, 'Event proposal submitted successfully and added to review queue!', 201)
+        def _format_dt(val, default_time='09:00:00'):
+            if not val:
+                return None
+            val_str = str(val).replace('T', ' ')
+            if len(val_str) == 10:
+                return f"{val_str} {default_time}"
+            return val_str
+
+        formatted_start = _format_dt(start_date, '09:00:00')
+        formatted_end = _format_dt(end_date, '17:00:00')
+
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                if not created_by:
+                    cur.execute("SELECT id, chapter_id FROM users WHERE account_status = 'active' LIMIT 1")
+                    first_user = cur.fetchone()
+                    if first_user:
+                        created_by = first_user['id']
+                        if not chapter_id:
+                            chapter_id = first_user['chapter_id']
+
+                if not chapter_id:
+                    cur.execute("SELECT id FROM chapters LIMIT 1")
+                    ch = cur.fetchone()
+                    chapter_id = ch['id'] if ch else None
+
+                cur.execute("""
+                    INSERT INTO events (chapter_id, title, description, event_type, ytr_program, target_audience, start_datetime, end_datetime, venue, target_turnout, budget_amount, budget_threshold, due_date, attachment_path, drive_link, status, created_by, created_at)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending_approval', %s, NOW())
+                """, (
+                    chapter_id,
+                    title,
+                    description,
+                    event_type,
+                    ytr_program,
+                    target_audience,
+                    formatted_start,
+                    formatted_end,
+                    venue,
+                    target_turnout,
+                    budget_amount,
+                    budget_threshold,
+                    due_date,
+                    attachment_path,
+                    drive_link,
+                    created_by
+                ))
+                new_id = cur.lastrowid
+
+        return api_response({'event_id': new_id, 'attachment_path': attachment_path, 'drive_link': drive_link}, 'Event proposal submitted successfully and added to review queue!', 201)
+    except Exception as e:
+        logger.exception("Failed to create proposal: %s", str(e))
+        return api_error(f"Failed to submit proposal: {str(e)}", 500)
 
 @proposals_bp.route('/<int:proposal_id>/review', methods=['POST'])
 def review_proposal(proposal_id):

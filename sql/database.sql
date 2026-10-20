@@ -226,7 +226,7 @@ CREATE TABLE `events` (
   `chapter_id` bigint(20) unsigned DEFAULT NULL,
   `title` varchar(200) NOT NULL,
   `description` text DEFAULT NULL,
-  `event_type` enum('national','chapter','community','other') NOT NULL DEFAULT 'chapter',
+  `event_type` varchar(100) NOT NULL DEFAULT 'chapter',
   `ytr_program` varchar(100) NOT NULL DEFAULT 'Lead up (Youth Leadership)',
   `target_audience` varchar(150) NOT NULL DEFAULT 'Open for All',
   `start_datetime` datetime DEFAULT NULL,

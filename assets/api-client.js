@@ -33,7 +33,18 @@ const YTR_API = {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+      let data = {};
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch (jsonErr) {
+          data = { message: await response.text() };
+        }
+      } else {
+        const text = await response.text();
+        data = { message: text || response.statusText };
+      }
       return { ok: response.ok, status: response.status, ...data };
     } catch (err) {
       console.error(`API Request to ${url} failed:`, err);
