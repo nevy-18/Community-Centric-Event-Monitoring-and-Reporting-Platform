@@ -40,6 +40,16 @@ def create_app(config_class=Config):
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(system_bp)
 
+    @app.route('/', methods=['GET'])
+    def root_index():
+        return jsonify({
+            'status': 'online',
+            'service': 'Youth on the Rock Platform Backend API',
+            'version': '1.0.0',
+            'database': Config.DB_NAME,
+            'health_check': '/api/health'
+        })
+
     @app.route('/api/health', methods=['GET'])
     def health_check():
         return jsonify({
