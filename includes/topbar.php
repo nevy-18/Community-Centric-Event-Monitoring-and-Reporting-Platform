@@ -49,9 +49,10 @@
 
     <div id="profile-dropdown" class="dropdown-menu font-roboto">
       <div class="dropdown-header">
-        <h4 style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">Hamilton Jones Dela</h4>
-        <p style="font-size: 0.75rem; color: #64748b;">admin@ytr.org</p>
+        <h4 id="topbar-dropdown-user-name" style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">Hamilton Jones Dela</h4>
+        <p id="topbar-dropdown-user-email" style="font-size: 0.75rem; color: #64748b;">admin@ytr.org</p>
       </div>
+      <a href="#" class="dropdown-item" onclick="openProfileModal(event)"><i class="ph ph-user"></i> My Profile</a>
       <a href="Manage.php" class="dropdown-item"><i class="ph ph-user-circle"></i> Manage Accounts</a>
       <a href="Proposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> Chapter Proposals</a>
       <a href="Report.php" class="dropdown-item"><i class="ph ph-file-text"></i> Event Reports</a>
@@ -75,6 +76,137 @@
     </div>
   </div>
 </header>
+
+
+<!-- TOPBAR USER PROFILE MODAL -->
+<div id="topbarProfileModal" class="modal-overlay hidden" style="display: none; z-index: 9999;">
+  <div class="modal-md" style="max-width: 560px; width: 95%;">
+    <!-- Header -->
+    <div class="modal-header-banner" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); color: #ffffff; padding: 1.15rem 1.4rem; border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <div id="profileModalAvatarLarge" style="width: 44px; height: 44px; border-radius: 50%; background: #ffffff; color: #1e3a8a; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+          US
+        </div>
+        <div>
+          <h3 id="profileModalHeaderTitle" style="color: #ffffff; margin: 0; font-size: 1.05rem; font-weight: 700;">Account Profile</h3>
+          <p id="profileModalHeaderSubtitle" style="color: #bfdbfe; margin: 0.15rem 0 0; font-size: 0.75rem;">Manage your profile credentials and digital signature</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeProfileModal()" style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+        <i class="ph ph-x"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body-scroll" style="background: #f8fafc; padding: 1.25rem 1.4rem; max-height: calc(85vh - 120px); overflow-y: auto;">
+      <!-- Alerts -->
+      <div id="profileModalAlert" style="display: none; padding: 0.7rem 0.9rem; border-radius: 8px; margin-bottom: 0.9rem; font-size: 0.825rem; font-weight: 600;"></div>
+
+      <!-- Account Badge Row -->
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 0.95rem; margin-bottom: 0.9rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <span style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Role &amp; Assignment</span>
+          <div style="display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem;">
+            <span id="profileModalRoleBadge" class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 700; padding: 2px 7px; font-size: 0.72rem;">National Admin</span>
+            <span id="profileModalChapterBadge" class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700; padding: 2px 7px; font-size: 0.72rem;">National Office</span>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Account Status</span>
+          <div style="margin-top: 0.2rem;">
+            <span id="profileModalStatusBadge" class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 700; padding: 2px 7px; font-size: 0.72rem;">
+              <i class="ph-fill ph-check-circle"></i> Active
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Form -->
+      <form id="topbarProfileForm" onsubmit="handleSaveProfile(event)">
+        <!-- Personal Details Card -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.95rem 1.1rem; margin-bottom: 0.9rem;">
+          <h4 style="margin: 0 0 0.75rem; font-size: 0.85rem; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="ph-bold ph-identification-card" style="color: #2563eb;"></i> Personal Details
+          </h4>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div>
+              <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">Full Name *</label>
+              <input type="text" id="profileModalFullName" required style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem; color: #0f172a; outline: none;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">Email Address</label>
+              <input type="email" id="profileModalEmail" disabled style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 6px; font-size: 0.825rem; color: #64748b; cursor: not-allowed;">
+            </div>
+          </div>
+
+          <div style="margin-top: 0.75rem;">
+            <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">Official Position / Designation *</label>
+            <input type="text" id="profileModalPosition" required placeholder="e.g. Chapter Coordinator, Executive Director" style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem; color: #0f172a; outline: none;">
+          </div>
+        </div>
+
+        <!-- Security / Password Accordion -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.95rem 1.1rem; margin-bottom: 0.9rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleProfilePasswordFields()">
+            <h4 style="margin: 0; font-size: 0.85rem; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+              <i class="ph-bold ph-key" style="color: #f59e0b;"></i> Change Password
+            </h4>
+            <span id="profilePassToggleText" style="font-size: 0.75rem; color: #2563eb; font-weight: 700;">Show +</span>
+          </div>
+
+          <div id="profilePasswordFields" style="display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #e2e8f0;">
+            <div style="margin-bottom: 0.65rem;">
+              <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">Current Password</label>
+              <input type="password" id="profileModalCurrentPass" placeholder="Enter current password" style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div>
+                <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">New Password</label>
+                <input type="password" id="profileModalNewPass" placeholder="Min. 8 characters" style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem;">Confirm New Password</label>
+                <input type="password" id="profileModalConfirmPass" placeholder="Repeat new password" style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+            </div>
+            <p style="font-size: 0.68rem; color: #64748b; margin: 0.35rem 0 0;">Leave password fields blank if you only want to update your name or signature.</p>
+          </div>
+        </div>
+
+        <!-- Digital E-Signature Section -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.95rem 1.1rem; margin-bottom: 0.9rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <h4 style="margin: 0; font-size: 0.85rem; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+              <i class="ph-bold ph-pen-nib" style="color: #7c3aed;"></i> Official Digital Signature
+            </h4>
+            <button type="button" onclick="clearProfileSignatureCanvas()" style="background: transparent; border: none; font-size: 0.72rem; color: #dc2626; cursor: pointer; font-weight: 700;">
+              Clear / Redraw
+            </button>
+          </div>
+          <p style="font-size: 0.7rem; color: #64748b; margin: 0 0 0.5rem;">
+            Applied automatically when submitting proposals, validating event reports, and endorsing documentation.
+          </p>
+          <div style="background: #ffffff; border: 1px dashed #94a3b8; border-radius: 8px; position: relative; text-align: center;">
+            <canvas id="profileSignatureCanvas" width="460" height="110" style="width: 100%; height: 110px; touch-action: none; cursor: crosshair; display: block;"></canvas>
+            <div id="profileSignaturePlaceholder" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; color: #94a3b8; font-size: 0.78rem;">
+              <span><i class="ph ph-pencil-simple-line"></i> Draw your signature here using mouse or touch</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.9rem;">
+          <button type="button" class="btn btn-outline" onclick="closeProfileModal()" style="padding: 0.5rem 1.15rem; font-size: 0.825rem;">Cancel</button>
+          <button type="submit" id="btnSaveProfileModal" class="btn btn-primary" style="padding: 0.5rem 1.4rem; font-size: 0.825rem; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="ph-bold ph-floppy-disk"></i> <span>Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!-- TOPBAR SYSTEM DATA FLUSH MODAL (Accessible by Executive Director & Regional Director) -->
 <div id="topbarSystemFlushModal" class="modal-overlay hidden" style="display: none;">
@@ -202,6 +334,12 @@
             }
           }
 
+          const ddName = document.getElementById('topbar-dropdown-user-name');
+          if (ddName) ddName.textContent = u.full_name || 'User';
+
+          const ddEmail = document.getElementById('topbar-dropdown-user-email');
+          if (ddEmail) ddEmail.textContent = u.email || 'user@ytr.org';
+
           // Check Executive Authorization for Reset & Backup:
           // Restricted to: Executive Director, Regional Director (National), or root admin
           const execPositions = ['Executive Director', 'Regional Director (National)'];
@@ -220,6 +358,7 @@
                   <h4 style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">${u.full_name}</h4>
                   <p style="font-size: 0.75rem; color: #64748b;">${u.position || 'Chapter Officer'} (${u.chapter_name || 'Chapter'})</p>
                 </div>
+                <a href="#" class="dropdown-item" onclick="openProfileModal(event)"><i class="ph ph-user"></i> My Profile</a>
                 <a href="ChapterDashboard.php" class="dropdown-item"><i class="ph ph-squares-four"></i> Chapter Dashboard</a>
                 <a href="ChapterProposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> My Event Proposals</a>
                 <a href="ChapterReport.php" class="dropdown-item"><i class="ph ph-file-arrow-up"></i> Submit Event Report</a>
@@ -444,4 +583,337 @@
       checkTopbarFlushInput();
     }
   }
+
+  // ==========================================
+  // PROFILE MODAL LOGIC & CONTROLLER
+  // ==========================================
+  let profileCanvasInited = false;
+  let profileCanvasIsDrawing = false;
+  let profileCanvasHasSignature = false;
+
+  function openProfileModal(e) {
+    if (e) e.preventDefault();
+    const dropdown = document.getElementById('profile-dropdown');
+    if (dropdown) dropdown.classList.remove('show');
+
+    const modal = document.getElementById('topbarProfileModal');
+    if (!modal) return;
+
+    let user = null;
+    try {
+      const raw = localStorage.getItem('ytr_user');
+      if (raw) user = JSON.parse(raw);
+    } catch(err) {}
+
+    if (!user) {
+      alert('Please sign in to view your profile.');
+      return;
+    }
+
+    // Populate Modal Fields
+    const initials = user.full_name ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
+    const av = document.getElementById('profileModalAvatarLarge');
+    if (av) av.textContent = initials;
+
+    document.getElementById('profileModalFullName').value = user.full_name || '';
+    document.getElementById('profileModalEmail').value = user.email || '';
+    document.getElementById('profileModalPosition').value = user.position || '';
+
+    const roleBadge = document.getElementById('profileModalRoleBadge');
+    if (roleBadge) {
+      const isCh = user.role === 'chapter_admin';
+      roleBadge.textContent = isCh ? 'Chapter Admin' : 'National Admin';
+      roleBadge.style.cssText = isCh 
+        ? 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700; padding: 2px 7px; font-size: 0.72rem;'
+        : 'background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 700; padding: 2px 7px; font-size: 0.72rem;';
+    }
+
+    const chapterBadge = document.getElementById('profileModalChapterBadge');
+    if (chapterBadge) {
+      chapterBadge.textContent = user.chapter_name || (user.role === 'chapter_admin' ? 'Chapter Branch' : 'National Secretariat');
+    }
+
+    // Reset password fields and collapse
+    document.getElementById('profileModalCurrentPass').value = '';
+    document.getElementById('profileModalNewPass').value = '';
+    document.getElementById('profileModalConfirmPass').value = '';
+    const passFields = document.getElementById('profilePasswordFields');
+    if (passFields) passFields.style.display = 'none';
+    const toggleTxt = document.getElementById('profilePassToggleText');
+    if (toggleTxt) toggleTxt.textContent = 'Show +';
+
+    // Clear alert
+    const alertBox = document.getElementById('profileModalAlert');
+    if (alertBox) {
+      alertBox.style.display = 'none';
+      alertBox.textContent = '';
+    }
+
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+
+    // Init canvas
+    setTimeout(() => {
+      initProfileSignatureCanvas(user.signature_image);
+    }, 100);
+  }
+
+  function closeProfileModal() {
+    const modal = document.getElementById('topbarProfileModal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.add('hidden');
+    }
+  }
+
+  function toggleProfilePasswordFields() {
+    const fields = document.getElementById('profilePasswordFields');
+    const toggleTxt = document.getElementById('profilePassToggleText');
+    if (!fields) return;
+    const isHidden = fields.style.display === 'none' || !fields.style.display;
+    fields.style.display = isHidden ? 'block' : 'none';
+    if (toggleTxt) toggleTxt.textContent = isHidden ? 'Hide -' : 'Show +';
+  }
+
+  function initProfileSignatureCanvas(existingSignature) {
+    const canvas = document.getElementById('profileSignatureCanvas');
+    const placeholder = document.getElementById('profileSignaturePlaceholder');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#0f172a';
+
+    // If existing signature exists, render it
+    if (existingSignature && existingSignature.startsWith('data:image')) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        profileCanvasHasSignature = true;
+        if (placeholder) placeholder.style.display = 'none';
+      };
+      img.src = existingSignature;
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      profileCanvasHasSignature = false;
+      if (placeholder) placeholder.style.display = 'flex';
+    }
+
+    if (profileCanvasInited) return;
+    profileCanvasInited = true;
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function startDraw(e) {
+      e.preventDefault();
+      profileCanvasIsDrawing = true;
+      profileCanvasHasSignature = true;
+      if (placeholder) placeholder.style.display = 'none';
+      const p = getCoords(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    }
+
+    function draw(e) {
+      if (!profileCanvasIsDrawing) return;
+      e.preventDefault();
+      const p = getCoords(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    }
+
+    function stopDraw(e) {
+      if (profileCanvasIsDrawing) {
+        profileCanvasIsDrawing = false;
+        ctx.closePath();
+      }
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+  }
+
+  function clearProfileSignatureCanvas() {
+    const canvas = document.getElementById('profileSignatureCanvas');
+    const placeholder = document.getElementById('profileSignaturePlaceholder');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    profileCanvasHasSignature = false;
+    if (placeholder) placeholder.style.display = 'flex';
+  }
+
+  async function handleSaveProfile(e) {
+    e.preventDefault();
+    const alertBox = document.getElementById('profileModalAlert');
+    const submitBtn = document.getElementById('btnSaveProfileModal');
+
+    let user = null;
+    try {
+      const raw = localStorage.getItem('ytr_user');
+      if (raw) user = JSON.parse(raw);
+    } catch(err) {}
+
+    if (!user || !user.id) {
+      alert('Session expired. Please log in again.');
+      return;
+    }
+
+    const fullName = (document.getElementById('profileModalFullName').value || '').trim();
+    const position = (document.getElementById('profileModalPosition').value || '').trim();
+    const currentPass = document.getElementById('profileModalCurrentPass').value;
+    const newPass = document.getElementById('profileModalNewPass').value;
+    const confirmPass = document.getElementById('profileModalConfirmPass').value;
+
+    if (!fullName) {
+      showProfileAlert('Full Name is required.', 'error');
+      return;
+    }
+
+    if (newPass) {
+      if (newPass.length < 8) {
+        showProfileAlert('New password must be at least 8 characters long.', 'error');
+        return;
+      }
+      if (newPass !== confirmPass) {
+        showProfileAlert('New passwords do not match. Please verify.', 'error');
+        return;
+      }
+      if (!currentPass) {
+        showProfileAlert('Please enter your current password to set a new password.', 'error');
+        return;
+      }
+    }
+
+    // Get Signature data URL if drawn
+    let sigDataUrl = null;
+    if (profileCanvasHasSignature) {
+      const canvas = document.getElementById('profileSignatureCanvas');
+      if (canvas) sigDataUrl = canvas.toDataURL('image/png');
+    }
+
+    const payload = {
+      user_id: user.id,
+      email: user.email,
+      full_name: fullName,
+      position: position
+    };
+    if (newPass) {
+      payload.current_password = currentPass;
+      payload.new_password = newPass;
+    }
+    if (sigDataUrl) {
+      payload.signature_image = sigDataUrl;
+    }
+
+    try {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+
+      let result = null;
+      if (window.YTR_API && window.YTR_API.auth && window.YTR_API.auth.updateProfile) {
+        result = await window.YTR_API.auth.updateProfile(payload);
+      } else {
+        const cloudUrl = (window.YTR_API && window.YTR_API.baseUrl) ? window.YTR_API.baseUrl : 'https://ytr-backend.onrender.com/api';
+        const res = await fetch(`${cloudUrl}/auth/profile`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        result = await res.json();
+      }
+
+      if (result && (result.status === 'success' || result.ok)) {
+        showProfileAlert('Profile updated successfully!', 'success');
+        
+        // Merge updated user data into localStorage
+        const updatedUser = (result.data && result.data.user) ? result.data.user : {
+          ...user,
+          full_name: fullName,
+          position: position,
+          signature_image: sigDataUrl || user.signature_image
+        };
+        localStorage.setItem('ytr_user', JSON.stringify(updatedUser));
+
+        // Re-sync topbar UI immediately
+        syncTopbarUserProfile(updatedUser);
+
+        setTimeout(() => {
+          closeProfileModal();
+        }, 1200);
+      } else {
+        showProfileAlert(result.message || 'Failed to update profile. Please try again.', 'error');
+      }
+    } catch(err) {
+      console.error('Save profile error:', err);
+      showProfileAlert('Failed to communicate with cloud server. Please check your network connection.', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> <span>Save Changes</span>';
+    }
+  }
+
+  function showProfileAlert(msg, type) {
+    const alertBox = document.getElementById('profileModalAlert');
+    if (!alertBox) return;
+    alertBox.style.display = 'block';
+    alertBox.textContent = msg;
+    if (type === 'success') {
+      alertBox.style.background = '#f0fdf4';
+      alertBox.style.color = '#15803d';
+      alertBox.style.border = '1px solid #bbf7d0';
+    } else {
+      alertBox.style.background = '#fef2f2';
+      alertBox.style.color = '#b91c1c';
+      alertBox.style.border = '1px solid #fecdd3';
+    }
+  }
+
+  function syncTopbarUserProfile(u) {
+    if (!u) return;
+    const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
+    const avatar = document.querySelector('.profile-avatar');
+    if (avatar) avatar.textContent = initials;
+    
+    const pName = document.querySelector('.profile-info h4');
+    if (pName) pName.textContent = u.full_name || 'User';
+    
+    const pRole = document.querySelector('.profile-info p');
+    if (pRole) pRole.textContent = u.position || (u.role === 'chapter_admin' ? (u.chapter_name || 'Chapter Admin') : 'National Administrator');
+
+    const ddName = document.getElementById('topbar-dropdown-user-name');
+    if (ddName) ddName.textContent = u.full_name || 'User';
+
+    const ddEmail = document.getElementById('topbar-dropdown-user-email');
+    if (ddEmail) ddEmail.textContent = u.email || 'user@ytr.org';
+
+    const topbarBadge = document.querySelector('.topbar-left .role-badge');
+    if (topbarBadge) {
+      if (u.role === 'chapter_admin') {
+        topbarBadge.textContent = (u.chapter_name || 'Chapter') + (u.position ? ' • ' + u.position : '');
+        topbarBadge.style.cssText = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700;';
+      } else {
+        topbarBadge.textContent = 'National' + (u.position ? ' • ' + u.position : '');
+      }
+    }
+  }
+
 </script>

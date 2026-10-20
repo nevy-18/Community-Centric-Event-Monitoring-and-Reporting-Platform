@@ -66,6 +66,19 @@ const YTR_API = {
     me() {
       return YTR_API.request('/auth/me');
     },
+    getProfile(userId, email) {
+      const params = new URLSearchParams();
+      if (userId) params.append('user_id', userId);
+      if (email) params.append('email', email);
+      const qs = params.toString() ? `?${params.toString()}` : '';
+      return YTR_API.request(`/auth/profile${qs}`);
+    },
+    updateProfile(data) {
+      return YTR_API.request('/auth/profile', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
     forgotPassword(email, notes = '') {
       return YTR_API.request('/auth/forgot-password', {
         method: 'POST',

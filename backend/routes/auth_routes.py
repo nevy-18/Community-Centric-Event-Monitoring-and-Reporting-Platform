@@ -166,6 +166,114 @@ def get_current_user():
 
     return api_response({'user': serialize_row(user)})
 
+@auth_bp.route('/profile', methods=['GET', 'POST', 'PUT'])
+def user_profile():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id') or session.get('user_id')
+        email = (request.args.get('email') or '').strip().lower()
+        if not user_id and not email:
+            return api_error('User identification required.', 400)
+
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                if user_id:
+                    cur.execute("""
+                        SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
+                               u.signature_image, u.requested_at, c.chapter_name, c.chapter_code, c.region
+                        FROM users u
+                        LEFT JOIN chapters c ON c.id = u.chapter_id
+                        WHERE u.id = %s
+                        LIMIT 1
+                    """, (user_id,))
+                else:
+                    cur.execute("""
+                        SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
+                               u.signature_image, u.requested_at, c.chapter_name, c.chapter_code, c.region
+                        FROM users u
+                        LEFT JOIN chapters c ON c.id = u.chapter_id
+                        WHERE LOWER(u.email) = %s
+                        LIMIT 1
+                    """, (email,))
+                user = cur.fetchone()
+
+        if not user:
+            return api_error('User not found.', 404)
+
+        return api_response({'user': serialize_row(user)})
+
+    # POST or PUT to update profile
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    user_id = data.get('user_id') or session.get('user_id')
+    email = (data.get('email') or '').strip().lower()
+
+    if not user_id and not email:
+        return api_error('User identification required.', 400)
+
+    full_name = (data.get('full_name') or '').strip()
+    position = (data.get('position') or '').strip()
+    signature_image = data.get('signature_image')
+    current_password = data.get('current_password', '')
+    new_password = data.get('new_password', '')
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            if user_id:
+                cur.execute("SELECT * FROM users WHERE id = %s LIMIT 1", (user_id,))
+            else:
+                cur.execute("SELECT * FROM users WHERE LOWER(email) = %s LIMIT 1", (email,))
+            user = cur.fetchone()
+
+            if not user:
+                return api_error('User not found.', 404)
+
+            target_id = user['id']
+
+            # If changing password
+            if new_password:
+                if len(new_password) < 8:
+                    return api_error('New password must be at least 8 characters long.', 400)
+                if current_password and not verify_password(current_password, user['password_hash']):
+                    return api_error('Current password is incorrect.', 400)
+                new_hash = hash_password(new_password)
+                cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (new_hash, target_id))
+
+            # Update profile info
+            updates = []
+            params = []
+            if full_name:
+                updates.append("full_name = %s")
+                params.append(full_name)
+            if position:
+                updates.append("position = %s")
+                params.append(position)
+            if signature_image is not None and signature_image != '':
+                updates.append("signature_image = %s")
+                params.append(signature_image)
+
+            if updates:
+                params.append(target_id)
+                cur.execute(f"UPDATE users SET {', '.join(updates)} WHERE id = %s", tuple(params))
+
+            # Fetch updated user
+            cur.execute("""
+                SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
+                       u.signature_image, u.requested_at, c.chapter_name, c.chapter_code, c.region
+                FROM users u
+                LEFT JOIN chapters c ON c.id = u.chapter_id
+                WHERE u.id = %s
+                LIMIT 1
+            """, (target_id,))
+            updated_user = cur.fetchone()
+
+    if session.get('user_id') == target_id:
+        if full_name:
+            session['user_name'] = full_name
+        if position:
+            session['user_position'] = position
+
+    return api_response({'user': serialize_row(updated_user)}, 'Profile updated successfully.')
+
+
 @auth_bp.route('/forgot-password', methods=['POST'])
 def forgot_password():
     data = request.get_json(silent=True) or request.form.to_dict() or {}
