@@ -205,6 +205,41 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
           <input type="number" id="ann-participants" class="form-input font-roboto" placeholder="e.g. 150" min="1" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
         </div>
 
+        <!-- Event Poster Upload & Preview -->
+        <div style="margin-bottom: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin: 0;">
+              <i class="ph-bold ph-image" style="color: #2563eb;"></i> Event Poster (Flyer / Banner)
+            </label>
+            <span style="font-size: 0.72rem; color: #64748b;">PNG, JPG, or WEBP</span>
+          </div>
+
+          <input type="file" id="ann-poster-file" accept="image/*" style="display: none;" onchange="handlePosterFileSelect(event, 'create')">
+
+          <!-- Dropzone -->
+          <div id="create-poster-dropzone" onclick="document.getElementById('ann-poster-file').click()" style="border: 2px dashed #cbd5e1; background: #ffffff; border-radius: 8px; padding: 1.15rem 1rem; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <i class="ph ph-cloud-arrow-up" style="font-size: 2rem; color: #3b82f6; display: block; margin-bottom: 0.25rem;"></i>
+            <span style="font-size: 0.825rem; font-weight: 600; color: #1e293b; display: block;">Click to browse or drop event poster here</span>
+            <span style="font-size: 0.72rem; color: #64748b;">Attach the official promotional image for this announcement</span>
+          </div>
+
+          <!-- Preview Box -->
+          <div id="create-poster-preview-box" style="display: none; margin-top: 0.5rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.65rem; align-items: center; gap: 0.85rem;">
+            <img id="create-poster-preview-img" src="" alt="Poster Preview" style="width: 65px; height: 65px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; flex-shrink: 0;">
+            <div style="flex: 1; min-width: 0;">
+              <div id="create-poster-filename" style="font-size: 0.8rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">poster.png</div>
+              <div style="font-size: 0.7rem; color: #16a34a; font-weight: 600; margin-top: 2px;">
+                <i class="ph-fill ph-check-circle"></i> Poster ready for publishing
+              </div>
+              <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                <button type="button" onclick="document.getElementById('ann-poster-file').click()" style="background: none; border: none; padding: 0; color: #2563eb; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Change Poster</button>
+                <span style="color: #cbd5e1;">&bull;</span>
+                <button type="button" onclick="clearCreatePoster()" style="background: none; border: none; padding: 0; color: #dc2626; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div style="margin-bottom: 1.25rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Announcement Summary & Highlights *</label>
           <textarea id="ann-description" class="form-textarea font-roboto" rows="3" required placeholder="Describe the program schedule, registration details, and guest ministers..." style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;"></textarea>
@@ -459,14 +494,38 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-          <div>
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Host Chapter / Region</label>
-            <input type="text" id="edit-ann-chapter" class="form-input font-roboto" placeholder="e.g. Laguna Chapter or YTR NATIONAL" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Host Chapter / Region</label>
+          <input type="text" id="edit-ann-chapter" class="form-input font-roboto" placeholder="e.g. Laguna Chapter or YTR NATIONAL" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+        </div>
+
+        <!-- Event Poster Manager (Upload & Live Change) -->
+        <div style="margin-bottom: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin: 0;">
+              <i class="ph-bold ph-image" style="color: #2563eb;"></i> Event Poster
+            </label>
+            <span style="font-size: 0.72rem; color: #64748b;">Upload new image file or update path/URL</span>
           </div>
-          <div>
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Poster Image (URL or Path)</label>
-            <input type="text" id="edit-ann-image" class="form-input font-roboto" placeholder="e.g. assets/images/tremendous_momentum.png" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+
+          <input type="file" id="edit-ann-poster-file" accept="image/*" style="display: none;" onchange="handlePosterFileSelect(event, 'edit')">
+
+          <div style="display: flex; align-items: center; gap: 0.85rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.65rem;">
+            <img id="edit-poster-preview-img" src="assets/images/background.jpg" alt="Poster Preview" style="width: 75px; height: 75px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; flex-shrink: 0;" onerror="this.src='assets/images/background.jpg'">
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.4rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-sm btn-primary font-roboto" onclick="document.getElementById('edit-ann-poster-file').click()" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                  <i class="ph ph-upload-simple"></i> Upload New Poster
+                </button>
+                <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="resetEditPosterToDefault()" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                  Reset Default
+                </button>
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.7rem; color: #64748b; margin-bottom: 2px;">Image Path or URL:</label>
+                <input type="text" id="edit-ann-image" class="form-input font-roboto" oninput="onEditPosterUrlChange(this.value)" placeholder="e.g. assets/images/tremendous_momentum.png" style="width: 100%; box-sizing: border-box; padding: 0.35rem 0.55rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.78rem;">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -922,6 +981,107 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
       }
     }
 
+
+    // ==========================================
+    // POSTER UPLOAD & EDIT CONTROLLER
+    // ==========================================
+    let selectedCreatePosterData = null;
+    let selectedEditPosterData = null;
+
+    function handlePosterFileSelect(event, mode) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      processPosterFile(file, mode);
+    }
+
+    function processPosterFile(file, mode) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please choose an image file (PNG, JPG, JPEG, WEBP).');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds 5MB limit. Please choose a smaller image.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        if (mode === 'create') {
+          selectedCreatePosterData = dataUrl;
+          const previewImg = document.getElementById('create-poster-preview-img');
+          const previewBox = document.getElementById('create-poster-preview-box');
+          const dropzone = document.getElementById('create-poster-dropzone');
+          const filenameEl = document.getElementById('create-poster-filename');
+
+          if (previewImg) previewImg.src = dataUrl;
+          if (filenameEl) filenameEl.textContent = file.name;
+          if (dropzone) dropzone.style.display = 'none';
+          if (previewBox) previewBox.style.display = 'flex';
+        } else if (mode === 'edit') {
+          selectedEditPosterData = dataUrl;
+          const previewImg = document.getElementById('edit-poster-preview-img');
+          const inputUrl = document.getElementById('edit-ann-image');
+          if (previewImg) previewImg.src = dataUrl;
+          if (inputUrl) inputUrl.value = dataUrl;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearCreatePoster() {
+      selectedCreatePosterData = null;
+      const fileInput = document.getElementById('ann-poster-file');
+      if (fileInput) fileInput.value = '';
+      const previewBox = document.getElementById('create-poster-preview-box');
+      const dropzone = document.getElementById('create-poster-dropzone');
+      if (previewBox) previewBox.style.display = 'none';
+      if (dropzone) dropzone.style.display = 'block';
+    }
+
+    function resetEditPosterToDefault() {
+      const defaultPoster = 'assets/images/background.jpg';
+      selectedEditPosterData = defaultPoster;
+      const previewImg = document.getElementById('edit-poster-preview-img');
+      const inputUrl = document.getElementById('edit-ann-image');
+      if (previewImg) previewImg.src = defaultPoster;
+      if (inputUrl) inputUrl.value = defaultPoster;
+    }
+
+    function onEditPosterUrlChange(val) {
+      const trimmed = (val || '').trim();
+      selectedEditPosterData = trimmed || null;
+      const previewImg = document.getElementById('edit-poster-preview-img');
+      if (previewImg) {
+        previewImg.src = trimmed || 'assets/images/background.jpg';
+      }
+    }
+
+    // Setup Drag and Drop on Create Dropzone
+    document.addEventListener('DOMContentLoaded', () => {
+      const dropzone = document.getElementById('create-poster-dropzone');
+      if (dropzone) {
+        dropzone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropzone.style.borderColor = '#2563eb';
+          dropzone.style.background = '#eff6ff';
+        });
+        dropzone.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          dropzone.style.borderColor = '#cbd5e1';
+          dropzone.style.background = '#ffffff';
+        });
+        dropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropzone.style.borderColor = '#cbd5e1';
+          dropzone.style.background = '#ffffff';
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            processPosterFile(e.dataTransfer.files[0], 'create');
+          }
+        });
+      }
+    });
+
     function openEditAnnouncementModal(id) {
       if (isChapterAdminUser) {
         alert('Permission Denied: Only National Administrators can edit announcements.');
@@ -940,6 +1100,9 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
       document.getElementById('edit-ann-participants').value = a.target || 100;
       document.getElementById('edit-ann-registered').value = a.registered !== undefined ? a.registered : 60;
       document.getElementById('edit-ann-image').value = a.image || '';
+      selectedEditPosterData = a.image || 'assets/images/background.jpg';
+      const editPreviewImg = document.getElementById('edit-poster-preview-img');
+      if (editPreviewImg) editPreviewImg.src = selectedEditPosterData;
       document.getElementById('edit-ann-description').value = a.details || a.excerpt || '';
       document.getElementById('edit-ann-pm').value = a.pm || 'Alex R.';
       document.getElementById('edit-ann-creative').value = a.creative_lead || 'Maria P.';
@@ -982,7 +1145,7 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
         chapter: document.getElementById('edit-ann-chapter').value.trim(),
         target: parseInt(document.getElementById('edit-ann-participants').value) || 100,
         registered: parseInt(document.getElementById('edit-ann-registered').value) || 60,
-        image: document.getElementById('edit-ann-image').value.trim() || 'assets/images/background.jpg',
+        image: selectedEditPosterData || document.getElementById('edit-ann-image').value.trim() || 'assets/images/background.jpg',
         excerpt: desc.length > 140 ? desc.substring(0, 140) + '...' : desc,
         details: desc,
         pm: document.getElementById('edit-ann-pm').value.trim() || 'Alex R.',
@@ -1051,7 +1214,7 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
         chapter: document.getElementById('ann-chapter').value.trim() || 'National HQ',
         target: parseInt(document.getElementById('ann-participants').value) || 100,
         registered: 0,
-        image: 'assets/images/background.jpg',
+        image: selectedCreatePosterData || 'assets/images/background.jpg',
         excerpt: desc.substring(0, 140) + '...',
         details: desc,
         pm: "Alex R.",
@@ -1069,6 +1232,7 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
       localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
       alert('Announcement published successfully to all chapters!');
       document.getElementById('createAnnouncementForm').reset();
+      clearCreatePoster();
       closeCreateAnnouncementModal();
       renderAnnouncements();
     }
