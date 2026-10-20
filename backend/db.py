@@ -18,7 +18,13 @@ def get_db_connection():
     }
     if getattr(Config, 'DB_SSL', False):
         conn_params['ssl'] = {'check_hostname': False}
-    return pymysql.connect(**conn_params)
+    conn = pymysql.connect(**conn_params)
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))")
+    except Exception:
+        pass
+    return conn
 
 @contextmanager
 def get_db():

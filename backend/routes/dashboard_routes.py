@@ -28,17 +28,17 @@ def get_dashboard_overview():
                     c.region,
                     e.title AS event_title,
                     e.ytr_program,
-                    COALESCE(pr.event_conducted_at, e.start_datetime) AS conducted_datetime,
-                    COALESCE(pr.event_date, DATE(e.start_datetime)) AS event_date,
+                    COALESCE(MAX(pr.event_conducted_at), e.start_datetime) AS conducted_datetime,
+                    COALESCE(MAX(pr.event_date), DATE(e.start_datetime)) AS event_date,
                     e.status AS event_status,
                     e.venue,
-                    er.id AS report_id,
-                    er.status AS report_status,
-                    er.submitted_at AS report_submitted_at,
-                    pr.id AS poster_request_id,
-                    pr.is_event_conducted,
-                    pr.report_due_date,
-                    pr.documentation_status
+                    MAX(er.id) AS report_id,
+                    MAX(er.status) AS report_status,
+                    MAX(er.submitted_at) AS report_submitted_at,
+                    MAX(pr.id) AS poster_request_id,
+                    MAX(pr.is_event_conducted) AS is_event_conducted,
+                    MAX(pr.report_due_date) AS report_due_date,
+                    MAX(pr.documentation_status) AS documentation_status
                 FROM events e
                 JOIN chapters c ON c.id = e.chapter_id
                 LEFT JOIN event_reports er ON er.event_id = e.id
@@ -51,7 +51,7 @@ def get_dashboard_overview():
                     OR (er.id IS NOT NULL)
                     OR (e.status = 'completed')
                   )
-                GROUP BY e.id
+                GROUP BY e.id, e.chapter_id, c.chapter_name, c.chapter_code, c.region, e.title, e.ytr_program, e.start_datetime, e.status, e.venue
             """)
             conducted_rows = cur.fetchall()
 
@@ -163,6 +163,7 @@ def get_dashboard_overview():
                     'chapter_code': r.get('chapter_code'),
                     'region': r.get('region'),
                     'event_title': r.get('event_title'),
+                    'ytr_program': r.get('ytr_program'),
                     'venue': r.get('venue'),
                     'event_date': ev_date.strftime('%Y-%m-%d'),
                     'event_date_formatted': ev_date.strftime('%b %d, %Y'),
