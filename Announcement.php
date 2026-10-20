@@ -620,105 +620,6 @@
 
   <script>
     // Initial Announcement Data (matching mockup specifications)
-    const defaultAnnouncements = [
-      {
-        id: 1,
-        title: "Tremendous Momentum: Youth Camp 2026",
-        category: "national",
-        date: "May 21, 2026",
-        time: "9:00 AM - 5:00 PM",
-        venue: "SJB Learning Center Canlalay",
-        city: "Biñan, Laguna",
-        target: 100,
-        registered: 60,
-        chapter: "Laguna Chapter",
-        image: "assets/images/tremendous_momentum.png",
-        excerpt: "Join us for the ultimate showcase of the year. The 'Greatest of All Time' of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.",
-        details: "Join us for the ultimate showcase of the year. The 'Greatest of All Time' of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.",
-        pm: "Alex R.",
-        creative_lead: "Maria P.",
-        tech_director: "John K.",
-        room: "Auditorium A (2nd Floor)",
-        parking: "Lot B, Level-1",
-        wifi: "YTR-Guest / goat2026",
-        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
-        contact_team: "YTR - Laguna Team",
-        contact_person: "Secretary: Rayvhen P. Muñoz"
-      },
-      {
-        id: 2,
-        title: "29th YTR Anniversary Celebration",
-        category: "national",
-        date: "Sept 28, 2026",
-        time: "8:00 AM - 6:00 PM",
-        venue: "SJB Learning Center Canlalay",
-        city: "Biñan, Laguna",
-        target: 250,
-        registered: 180,
-        chapter: "National Secretariat",
-        image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=80",
-        excerpt: "Celebrating nearly three decades of passionate youth transformation, leadership empowerment, and nation-building across every Philippine province.",
-        details: "Commemorating 29 years of faithful community impact. All chapters nationwide are invited to join the main thanksgiving fellowship and awards ceremony honoring outstanding youth leaders.",
-        pm: "David C.",
-        creative_lead: "Sarah L.",
-        tech_director: "Michael T.",
-        room: "Main Hall (Ground Floor)",
-        parking: "Lot A & B",
-        wifi: "YTR-Anniversary / ytr2026",
-        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
-        contact_team: "National Secretariat Team",
-        contact_person: "Coordinator: Hannah S. Gomez"
-      },
-      {
-        id: 3,
-        title: "National Youth Leadership Summit",
-        category: "national",
-        date: "Dec 19-20, 2026",
-        time: "9:00 AM - 4:00 PM",
-        venue: "SMX Convention Center, Pasay City",
-        city: "Pasay City, Metro Manila",
-        target: 400,
-        registered: 320,
-        chapter: "National HQ",
-        image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=500&q=80",
-        excerpt: "An executive gathering of chapter administrators, youth pastoring councils, and ministry executives to strategize vision 2027 and annual mission milestones.",
-        details: "Two-day national leadership conference covering strategic planning, digital event monitoring governance, budget threshold liquidation, and youth mobilization across chapters.",
-        pm: "Jonathan E.",
-        creative_lead: "Rachel B.",
-        tech_director: "Kevin M.",
-        room: "Function Room 3 & 4",
-        parking: "SMX Multi-Level Parking",
-        wifi: "SMX-Event / summit2026",
-        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
-        contact_team: "National Leadership Council",
-        contact_person: "Director: Joshua M. Santos"
-      },
-      {
-        id: 4,
-        title: "Greatest of All Time: Regional Fellowship",
-        category: "chapter",
-        date: "Sept 28, 2026",
-        time: "1:00 PM - 5:00 PM",
-        venue: "SJB Learning Center Canlalay",
-        city: "Biñan, Laguna",
-        target: 120,
-        registered: 60,
-        chapter: "Laguna Chapter",
-        image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=500&q=80",
-        excerpt: "High-energy praise, worship revival, and inter-campus fellowship bringing university students together for inspiration and community outreach.",
-        details: "Laguna Chapter host gathering featuring guest worship teams, creative arts presentations, and community outreach testimony nights.",
-        pm: "Alex R.",
-        creative_lead: "Maria P.",
-        tech_director: "John K.",
-        room: "Auditorium A (2nd Floor)",
-        parking: "Lot B, Level-1",
-        wifi: "YTR-Guest / goat2026",
-        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
-        contact_team: "YTR - Laguna Team",
-        contact_person: "Secretary: Rayvhen P. Muñoz"
-      }
-    ];
-
     let announcements = [];
     let currentFilter = 'all';
     let isChapterAdminUser = false;
@@ -757,33 +658,37 @@
     }
 
     async function loadAnnouncements() {
-      // 1. Initial fast render from localStorage or defaultAnnouncements
+      // 1. Initial render from localStorage cache (ignoring legacy demo data)
       const stored = localStorage.getItem('ytr_announcements');
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed) && parsed.some(a => a.title && a.title.includes('Tremendous Momentum'))) {
+            localStorage.removeItem('ytr_announcements');
+            announcements = [];
+          } else if (Array.isArray(parsed)) {
             announcements = parsed;
+            renderAnnouncements();
           }
-        } catch (e) {}
+        } catch (e) {
+          localStorage.removeItem('ytr_announcements');
+        }
+      } else {
+        renderAnnouncements();
       }
-      if (!announcements || announcements.length === 0) {
-        announcements = [...defaultAnnouncements];
-      }
-      renderAnnouncements();
 
       // 2. Fetch live announcements from Aiven Cloud MySQL via Backend API
       try {
         if (window.YTR_API && YTR_API.announcements) {
           const res = await YTR_API.announcements.getAll();
-          if (res.ok && res.data && Array.isArray(res.data.announcements) && res.data.announcements.length > 0) {
+          if (res.ok && res.data && Array.isArray(res.data.announcements)) {
             announcements = res.data.announcements;
             localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
             renderAnnouncements();
           }
         }
       } catch (err) {
-        console.warn('Could not load announcements from cloud API, using cached data:', err);
+        console.warn('Could not load announcements from cloud API:', err);
       }
     }
 

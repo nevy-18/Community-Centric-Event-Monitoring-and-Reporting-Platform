@@ -5,105 +5,6 @@ from backend.auth_helpers import api_response, api_error
 
 announcements_bp = Blueprint('announcements', __name__, url_prefix='/api/announcements')
 
-DEFAULT_ANNOUNCEMENTS = [
-    {
-        'id': 1,
-        'title': 'Tremendous Momentum: Youth Camp 2026',
-        'category': 'national',
-        'date': 'May 21, 2026',
-        'time': '9:00 AM - 5:00 PM',
-        'venue': 'SJB Learning Center Canlalay',
-        'city': 'Biñan, Laguna',
-        'target': 100,
-        'registered': 60,
-        'chapter': 'Laguna Chapter',
-        'image': 'assets/images/tremendous_momentum.png',
-        'excerpt': 'Join us for the ultimate showcase of the year. The "Greatest of All Time" of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.',
-        'details': 'Join us for the ultimate showcase of the year. The "Greatest of All Time" of Youth Tech Revolution will feature live algorithm optimization challenges, full-stack architecture deep dives, and an awards ceremony for the top chapter contributors.',
-        'pm': 'Alex R.',
-        'creative_lead': 'Maria P.',
-        'tech_director': 'John K.',
-        'room': 'Auditorium A (2nd Floor)',
-        'parking': 'Lot B, Level-1',
-        'wifi': 'YTR-Guest / goat2026',
-        'reg_link': 'https://forms.gle/YcZudZkgefs1dEEn7',
-        'contact_team': 'YTR - Laguna Team',
-        'contact_person': 'Secretary: Rayvhen P. Muñoz'
-    },
-    {
-        'id': 2,
-        'title': '29th YTR Anniversary Celebration',
-        'category': 'national',
-        'date': 'Sept 28, 2026',
-        'time': '8:00 AM - 6:00 PM',
-        'venue': 'SJB Learning Center Canlalay',
-        'city': 'Biñan, Laguna',
-        'target': 250,
-        'registered': 180,
-        'chapter': 'National Secretariat',
-        'image': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=80',
-        'excerpt': 'Celebrating nearly three decades of passionate youth transformation, leadership empowerment, and nation-building across every Philippine province.',
-        'details': 'Commemorating 29 years of faithful community impact. All chapters nationwide are invited to join the main thanksgiving fellowship and awards ceremony honoring outstanding youth leaders.',
-        'pm': 'David C.',
-        'creative_lead': 'Sarah L.',
-        'tech_director': 'Michael T.',
-        'room': 'Main Hall (Ground Floor)',
-        'parking': 'Lot A & B',
-        'wifi': 'YTR-Anniversary / ytr2026',
-        'reg_link': 'https://forms.gle/YcZudZkgefs1dEEn7',
-        'contact_team': 'National Secretariat Team',
-        'contact_person': 'Coordinator: Hannah S. Gomez'
-    },
-    {
-        'id': 3,
-        'title': 'National Youth Leadership Summit',
-        'category': 'national',
-        'date': 'Dec 19-20, 2026',
-        'time': '9:00 AM - 4:00 PM',
-        'venue': 'SMX Convention Center, Pasay City',
-        'city': 'Pasay City, Metro Manila',
-        'target': 400,
-        'registered': 320,
-        'chapter': 'National HQ',
-        'image': 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=500&q=80',
-        'excerpt': 'An executive gathering of chapter administrators, youth pastoring councils, and ministry executives to strategize vision 2027 and annual mission milestones.',
-        'details': 'Two-day national leadership conference covering strategic planning, digital event monitoring governance, budget threshold liquidation, and youth mobilization across chapters.',
-        'pm': 'Jonathan E.',
-        'creative_lead': 'Rachel B.',
-        'tech_director': 'Kevin M.',
-        'room': 'Function Room 3 & 4',
-        'parking': 'SMX Multi-Level Parking',
-        'wifi': 'SMX-Event / summit2026',
-        'reg_link': 'https://forms.gle/YcZudZkgefs1dEEn7',
-        'contact_team': 'National Leadership Council',
-        'contact_person': 'Director: Joshua M. Santos'
-    },
-    {
-        'id': 4,
-        'title': 'Greatest of All Time: Regional Fellowship',
-        'category': 'chapter',
-        'date': 'Sept 28, 2026',
-        'time': '1:00 PM - 5:00 PM',
-        'venue': 'SJB Learning Center Canlalay',
-        'city': 'Biñan, Laguna',
-        'target': 120,
-        'registered': 60,
-        'chapter': 'Laguna Chapter',
-        'image': 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=500&q=80',
-        'excerpt': 'High-energy praise, worship revival, and inter-campus fellowship bringing university students together for inspiration and community outreach.',
-        'details': 'Laguna Chapter host gathering featuring guest worship teams, creative arts presentations, and community outreach testimony nights.',
-        'pm': 'Alex R.',
-        'creative_lead': 'Maria P.',
-        'tech_director': 'John K.',
-        'room': 'Auditorium A (2nd Floor)',
-        'parking': 'Lot B, Level-1',
-        'wifi': 'YTR-Guest / goat2026',
-        'reg_link': 'https://forms.gle/YcZudZkgefs1dEEn7',
-        'contact_team': 'YTR - Laguna Team',
-        'contact_person': 'Secretary: Rayvhen P. Muñoz'
-    }
-]
-
 def format_announcement_row(row):
     extra = {}
     if row.get('extra_details'):
@@ -116,34 +17,32 @@ def format_announcement_row(row):
     raw_cat = row.get('category') or 'national'
     cat = 'chapter' if raw_cat in ('chapter', 'specific_chapter') else 'national'
 
-    def_item = next((d for d in DEFAULT_ANNOUNCEMENTS if d['id'] == row['id']), {})
-
-    image = row.get('poster_image') or extra.get('image') or def_item.get('image') or 'assets/images/background.jpg'
-    date_val = extra.get('date') or (row['published_at'].strftime('%b %d, %Y') if row.get('published_at') else def_item.get('date', 'Upcoming'))
+    image = row.get('poster_image') or extra.get('image') or 'assets/images/background.jpg'
+    date_val = extra.get('date') or (row['published_at'].strftime('%b %d, %Y') if row.get('published_at') else 'Upcoming')
 
     return {
         'id': row['id'],
         'title': row['title'],
         'category': cat,
         'date': date_val,
-        'time': extra.get('time') or def_item.get('time', '9:00 AM - 5:00 PM'),
-        'venue': extra.get('venue') or def_item.get('venue', 'Venue TBD'),
-        'city': extra.get('city') or def_item.get('city', 'Philippines'),
-        'target': int(extra.get('target', def_item.get('target', 100))),
-        'registered': int(extra.get('registered', def_item.get('registered', 0))),
-        'chapter': extra.get('chapter') or def_item.get('chapter', 'Youth on the Rock'),
+        'time': extra.get('time') or '9:00 AM - 5:00 PM',
+        'venue': extra.get('venue') or 'Venue TBD',
+        'city': extra.get('city') or 'Philippines',
+        'target': int(extra.get('target', 100)),
+        'registered': int(extra.get('registered', 0)),
+        'chapter': extra.get('chapter') or 'Youth on the Rock',
         'image': image,
-        'excerpt': row.get('body') or def_item.get('excerpt', ''),
-        'details': row.get('body') or def_item.get('details', ''),
-        'pm': extra.get('pm') or def_item.get('pm', 'Event Lead'),
-        'creative_lead': extra.get('creative_lead') or def_item.get('creative_lead', 'Creative Lead'),
-        'tech_director': extra.get('tech_director') or def_item.get('tech_director', 'Tech Director'),
-        'room': extra.get('room') or def_item.get('room', 'Main Hall'),
-        'parking': extra.get('parking') or def_item.get('parking', 'General Parking'),
-        'wifi': extra.get('wifi') or def_item.get('wifi', 'YTR-Guest'),
-        'reg_link': extra.get('reg_link') or def_item.get('reg_link', 'https://forms.gle/YcZudZkgefs1dEEn7'),
-        'contact_team': extra.get('contact_team') or def_item.get('contact_team', 'YTR Secretariat'),
-        'contact_person': extra.get('contact_person') or def_item.get('contact_person', 'National Admin')
+        'excerpt': row.get('body') or '',
+        'details': row.get('body') or '',
+        'pm': extra.get('pm') or 'Event Lead',
+        'creative_lead': extra.get('creative_lead') or 'Creative Lead',
+        'tech_director': extra.get('tech_director') or 'Tech Director',
+        'room': extra.get('room') or 'Main Hall',
+        'parking': extra.get('parking') or 'General Parking',
+        'wifi': extra.get('wifi') or 'YTR-Guest',
+        'reg_link': extra.get('reg_link') or '',
+        'contact_team': extra.get('contact_team') or 'YTR Secretariat',
+        'contact_person': extra.get('contact_person') or 'National Admin'
     }
 
 @announcements_bp.route('', methods=['GET'])
@@ -155,54 +54,12 @@ def get_announcements():
                        poster_image, extra_details, is_published, published_at 
                 FROM announcements
                 WHERE is_published = 1
-                ORDER BY id ASC
+                ORDER BY published_at DESC, id DESC
             """)
             rows = cur.fetchall()
 
-            # If table is empty, auto-seed defaults into DB so all platforms stay in sync
-            if not rows:
-                for d in DEFAULT_ANNOUNCEMENTS:
-                    extra = {
-                        'time': d['time'],
-                        'venue': d['venue'],
-                        'city': d['city'],
-                        'target': d['target'],
-                        'registered': d['registered'],
-                        'chapter': d['chapter'],
-                        'pm': d['pm'],
-                        'creative_lead': d['creative_lead'],
-                        'tech_director': d['tech_director'],
-                        'room': d['room'],
-                        'parking': d['parking'],
-                        'wifi': d['wifi'],
-                        'reg_link': d['reg_link'],
-                        'contact_team': d['contact_team'],
-                        'contact_person': d['contact_person']
-                    }
-                    cur.execute("""
-                        INSERT INTO announcements (created_by, target_audience, category, title, body, poster_image, extra_details, is_published, published_at)
-                        VALUES (1, %s, %s, %s, %s, %s, %s, 1, NOW())
-                    """, (
-                        'specific_chapter' if d['category'] == 'chapter' else 'everyone',
-                        d['category'],
-                        d['title'],
-                        d['details'],
-                        d['image'],
-                        json.dumps(extra)
-                    ))
-                conn.commit()
-
-                cur.execute("""
-                    SELECT id, created_by, target_audience, category, title, body, 
-                           poster_image, extra_details, is_published, published_at 
-                    FROM announcements
-                    WHERE is_published = 1
-                    ORDER BY id ASC
-                """)
-                rows = cur.fetchall()
-
     announcements_list = [format_announcement_row(r) for r in rows]
-    return api_response({'announcements': announcements_list})
+    return api_response({'announcements': announcements_list}, 'Announcements retrieved successfully')
 
 @announcements_bp.route('/<int:announcement_id>/photo', methods=['POST'])
 def update_announcement_photo(announcement_id):

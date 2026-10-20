@@ -318,18 +318,7 @@ def flush_system_data():
                             VALUES (%s, %s, %s, %s, %s, %s)
                         """, (tid, skey, sorder, stitle, sdesc, sact))
 
-                    # Re-seed Baseline Announcements
-                    announcements_data = [
-                        (1, 'everyone', None, 'Tremendous Momentum: Youth Camp 2026', 'Join us for the ultimate spiritual gathering of the year featuring live worship, breakout sessions, and youth empowerment at SJB Learning Center, Calamba.', 1, '2026-05-21 09:00:00'),
-                        (1, 'everyone', None, '29th YTR Anniversary Celebration', 'Celebrating 29 years of youth transformation and spiritual community impact across every chapter branch nationwide.', 1, '2026-09-26 14:00:00'),
-                        (1, 'chapter_admins', None, 'National Youth Leadership Summit', 'An executive summit for chapter administrators and coordinators covering mission governance and budget liquidation.', 1, '2026-12-19 08:30:00'),
-                        (1, 'specific_chapter', 1, 'Greatest of All Time: Regional Fellowship', 'High-energy praise, worship revival, and inter-campus fellowship bringing Laguna students together.', 1, '2026-09-28 16:00:00')
-                    ]
-                    for creator_id, audience, target_ch, title, body, is_pub, pub_at in announcements_data:
-                        cur.execute("""
-                            INSERT INTO announcements (created_by, target_audience, target_chapter_id, title, body, is_published, published_at)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
-                        """, (creator_id, audience, target_ch, title, body, is_pub, pub_at))
+                    # Announcements table remains completely clean on reset
 
                 if mode == 'demo':
                     # Seed clean baseline events & proposals
