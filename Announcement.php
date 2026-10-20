@@ -157,7 +157,7 @@
 
   <!-- MODAL: CREATE ANNOUNCEMENT (FOR NATIONAL ADMIN ONLY) -->
   <div id="createAnnouncementModal" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 720px;">
       <div class="modal-header">
         <h3 class="font-roboto">
           <i class="ph ph-megaphone-simple" style="color: #2563eb;"></i> Publish New Announcement
@@ -165,12 +165,14 @@
         <button type="button" class="modal-close-btn" onclick="closeCreateAnnouncementModal()"><i class="ph ph-x"></i></button>
       </div>
       <form id="createAnnouncementForm" onsubmit="handleCreateAnnouncementSubmit(event)">
+        <!-- Title -->
         <div style="margin-bottom: 1rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event / Announcement Title *</label>
-          <input type="text" id="ann-title" class="form-input font-roboto" required placeholder="e.g. Annual National Youth Conference 2026" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          <input type="text" id="ann-title" class="form-input font-roboto" required placeholder="e.g. TREMENDOUS MOMENTUM / Annual Youth Conference" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <!-- Category, Event Date, Event Time -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
           <div>
             <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Category *</label>
             <select id="ann-category" class="form-select font-roboto" required style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
@@ -180,24 +182,42 @@
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Date *</label>
-            <input type="date" id="ann-date" class="form-input font-roboto" required style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+            <input type="text" id="ann-date" class="form-input font-roboto" required placeholder="e.g. Sept 28, 2026 or 2026-09-28" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Time</label>
+            <input type="text" id="ann-time" class="form-input font-roboto" placeholder="e.g. 8:00 AM - 5:00 PM" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <!-- Venue / Platform, City / Location Specifics -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
           <div>
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Venue / Location *</label>
-            <input type="text" id="ann-venue" class="form-input font-roboto" required placeholder="e.g. SJB Learning Center, Calamba" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Venue / Platform *</label>
+            <input type="text" id="ann-venue" class="form-input font-roboto" required placeholder="e.g. SJB Learning Center Canlalay" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
           </div>
           <div>
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Host Chapter / Region</label>
-            <input type="text" id="ann-chapter" class="form-input font-roboto" placeholder="e.g. Laguna Chapter or National HQ" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">City / Location Specifics</label>
+            <input type="text" id="ann-city" class="form-input font-roboto" placeholder="e.g. Bi�an, Laguna" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
           </div>
         </div>
 
+        <!-- Host Chapter / Region -->
         <div style="margin-bottom: 1rem;">
-          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Target Expected Attendees</label>
-          <input type="number" id="ann-participants" class="form-input font-roboto" placeholder="e.g. 150" min="1" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Host Chapter / Region</label>
+          <input type="text" id="ann-chapter" class="form-input font-roboto" placeholder="e.g. Laguna Chapter or YTR NATIONAL" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+        </div>
+
+        <!-- Target and Registered Attendees -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Target Expected Attendees</label>
+            <input type="number" id="ann-participants" class="form-input font-roboto" placeholder="e.g. 100" min="1" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Total Registered Participants</label>
+            <input type="number" id="ann-registered" class="form-input font-roboto" placeholder="e.g. 60" min="0" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
         </div>
 
         <!-- Event Poster Upload & Preview -->
@@ -235,9 +255,74 @@
           </div>
         </div>
 
-        <div style="margin-bottom: 1.25rem;">
-          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Announcement Summary & Highlights *</label>
-          <textarea id="ann-description" class="form-textarea font-roboto" rows="3" required placeholder="Describe the program schedule, registration details, and guest ministers..." style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;"></textarea>
+        <!-- Description (About the Event) -->
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Announcement Summary & Highlights (About the Event) *</label>
+          <textarea id="ann-description" class="form-textarea font-roboto" rows="3" required placeholder="Describe the event showcase, algorithm optimization challenges, or ministry agenda..." style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;"></textarea>
+        </div>
+
+        <!-- Section: Logistics & Team Specifics -->
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 0.85rem; margin-bottom: 1rem;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #1e40af; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="ph ph-gear"></i> Logistics, Team & Registration Specifics
+          </div>
+
+          <!-- Card 1: Core Team Leads -->
+          <div style="margin-bottom: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.35rem;">Core Team Leads</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;">
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Project Manager</label>
+                <input type="text" id="ann-pm" class="form-input font-roboto" placeholder="e.g. Alex R." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Creative Lead</label>
+                <input type="text" id="ann-creative" class="form-input font-roboto" placeholder="e.g. Maria P." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Technical Director</label>
+                <input type="text" id="ann-tech" class="form-input font-roboto" placeholder="e.g. John K." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Venue Specifics -->
+          <div style="margin-bottom: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.35rem;">Venue Specifics</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;">
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Room Specifics</label>
+                <input type="text" id="ann-room" class="form-input font-roboto" placeholder="e.g. Auditorium A (2nd Floor)" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Parking Specifics</label>
+                <input type="text" id="ann-parking" class="form-input font-roboto" placeholder="e.g. Lot B, Level-1" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Wi-Fi Details</label>
+                <input type="text" id="ann-wifi" class="form-input font-roboto" placeholder="e.g. YTR-Guest / goat2026" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Registration & Contact -->
+          <div style="margin-bottom: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.35rem;">Registration & Contact Inquiries</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;">
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Registration Form Link (GForms)</label>
+                <input type="url" id="ann-reglink" class="form-input font-roboto" placeholder="https://forms.gle/..." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Contact Team / Unit</label>
+                <input type="text" id="ann-contact-team" class="form-input font-roboto" placeholder="e.g. YTR - Laguna Team" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Contact Officer / Secretary</label>
+                <input type="text" id="ann-contact-person" class="form-input font-roboto" placeholder="e.g. Secretary: Rayvhen P. Mu�oz" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
@@ -387,7 +472,7 @@
                 <i class="ph ph-map-pin" style="color: #2563eb; font-size: 1.15rem;"></i> Location / Platform
               </div>
               <div id="view-ann-loc-venue" style="font-weight: 700; color: #0f172a; font-size: 0.875rem; margin-bottom: 0.15rem;">SJB Learning Center Canlalay</div>
-              <div id="view-ann-loc-city" style="font-size: 0.75rem; color: #64748b;">Biñan, Laguna</div>
+              <div id="view-ann-loc-city" style="font-size: 0.75rem; color: #64748b;">Bi�an, Laguna</div>
             </div>
 
             <div style="border-top: 1px solid #f1f5f9; margin: 1rem 0;"></div>
@@ -402,7 +487,7 @@
                   For inquiries, you may Contact the Chapter Officer or the <span id="view-ann-contact-team" style="font-weight: 700;">YTR - Laguna Team</span>
                 </div>
                 <div style="font-size: 0.75rem; color: #1e3a8a; font-weight: 600;">
-                  <span id="view-ann-contact-person">Secretary: Rayvhen P. Muñoz</span>
+                  <span id="view-ann-contact-person">Secretary: Rayvhen P. Mu�oz</span>
                 </div>
               </div>
             </div>
@@ -470,7 +555,7 @@
           <input type="text" id="edit-ann-title" class="form-input font-roboto" required style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
           <div>
             <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Category *</label>
             <select id="edit-ann-category" class="form-select font-roboto" required style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
@@ -482,6 +567,10 @@
             <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Date *</label>
             <input type="text" id="edit-ann-date" class="form-input font-roboto" required placeholder="e.g. Sept 28, 2026 or 2026-09-28" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
           </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">Event Time</label>
+            <input type="text" id="edit-ann-time" class="form-input font-roboto" placeholder="e.g. 8:00 AM - 5:00 PM" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+          </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
@@ -491,7 +580,7 @@
           </div>
           <div>
             <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 0.35rem;">City / Location Specifics</label>
-            <input type="text" id="edit-ann-city" class="form-input font-roboto" placeholder="e.g. Biñan, Laguna" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+            <input type="text" id="edit-ann-city" class="form-input font-roboto" placeholder="e.g. Bi�an, Laguna" style="width: 100%; padding: 0.55rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
           </div>
         </div>
 
@@ -581,14 +670,18 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem;">
             <div>
               <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Registration Form Link (GForms / Site)</label>
               <input type="url" id="edit-ann-reglink" class="form-input font-roboto" placeholder="https://forms.gle/..." style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
             </div>
             <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Contact Team / Unit</label>
+              <input type="text" id="edit-ann-contact-team" class="form-input font-roboto" placeholder="e.g. YTR - Laguna Team" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+            </div>
+            <div>
               <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.2rem;">Contact Officer / Secretary</label>
-              <input type="text" id="edit-ann-contact-person" class="form-input font-roboto" placeholder="e.g. Secretary: Rayvhen P. Muñoz" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
+              <input type="text" id="edit-ann-contact-person" class="form-input font-roboto" placeholder="e.g. Secretary: Rayvhen P. Mu�oz" style="width: 100%; padding: 0.45rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.825rem;">
             </div>
           </div>
         </div>
@@ -824,14 +917,14 @@
 
       const locCityEl = document.getElementById('view-ann-loc-city');
       if (locCityEl) {
-        locCityEl.textContent = a.city || (a.venue && a.venue.includes(',') ? a.venue.split(',').slice(1).join(',').trim() : 'Biñan, Laguna');
+        locCityEl.textContent = a.city || (a.venue && a.venue.includes(',') ? a.venue.split(',').slice(1).join(',').trim() : 'Bi�an, Laguna');
       }
 
       const contactTeamEl = document.getElementById('view-ann-contact-team');
       if (contactTeamEl) contactTeamEl.textContent = a.contact_team || (a.chapter ? `YTR - ${a.chapter} Team` : 'YTR - Laguna Team');
 
       const contactPersonEl = document.getElementById('view-ann-contact-person');
-      if (contactPersonEl) contactPersonEl.textContent = a.contact_person || 'Secretary: Rayvhen P. Muñoz';
+      if (contactPersonEl) contactPersonEl.textContent = a.contact_person || 'Secretary: Rayvhen P. Mu�oz';
 
       // Column 3: Logistics & Team
       const pmEl = document.getElementById('view-ann-team-pm');
@@ -1072,7 +1165,7 @@
       document.getElementById('edit-ann-category').value = a.category || 'national';
       document.getElementById('edit-ann-date').value = a.date || '';
       document.getElementById('edit-ann-venue').value = a.venue || '';
-      document.getElementById('edit-ann-city').value = a.city || 'Biñan, Laguna';
+      document.getElementById('edit-ann-city').value = a.city || 'Bi�an, Laguna';
       document.getElementById('edit-ann-chapter').value = a.chapter || '';
       document.getElementById('edit-ann-participants').value = a.target || 100;
       document.getElementById('edit-ann-registered').value = a.registered !== undefined ? a.registered : 60;
@@ -1087,8 +1180,10 @@
       document.getElementById('edit-ann-room').value = a.room || 'Auditorium A (2nd Floor)';
       document.getElementById('edit-ann-parking').value = a.parking || 'Lot B, Level-1';
       document.getElementById('edit-ann-wifi').value = a.wifi || 'YTR-Guest / goat2026';
+      if (document.getElementById('edit-ann-time')) document.getElementById('edit-ann-time').value = a.time || '8:00 AM - 5:00 PM';
       document.getElementById('edit-ann-reglink').value = a.reg_link || 'https://forms.gle/YcZudZkgefs1dEEn7';
-      document.getElementById('edit-ann-contact-person').value = a.contact_person || 'Secretary: Rayvhen P. Muñoz';
+      if (document.getElementById('edit-ann-contact-team')) document.getElementById('edit-ann-contact-team').value = a.contact_team || (a.chapter ? 'YTR - ' + a.chapter + ' Team' : 'YTR - Laguna Team');
+      document.getElementById('edit-ann-contact-person').value = a.contact_person || 'Secretary: Rayvhen P. Mu�oz';
 
       document.getElementById('editAnnouncementModal').style.display = 'flex';
     }
@@ -1118,7 +1213,7 @@
         category: document.getElementById('edit-ann-category').value,
         date: document.getElementById('edit-ann-date').value.trim(),
         venue: document.getElementById('edit-ann-venue').value.trim(),
-        city: document.getElementById('edit-ann-city').value.trim() || 'Biñan, Laguna',
+        city: document.getElementById('edit-ann-city').value.trim() || 'Bi�an, Laguna',
         chapter: document.getElementById('edit-ann-chapter').value.trim(),
         target: parseInt(document.getElementById('edit-ann-participants').value) || 100,
         registered: parseInt(document.getElementById('edit-ann-registered').value) || 60,
@@ -1131,8 +1226,10 @@
         room: document.getElementById('edit-ann-room').value.trim() || 'Auditorium A (2nd Floor)',
         parking: document.getElementById('edit-ann-parking').value.trim() || 'Lot B, Level-1',
         wifi: document.getElementById('edit-ann-wifi').value.trim() || 'YTR-Guest / goat2026',
+        time: (document.getElementById('edit-ann-time')?.value || '').trim() || '8:00 AM - 5:00 PM',
         reg_link: document.getElementById('edit-ann-reglink').value.trim() || 'https://forms.gle/YcZudZkgefs1dEEn7',
-        contact_person: document.getElementById('edit-ann-contact-person').value.trim() || 'Secretary: Rayvhen P. Muñoz'
+        contact_team: (document.getElementById('edit-ann-contact-team')?.value || '').trim() || (document.getElementById('edit-ann-chapter').value.trim() ? ('YTR - ' + document.getElementById('edit-ann-chapter').value.trim() + ' Team') : 'YTR - Laguna Team'),
+        contact_person: document.getElementById('edit-ann-contact-person').value.trim() || 'Secretary: Rayvhen P. Mu�oz'
       };
 
       announcements[idx] = updated;
@@ -1185,29 +1282,30 @@
       }
 
       const desc = document.getElementById('ann-description').value.trim();
+      const chVal = (document.getElementById('ann-chapter')?.value || '').trim() || 'YTR NATIONAL';
       const newAnn = {
         id: Date.now(),
         title: document.getElementById('ann-title').value.trim(),
         category: document.getElementById('ann-category').value,
-        date: document.getElementById('ann-date').value,
-        time: "9:00 AM - 5:00 PM",
+        date: (document.getElementById('ann-date')?.value || '').trim() || 'Sept 28, 2026',
+        time: (document.getElementById('ann-time')?.value || '').trim() || '8:00 AM - 5:00 PM',
         venue: document.getElementById('ann-venue').value.trim(),
-        city: "Biñan, Laguna",
-        chapter: document.getElementById('ann-chapter').value.trim() || 'National HQ',
-        target: parseInt(document.getElementById('ann-participants').value) || 100,
-        registered: 0,
+        city: (document.getElementById('ann-city')?.value || '').trim() || 'Bi�an, Laguna',
+        chapter: chVal,
+        target: parseInt(document.getElementById('ann-participants')?.value) || 100,
+        registered: parseInt(document.getElementById('ann-registered')?.value) || 60,
         image: selectedCreatePosterData || 'assets/images/background.jpg',
-        excerpt: desc.substring(0, 140) + '...',
+        excerpt: desc.length > 140 ? desc.substring(0, 140) + '...' : desc,
         details: desc,
-        pm: "Alex R.",
-        creative_lead: "Maria P.",
-        tech_director: "John K.",
-        room: "Auditorium A (2nd Floor)",
-        parking: "Lot B, Level-1",
-        wifi: "YTR-Guest / goat2026",
-        reg_link: "https://forms.gle/YcZudZkgefs1dEEn7",
-        contact_team: document.getElementById('ann-chapter').value.trim() || 'National Secretariat',
-        contact_person: "Secretary: Rayvhen P. Muñoz"
+        pm: (document.getElementById('ann-pm')?.value || '').trim() || 'Alex R.',
+        creative_lead: (document.getElementById('ann-creative')?.value || '').trim() || 'Maria P.',
+        tech_director: (document.getElementById('ann-tech')?.value || '').trim() || 'John K.',
+        room: (document.getElementById('ann-room')?.value || '').trim() || 'Auditorium A (2nd Floor)',
+        parking: (document.getElementById('ann-parking')?.value || '').trim() || 'Lot B, Level-1',
+        wifi: (document.getElementById('ann-wifi')?.value || '').trim() || 'YTR-Guest / goat2026',
+        reg_link: (document.getElementById('ann-reglink')?.value || '').trim() || 'https://forms.gle/YcZudZkgefs1dEEn7',
+        contact_team: (document.getElementById('ann-contact-team')?.value || '').trim() || ('YTR - ' + chVal + ' Team'),
+        contact_person: (document.getElementById('ann-contact-person')?.value || '').trim() || 'Secretary: Rayvhen P. Mu�oz'
       };
 
       announcements.unshift(newAnn);
