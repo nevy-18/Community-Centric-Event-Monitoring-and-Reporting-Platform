@@ -16,7 +16,7 @@
   </div>
 
   <nav class="nav-menu font-roboto">
-    <a href="dashboard.php" class="nav-link <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
+    <a href="Dashboard.php" class="nav-link <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
       <i class="ph ph-squares-four"></i> Dashboard
     </a>
     <a href="Announcement.php" class="nav-link <?php echo ($current_page == 'announcement.php') ? 'active' : ''; ?>">
