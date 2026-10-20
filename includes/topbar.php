@@ -35,8 +35,6 @@
           </a>
         </div>
       </div>
-
-      <button class="icon-btn"><i class="ph ph-chat-circle"></i></button>
     </div>
 
     <button id="profile-btn" class="profile-btn">

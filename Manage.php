@@ -311,7 +311,7 @@
             <i class="ph ph-buildings"></i> Chapter: --
           </div>
           <div id="resetModalNoteBox" style="margin-top: 0.5rem; background: #fff7ed; border: 1px solid #fed7aa; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #9a3412; display: none;">
-            <strong style="display: block; margin-bottom: 2px;"><i class="ph-bold ph-chat-circle-dots"></i> User Request Note:</strong>
+            <strong style="display: block; margin-bottom: 2px;"><i class="ph-bold ph-note"></i> User Request Note:</strong>
             <span id="resetModalNoteText"></span>
           </div>
         </div>

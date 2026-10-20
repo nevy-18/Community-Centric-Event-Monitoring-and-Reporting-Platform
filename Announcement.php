@@ -395,7 +395,7 @@
             <!-- Contact Section -->
             <div>
               <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 700; color: #1e40af; margin-bottom: 0.4rem;">
-                <i class="ph ph-chat-circle-dots" style="color: #2563eb; font-size: 1.15rem;"></i> Contact
+                <i class="ph ph-phone" style="color: #2563eb; font-size: 1.15rem;"></i> Contact
               </div>
               <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 0.85rem;">
                 <div id="view-ann-contact-msg" style="font-size: 0.75rem; color: #1e40af; font-weight: 500; margin-bottom: 0.35rem;">
