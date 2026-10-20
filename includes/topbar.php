@@ -324,7 +324,7 @@
 
     const url = (window.YTR_API && window.YTR_API.system)
       ? window.YTR_API.system.getBackupUrl(fmt)
-      : `http://127.0.0.1:5000/api/system/backup?format=${fmt}&download=1`;
+      : `https://ytr-backend.onrender.com/api/system/backup?format=${fmt}&download=1`;
 
     const a = document.createElement('a');
     a.href = url;

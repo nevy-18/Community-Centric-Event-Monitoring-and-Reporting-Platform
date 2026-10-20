@@ -112,7 +112,7 @@ const loginTab = document.getElementById('loginTab');
     // Load real chapters from Python backend API
     async function loadChapters() {
       try {
-        const result = window.YTR_API ? await YTR_API.chapters.getAll() : await (await fetch('http://127.0.0.1:5000/api/chapters')).json();
+        const result = window.YTR_API ? await YTR_API.chapters.getAll() : await (await fetch('https://ytr-backend.onrender.com/api/chapters')).json();
         if (result.status === 'success' && Array.isArray(result.data)) {
           chapterName.innerHTML = '<option value="" selected disabled>Select your chapter</option>';
           result.data.forEach(ch => {
@@ -148,7 +148,7 @@ const loginTab = document.getElementById('loginTab');
 
         const result = window.YTR_API 
           ? await YTR_API.auth.login(email.value.trim(), password.value)
-          : await (await fetch('http://127.0.0.1:5000/api/auth/login', {
+          : await (await fetch('https://ytr-backend.onrender.com/api/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email: email.value.trim(), password: password.value })
@@ -179,7 +179,7 @@ const loginTab = document.getElementById('loginTab');
           showError('loginError', result.message || 'Login failed.');
         }
       } catch (err) {
-        showError('loginError', 'Could not reach the Python backend API (http://127.0.0.1:5000). Please ensure it is running.');
+        showError('loginError', 'Could not reach the cloud backend API. Please check your internet connection.');
       } finally {
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
@@ -242,7 +242,7 @@ const loginTab = document.getElementById('loginTab');
 
         const result = window.YTR_API 
           ? await YTR_API.auth.register(payload)
-          : await (await fetch('http://127.0.0.1:5000/api/auth/register', {
+          : await (await fetch('https://ytr-backend.onrender.com/api/auth/register', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
@@ -258,7 +258,7 @@ const loginTab = document.getElementById('loginTab');
           showError('signupError', result.message || 'Registration failed.');
         }
       } catch (err) {
-        showError('signupError', 'Could not reach the Python backend API (http://127.0.0.1:5000). Please ensure it is running.');
+        showError('signupError', 'Could not reach the cloud backend API. Please check your internet connection.');
       } finally {
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
@@ -326,7 +326,7 @@ const loginTab = document.getElementById('loginTab');
 
         const result = window.YTR_API
           ? await YTR_API.auth.forgotPassword(emailVal, notesVal)
-          : await (await fetch('http://127.0.0.1:5000/api/auth/forgot-password', {
+          : await (await fetch('https://ytr-backend.onrender.com/api/auth/forgot-password', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email: emailVal, notes: notesVal })
@@ -345,7 +345,7 @@ const loginTab = document.getElementById('loginTab');
           forgotError.classList.add('visible');
         }
       } catch (err) {
-        forgotError.textContent = 'Could not reach the Python backend API (http://127.0.0.1:5000). Please ensure it is running.';
+        forgotError.textContent = 'Could not reach the cloud backend API. Please check your internet connection.';
         forgotError.classList.add('visible');
       } finally {
         btnSubmitForgot.disabled = false;
