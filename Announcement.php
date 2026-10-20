@@ -136,7 +136,7 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
               </button>
             <?php else: ?>
               <div id="chapterAnnouncementNotice" style="display: flex; align-items: center; gap: 0.5rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9999px; padding: 0.45rem 0.9rem; font-size: 0.8rem; color: #166534; font-weight: 700;">
-                <i class="ph-fill ph-broadcast" style="font-size: 1.1rem; color: #16a34a;"></i> Chapter Broadcast Feed (Read-Only)
+                <i class="ph-fill ph-broadcast" style="font-size: 1.1rem; color: #16a34a;"></i> Announcements
               </div>
             <?php endif; ?>
           </div>
