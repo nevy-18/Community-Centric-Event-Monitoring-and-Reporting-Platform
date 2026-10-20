@@ -1163,6 +1163,7 @@
 
     // Initialize on DOM load or immediate if DOM already ready
     function initProposalPage() {
+      document.body.appendChild(document.getElementById('proposalDossierModal'));
       loadProposalMetrics();
       loadChapters();
       loadProposals();
