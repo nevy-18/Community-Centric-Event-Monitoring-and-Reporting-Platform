@@ -39,18 +39,18 @@
     </div>
 
     <button id="profile-btn" class="profile-btn">
-      <div class="profile-avatar">HJ</div>
+      <div class="profile-avatar">--</div>
       <div class="profile-info font-roboto">
-        <h4>Hamilton Jones Dela</h4>
-        <p>Project Coordinator</p>
+        <h4>Loading...</h4>
+        <p>Authenticating...</p>
       </div>
       <i class="ph ph-caret-down" style="color: #6b7280; font-size: 0.875rem;"></i>
     </button>
 
     <div id="profile-dropdown" class="dropdown-menu font-roboto">
       <div class="dropdown-header">
-        <h4 id="topbar-dropdown-user-name" style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">Hamilton Jones Dela</h4>
-        <p id="topbar-dropdown-user-email" style="font-size: 0.75rem; color: #64748b;">admin@ytr.org</p>
+        <h4 id="topbar-dropdown-user-name" style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">Loading...</h4>
+        <p id="topbar-dropdown-user-email" style="font-size: 0.75rem; color: #64748b;">user@ytr.org</p>
       </div>
       <a href="#" class="dropdown-item" onclick="openProfileModal(event)"><i class="ph ph-user"></i> My Profile</a>
       <a href="Manage.php" class="dropdown-item"><i class="ph ph-user-circle"></i> Manage Accounts</a>
@@ -72,7 +72,8 @@
       </div>
 
       <div class="dropdown-divider"></div>
-      <a href="login.php" class="dropdown-item text-rose" onclick="localStorage.removeItem('ytr_user'); localStorage.removeItem('ytr_role'); document.cookie='ytr_role=; path=/; max-age=0;'"><i class="ph ph-sign-out"></i> Sign Out</a>
+      <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-arrows-clockwise"></i> Switch Account</a>
+      <a href="login.php" class="dropdown-item text-rose" onclick="ytrGlobalSignOut(event)"><i class="ph ph-sign-out"></i> Sign Out</a>
     </div>
   </div>
 </header>
@@ -336,74 +337,78 @@
       e.stopPropagation();
       profileDropdown.classList.remove('show');
       notifDropdown.classList.toggle('show');
-    });
-
-    // Sync Topbar with Logged In User
+    });    // Sync Topbar with Logged In User
     try {
       const rawUser = localStorage.getItem('ytr_user');
-      if (rawUser) {
-        const u = JSON.parse(rawUser);
-        if (u) {
-          const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
-          const avatar = document.querySelector('.profile-avatar');
-          if (avatar) {
-            if (u.profile_picture) {
-              avatar.innerHTML = `<img src="${u.profile_picture}" alt="${u.full_name || 'Profile'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-            } else {
-              avatar.textContent = initials;
-            }
-          }
-          
-          const pName = document.querySelector('.profile-info h4');
-          if (pName) pName.textContent = u.full_name || 'User';
-          
-          const pRole = document.querySelector('.profile-info p');
-          if (pRole) pRole.textContent = u.position || (u.role === 'chapter_admin' ? (u.chapter_name || 'Chapter Admin') : 'National Administrator');
+      if (!rawUser) {
+        ytrGlobalSignOut();
+        return;
+      }
+      const u = JSON.parse(rawUser);
+      if (!u || !u.id) {
+        ytrGlobalSignOut();
+        return;
+      }
 
-          const topbarBadge = document.querySelector('.topbar-left .role-badge');
-          if (topbarBadge) {
-            if (u.role === 'chapter_admin') {
-              topbarBadge.textContent = (u.chapter_name || 'Chapter') + (u.position ? ' • ' + u.position : '');
-              topbarBadge.style.cssText = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700;';
-            } else {
-              topbarBadge.textContent = 'National' + (u.position ? ' • ' + u.position : '');
-            }
-          }
+      const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
+      const avatar = document.querySelector('.profile-avatar');
+      if (avatar) {
+        if (u.profile_picture) {
+          avatar.innerHTML = `<img src="${u.profile_picture}" alt="${u.full_name || 'Profile'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        } else {
+          avatar.textContent = initials;
+        }
+      }
 
-          const ddName = document.getElementById('topbar-dropdown-user-name');
-          if (ddName) ddName.textContent = u.full_name || 'User';
+      const pName = document.querySelector('.profile-info h4');
+      if (pName) pName.textContent = u.full_name || 'User';
 
-          const ddEmail = document.getElementById('topbar-dropdown-user-email');
-          if (ddEmail) ddEmail.textContent = u.email || 'user@ytr.org';
+      const pRole = document.querySelector('.profile-info p');
+      if (pRole) pRole.textContent = u.position || (u.role === 'chapter_admin' ? (u.chapter_name || 'Chapter Admin') : 'National Administrator');
 
-          // Check Executive Authorization for Reset & Backup:
-          // Restricted to: Executive Director, Regional Director (National), or root admin
-          const execPositions = ['Executive Director', 'Regional Director (National)'];
-          const isExec = execPositions.includes(u.position) || u.email === 'admin@ytr.org';
-          const execSection = document.getElementById('executive-tools-dropdown-section');
-          if (execSection) {
-            execSection.style.display = isExec ? 'block' : 'none';
-          }
+      const topbarBadge = document.querySelector('.topbar-left .role-badge');
+      if (topbarBadge) {
+        if (u.role === 'chapter_admin') {
+          topbarBadge.textContent = (u.chapter_name || 'Chapter') + (u.position ? ' • ' + u.position : '');
+          topbarBadge.style.cssText = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700;';
+        } else {
+          topbarBadge.textContent = 'National' + (u.position ? ' • ' + u.position : '');
+        }
+      }
 
-          // If Chapter Admin, customize profile dropdown links
-          if (u.role === 'chapter_admin') {
-            const dropdown = document.getElementById('profile-dropdown');
-            if (dropdown) {
-              dropdown.innerHTML = `
-                <div class="dropdown-header">
-                  <h4 style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">${u.full_name}</h4>
-                  <p style="font-size: 0.75rem; color: #64748b;">${u.position || 'Chapter Officer'} (${u.chapter_name || 'Chapter'})</p>
-                </div>
-                <a href="#" class="dropdown-item" onclick="openProfileModal(event)"><i class="ph ph-user"></i> My Profile</a>
-                <a href="ChapterDashboard.php" class="dropdown-item"><i class="ph ph-squares-four"></i> Chapter Dashboard</a>
-                <a href="ChapterProposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> My Event Proposals</a>
-                <a href="ChapterReport.php" class="dropdown-item"><i class="ph ph-file-arrow-up"></i> Submit Event Report</a>
-                <a href="ChapterRequest.php" class="dropdown-item"><i class="ph ph-image"></i> My Poster Requests</a>
-                <div class="dropdown-divider"></div>
-                <a href="login.php" class="dropdown-item text-rose" onclick="localStorage.removeItem('ytr_user'); localStorage.removeItem('ytr_role'); document.cookie='ytr_role=; path=/; max-age=0;'"><i class="ph ph-sign-out"></i> Sign Out</a>
-              `;
-            }
-          }
+      const ddName = document.getElementById('topbar-dropdown-user-name');
+      if (ddName) ddName.textContent = u.full_name || 'User';
+
+      const ddEmail = document.getElementById('topbar-dropdown-user-email');
+      if (ddEmail) ddEmail.textContent = u.email || 'user@ytr.org';
+
+      // Check Executive Authorization for Reset & Backup:
+      // Restricted to: Executive Director, Regional Director (National), or root admin
+      const execPositions = ['Executive Director', 'Regional Director (National)'];
+      const isExec = execPositions.includes(u.position) || u.email === 'admin@ytr.org';
+      const execSection = document.getElementById('executive-tools-dropdown-section');
+      if (execSection) {
+        execSection.style.display = isExec ? 'block' : 'none';
+      }
+
+      // If Chapter Admin, customize profile dropdown links
+      if (u.role === 'chapter_admin') {
+        const dropdown = document.getElementById('profile-dropdown');
+        if (dropdown) {
+          dropdown.innerHTML = `
+            <div class="dropdown-header">
+              <h4 style="font-size: 0.875rem; color: #0f172a; font-weight: bold;">${escapeHtml(u.full_name || 'Chapter Admin')}</h4>
+              <p style="font-size: 0.75rem; color: #64748b;">${escapeHtml(u.position || 'Chapter Officer')} (${escapeHtml(u.chapter_name || 'Chapter')})</p>
+            </div>
+            <a href="#" class="dropdown-item" onclick="openProfileModal(event)"><i class="ph ph-user"></i> My Profile</a>
+            <a href="ChapterDashboard.php" class="dropdown-item"><i class="ph ph-squares-four"></i> Chapter Dashboard</a>
+            <a href="ChapterProposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> My Event Proposals</a>
+            <a href="ChapterReport.php" class="dropdown-item"><i class="ph ph-file-arrow-up"></i> Submit Event Report</a>
+            <a href="ChapterRequest.php" class="dropdown-item"><i class="ph ph-image"></i> My Poster Requests</a>
+            <div class="dropdown-divider"></div>
+            <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-arrows-clockwise"></i> Switch Account</a>
+            <a href="login.php" class="dropdown-item text-rose" onclick="ytrGlobalSignOut(event)"><i class="ph ph-sign-out"></i> Sign Out</a>
+          `;
         }
       }
     } catch (e) {
@@ -987,8 +992,29 @@
     }
   }
 
+  function ytrGlobalSignOut(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    try {
+      localStorage.removeItem('ytr_user');
+      localStorage.removeItem('ytr_role');
+      localStorage.removeItem('ytr_chapter_id');
+      sessionStorage.clear();
+      document.cookie = "ytr_role=; path=/; max-age=0;";
+      document.cookie = "ytr_chapter_id=; path=/; max-age=0;";
+      document.cookie = "ytr_user_id=; path=/; max-age=0;";
+    } catch(err) {}
+    window.location.href = 'login.php';
+  }
+
   function syncTopbarUserProfile(u) {
-    if (!u) return;
+    if (!u) {
+      ytrGlobalSignOut();
+      return;
+    }
+    if (u.chapter_name) {
+      const sbCh = document.getElementById('sidebar-chapter-name');
+      if (sbCh) sbCh.textContent = u.chapter_name.toUpperCase();
+    }
     const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
     const avatar = document.querySelector('.profile-avatar');
     if (avatar) {

@@ -13,6 +13,8 @@
       // Clear previous session when returning to login page
       localStorage.removeItem('ytr_user');
       localStorage.removeItem('ytr_role');
+      localStorage.removeItem('ytr_chapter_id');
+      sessionStorage.clear();
       document.cookie = "ytr_role=; path=/; max-age=0;";
       document.cookie = "ytr_chapter_id=; path=/; max-age=0;";
       document.cookie = "ytr_user_id=; path=/; max-age=0;";

@@ -1,3 +1,4 @@
+<?php include 'includes/auth_guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

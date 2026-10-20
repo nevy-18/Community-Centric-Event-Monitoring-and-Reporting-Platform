@@ -1,10 +1,4 @@
-<?php
-// Role determination: Check if user is Chapter Admin
-$is_chapter_admin = false;
-if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
-    $is_chapter_admin = true;
-}
-?>
+<?php include 'includes/auth_guard.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

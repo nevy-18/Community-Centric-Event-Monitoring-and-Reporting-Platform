@@ -39,12 +39,12 @@
         <i class="ph-fill ph-buildings" style="font-size: 1.25rem;"></i>
       </div>
       <div class="sidebar-title">
-        <h1 class="font-roboto" id="sidebar-chapter-name" style="font-size: 0.85rem; color: #ffffff;">LAGUNA CHAPTER</h1>
+        <h1 class="font-roboto" id="sidebar-chapter-name" style="font-size: 0.85rem; color: #ffffff;">Chapter Workspace</h1>
         <p style="color: #38bdf8; font-size: 0.75rem;">Chapter Admin</p>
       </div>
     </div>
 
-    <a href="login.php" class="sign-out">
+    <a href="login.php" class="sign-out" onclick="if(typeof ytrGlobalSignOut==='function'){ytrGlobalSignOut(event);}else{localStorage.clear();document.cookie='ytr_role=; path=/; max-age=0;';document.cookie='ytr_user_id=; path=/; max-age=0;';}">
       <div class="icon"><i class="ph ph-sign-out"></i></div>
       Sign Out
     </a>

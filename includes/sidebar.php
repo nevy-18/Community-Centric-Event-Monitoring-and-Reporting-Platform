@@ -44,7 +44,7 @@
         <p style="color: #f59e0b; font-size: 0.75rem; margin: 0; line-height: 1.2;">System Admin</p>
       </div>
     </div>
-    <a href="login.php" class="sign-out">
+    <a href="login.php" class="sign-out" onclick="if(typeof ytrGlobalSignOut==='function'){ytrGlobalSignOut(event);}else{localStorage.clear();document.cookie='ytr_role=; path=/; max-age=0;';document.cookie='ytr_user_id=; path=/; max-age=0;';}">
       <div class="icon"><i class="ph ph-sign-out"></i></div>
       Sign Out
     </a>
