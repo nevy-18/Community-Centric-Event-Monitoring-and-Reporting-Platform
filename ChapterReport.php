@@ -715,7 +715,7 @@
     async function loadChapterReports() {
       try {
         const res = await YTR_API.reports.list('all', '');
-        if (res.ok && res.data) {
+        if ((res.status === 'success' || res.ok) && res.data) {
           // Filter to this chapter
           chapterReports = res.data.filter(r => r.chapter_id === chapterId);
           updateMetrics();

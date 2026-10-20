@@ -331,7 +331,7 @@
                     <tr>
                       <td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;">
                         <i class="ph ph-spinner" style="font-size: 1.5rem; animation: spin 1s linear infinite;"></i>
-                        <br>Loading chapter proposals from Python backend...
+                        <br>Loading chapter proposals...
                       </td>
                     </tr>
                   </tbody>
@@ -686,95 +686,109 @@
       }
     }
 
+    function selectProposalById(id) {
+      const p = allProposalsData.find(item => item.id == id);
+      if (p) selectProposalRecord(p);
+    }
+
     // Load Proposals list
     async function loadProposals() {
       const tbody = document.getElementById('proposalsTableBody');
-      const search = document.getElementById('proposalSearchInput').value.trim();
-
-      const res = await YTR_API.proposals.list(currentStatus, currentChapter, search);
-      if (res.status === 'success' && Array.isArray(res.data)) {
-        allProposalsData = res.data;
-        if (res.data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;">No proposals match the selected filters.</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = '';
-        res.data.forEach((p, idx) => {
-          const row = document.createElement('tr');
-          const isPending = p.status === 'pending_approval';
-          const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
-          const isRevision = p.status === 'draft';
-
-          let statusBadge = '<span class="badge pending font-roboto">Pending Review</span>';
-          if (isApproved) statusBadge = '<span class="badge approved font-roboto"><i class="ph ph-check"></i> Approved</span>';
-          if (isRevision) statusBadge = '<span class="badge pending font-roboto" style="background: #fff1f2; color: #e11d48; border-color: #fecdd3;">Needs Revision</span>';
-
-          // Due Date Badge
-          let dueBadgeHtml = '';
-          if (p.due_badge) {
-            const badgeClass = p.due_badge.type === 'overdue' ? 'badge overdue' : (p.due_badge.type === 'due_soon' ? 'badge due-soon' : 'badge timer');
-            const icon = p.due_badge.type === 'overdue' ? 'ph-warning-octagon' : 'ph-clock';
-            dueBadgeHtml = `<span class="${badgeClass} font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ${icon}"></i> ${p.due_badge.text}</span>`;
+      try {
+        const search = (document.getElementById('proposalSearchInput')?.value || '').trim();
+        const res = await YTR_API.proposals.list(currentStatus, currentChapter, search);
+        if (res.status === 'success' && Array.isArray(res.data)) {
+          allProposalsData = res.data;
+          if (res.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;"><i class="ph ph-file-dashed" style="font-size: 2rem; color: #94a3b8; display: block; margin-bottom: 0.5rem;"></i>No proposals match the selected filters.</td></tr>';
+            return;
           }
 
-          // Approval Timer Badge
-          let timerBadgeHtml = '';
-          if (p.approval_timer) {
-            timerBadgeHtml = `<span class="badge timer font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ph-hourglass-high"></i> ${p.approval_timer}</span>`;
-          }
+          tbody.innerHTML = '';
+          res.data.forEach((p, idx) => {
+            const row = document.createElement('tr');
+            const isPending = p.status === 'pending_approval';
+            const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
+            const isRevision = p.status === 'draft';
 
-          const startDate = p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD';
-          const budgetFormatted = Number(p.budget_amount || 0).toLocaleString();
-          const targetTurnout = p.target_turnout || 100;
+            let statusBadge = '<span class="badge pending font-roboto">Pending Review</span>';
+            if (isApproved) statusBadge = '<span class="badge approved font-roboto"><i class="ph ph-check"></i> Approved</span>';
+            if (isRevision) statusBadge = '<span class="badge pending font-roboto" style="background: #fff1f2; color: #e11d48; border-color: #fecdd3;">Needs Revision</span>';
 
-          row.className = 'proposal-row';
-          row.innerHTML = `
-            <td>
-              <div class="td-user">
-                <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
-                  <i class="ph-fill ph-compass"></i>
-                </div>
-                <div>
-                  <span class="proposal-name font-roboto" style="font-weight: 800; color: #0f172a; font-size: 0.9rem; display: block;">${p.title}</span>
-                  <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin: 2px 0;">
-                    <span class="td-sub font-roboto" style="font-weight: 600; color: #2563eb;">${p.event_type.toUpperCase()} EVENT</span>
-                    ${p.ytr_program ? `<span class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.7rem; padding: 1px 6px; font-weight: 700;"><i class="ph-bold ph-compass"></i> ${p.ytr_program}</span>` : ''}
-                    <span class="badge font-roboto" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 0.7rem; padding: 1px 6px; font-weight: 600;"><i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}</span>
-                    ${p.attachment_path ? `<span class="badge font-roboto" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 0.7rem; padding: 1px 6px;" title="Proposal File Soft Copy Attached"><i class="ph-bold ph-paperclip"></i> Soft Copy</span>` : ''}
-                    ${p.drive_link ? `<a href="${escapeHtml(p.drive_link)}" target="_blank" rel="noopener noreferrer" class="badge font-roboto" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.7rem; padding: 1px 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 2px;" title="Open Cloud / Google Drive Proposal"><i class="ph-bold ph-google-drive-logo"></i> Drive</a>` : ''}
+            // Due Date Badge
+            let dueBadgeHtml = '';
+            if (p.due_badge) {
+              const bText = typeof p.due_badge === 'object' ? (p.due_badge.label || p.due_badge.text) : p.due_badge;
+              const bType = typeof p.due_badge === 'object' ? (p.due_badge.type || 'on_track') : 'on_track';
+              const badgeClass = bType === 'overdue' ? 'badge overdue' : (bType === 'due_soon' ? 'badge due-soon' : 'badge timer');
+              const icon = bType === 'overdue' ? 'ph-warning-octagon' : 'ph-clock';
+              dueBadgeHtml = `<span class="${badgeClass} font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ${icon}"></i> ${escapeHtml(bText)}</span>`;
+            }
+
+            // Approval Timer Badge
+            let timerBadgeHtml = '';
+            if (p.approval_timer) {
+              const tText = typeof p.approval_timer === 'object' ? (p.approval_timer.label || p.approval_timer.text) : p.approval_timer;
+              timerBadgeHtml = `<span class="badge timer font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ph-hourglass-high"></i> ${escapeHtml(tText)}</span>`;
+            }
+
+            const startDate = p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD';
+            const budgetFormatted = Number(p.budget_amount || 0).toLocaleString();
+            const targetTurnout = p.target_turnout || 100;
+
+            row.className = 'proposal-row';
+            row.innerHTML = `
+              <td>
+                <div class="td-user">
+                  <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
+                    <i class="ph-fill ph-compass"></i>
                   </div>
-                  <div>${timerBadgeHtml} ${dueBadgeHtml}</div>
+                  <div>
+                    <span class="proposal-name font-roboto" style="font-weight: 800; color: #0f172a; font-size: 0.9rem; display: block;">${escapeHtml(p.title)}</span>
+                    <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin: 2px 0;">
+                      <span class="td-sub font-roboto" style="font-weight: 600; color: #2563eb;">${escapeHtml(String(p.event_type || 'chapter').toUpperCase())} EVENT</span>
+                      ${p.ytr_program ? `<span class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.7rem; padding: 1px 6px; font-weight: 700;"><i class="ph-bold ph-compass"></i> ${escapeHtml(p.ytr_program)}</span>` : ''}
+                      <span class="badge font-roboto" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 0.7rem; padding: 1px 6px; font-weight: 600;"><i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}</span>
+                      ${p.attachment_path ? `<span class="badge font-roboto" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 0.7rem; padding: 1px 6px;" title="Proposal File Soft Copy Attached"><i class="ph-bold ph-paperclip"></i> Soft Copy</span>` : ''}
+                      ${p.drive_link ? `<a href="${escapeHtml(p.drive_link)}" target="_blank" rel="noopener noreferrer" class="badge font-roboto" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.7rem; padding: 1px 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 2px;" title="Open Cloud / Google Drive Proposal"><i class="ph-bold ph-google-drive-logo"></i> Drive</a>` : ''}
+                    </div>
+                    <div>${timerBadgeHtml} ${dueBadgeHtml}</div>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td><span class="badge chapter-admin font-roboto">${p.chapter_name || 'All Chapters'}</span></td>
-            <td>
-              <p class="font-roboto" style="font-size: 0.825rem; font-weight: bold; color: #0f172a;">${startDate}</p>
-              <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> ${p.venue || 'TBD'}</p>
-            </td>
-            <td style="text-align: center;">
-              <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem; color: #0f172a;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> ${targetTurnout} Target</p>
-              <p class="td-sub font-roboto">₱${budgetFormatted}</p>
-            </td>
-            <td style="text-align: center;">${statusBadge}</td>
-            <td style="text-align: center;">
-              <div style="display: flex; gap: 0.35rem; justify-content: center; align-items: center;">
-                <button class="btn btn-primary btn-sm font-roboto" onclick='selectProposalRecord(${JSON.stringify(p)})'>
-                  <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
-                </button>
-                <button class="btn btn-outline btn-sm font-roboto" title="View &amp; Download Soft Copy (Dossier PDF)" onclick='openProposalDossier(${p.id})' style="padding: 0.4rem 0.55rem; color: #1e3a8a; border-color: #cbd5e1;">
-                  <i class="ph-bold ph-printer"></i>
-                </button>
-              </div>
-            </td>
-          `;
-          tbody.appendChild(row);
+              </td>
+              <td><span class="badge chapter-admin font-roboto">${escapeHtml(p.chapter_name || 'All Chapters')}</span></td>
+              <td>
+                <p class="font-roboto" style="font-size: 0.825rem; font-weight: bold; color: #0f172a;">${startDate}</p>
+                <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> ${escapeHtml(p.venue || 'TBD')}</p>
+              </td>
+              <td style="text-align: center;">
+                <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem; color: #0f172a;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> ${targetTurnout} Target</p>
+                <p class="td-sub font-roboto">₱${budgetFormatted}</p>
+              </td>
+              <td style="text-align: center;">${statusBadge}</td>
+              <td style="text-align: center;">
+                <div style="display: flex; gap: 0.35rem; justify-content: center; align-items: center;">
+                  <button class="btn btn-primary btn-sm font-roboto" onclick="selectProposalById(${p.id})">
+                    <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
+                  </button>
+                  <button class="btn btn-outline btn-sm font-roboto" title="View &amp; Download Soft Copy (Dossier PDF)" onclick="openProposalDossier(${p.id})" style="padding: 0.4rem 0.55rem; color: #1e3a8a; border-color: #cbd5e1;">
+                    <i class="ph-bold ph-printer"></i>
+                  </button>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(row);
 
-          if (idx === 0 && !activeProposalId) {
-            selectProposalRecord(p);
-          }
-        });
+            if (idx === 0 && !activeProposalId) {
+              selectProposalRecord(p);
+            }
+          });
+        } else {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #ef4444;"><i class="ph ph-warning-circle" style="font-size: 1.5rem; margin-bottom: 0.25rem;"></i><br>' + (res.message || 'Unable to load proposals from backend.') + '</td></tr>';
+        }
+      } catch (err) {
+        console.error('Failed to load proposals:', err);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #ef4444;"><i class="ph ph-warning-circle" style="font-size: 1.5rem; margin-bottom: 0.25rem;"></i><br>Network or service error loading proposals.</td></tr>';
       }
     }
 
@@ -1007,6 +1021,8 @@
         console.error('Proposal review error:', err);
         alert('Network error communicating with the Python API.');
       }
+    }
+
     // Open Proposal Dossier / Soft Copy Modal
     async function openProposalDossier(proposalId) {
       const pid = proposalId || activeProposalId;
@@ -1145,12 +1161,18 @@
         .replace(/'/g, '&#039;');
     }
 
-    // Initialize on DOM load
-    window.addEventListener('DOMContentLoaded', () => {
+    // Initialize on DOM load or immediate if DOM already ready
+    function initProposalPage() {
       loadProposalMetrics();
       loadChapters();
       loadProposals();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initProposalPage);
+    } else {
+      initProposalPage();
+    }
   </script>
 </body>
 </html>

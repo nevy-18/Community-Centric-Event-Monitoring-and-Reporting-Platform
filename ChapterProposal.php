@@ -602,7 +602,7 @@
             try {
                 // Fetch proposals specifically for this chapter
                 const res = await YTR_API.proposals.list('all', chapterId);
-                if (res.ok && Array.isArray(res.data)) {
+                if ((res.status === 'success' || res.ok) && Array.isArray(res.data)) {
                     proposalsData = res.data;
                     updateMetrics(proposalsData);
                     renderProposalsTable();
