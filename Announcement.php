@@ -152,6 +152,7 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
         </div>
 
         <!-- Events Grid -->
+        <input type="file" id="card-ann-poster-file" accept="image/*" style="display: none;" onchange="handleCardPosterFileSelect(event)">
         <div id="announcement-grid" class="announcement-grid">
           <!-- Dynamically populated -->
         </div>
@@ -286,8 +287,14 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
         <div class="event-details-grid">
           <!-- Column 1: Event Poster & Brief Card -->
           <div class="event-details-left-card">
-            <div class="event-details-poster-wrap">
+            <div class="event-details-poster-wrap" style="position: relative; overflow: hidden; border-radius: 8px;">
               <img id="view-ann-poster-img" src="assets/images/background.jpg" alt="Event Poster" onerror="this.src='assets/images/background.jpg'">
+              <?php if (!$is_chapter_admin): ?>
+              <input type="file" id="instant-ann-poster-file" accept="image/*" style="display: none;" onchange="handleInstantPosterUpdate(event)">
+              <button type="button" id="btnQuickChangePoster" onclick="document.getElementById('instant-ann-poster-file').click()" title="Click to upload and immediately update poster photo" style="position: absolute; bottom: 8px; right: 8px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: #ffffff; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s ease;">
+                <i class="ph-bold ph-camera"></i> Change Photo
+              </button>
+              <?php endif; ?>
             </div>
             <div>
               <h4 id="view-ann-left-title" class="font-roboto" style="font-size: 0.95rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.02em;">
@@ -822,8 +829,13 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
 
         return `
           <div class="announcement-card">
-            <div class="announcement-poster">
+            <div class="announcement-poster" style="position: relative;">
               <img src="${escapeHtml(a.image)}" alt="${escapeHtml(a.title)}" onerror="this.src='assets/images/background.jpg'">
+              ${canEdit ? `
+                <button type="button" class="btn-card-quick-photo" onclick="event.stopPropagation(); triggerCardPhotoChange(${a.id})" title="Click to upload and immediately update poster photo" style="position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); color: #ffffff; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 0.3rem 0.55rem; font-size: 0.72rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.3rem; transition: all 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.25);">
+                  <i class="ph-bold ph-camera"></i> Change Photo
+                </button>
+              ` : ''}
             </div>
             <h3 class="font-roboto">${escapeHtml(a.title)}</h3>
             <div class="announcement-meta font-roboto">
@@ -985,6 +997,64 @@ if (isset($_COOKIE['ytr_role']) && $_COOKIE['ytr_role'] === 'chapter_admin') {
     // ==========================================
     // POSTER UPLOAD & EDIT CONTROLLER
     // ==========================================
+    let targetCardPhotoAnnouncementId = null;
+
+    function triggerCardPhotoChange(id) {
+      if (isChapterAdminUser) return;
+      targetCardPhotoAnnouncementId = id;
+      const input = document.getElementById('card-ann-poster-file');
+      if (input) {
+        input.value = '';
+        input.click();
+      }
+    }
+
+    function handleCardPosterFileSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file || !targetCardPhotoAnnouncementId) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Please choose an image file (PNG, JPG, WEBP).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const dataUrl = evt.target.result;
+        const idx = announcements.findIndex(item => item.id === targetCardPhotoAnnouncementId);
+        if (idx !== -1) {
+          announcements[idx].image = dataUrl;
+          localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+          renderAnnouncements();
+          alert('Announcement poster photo updated successfully!');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleInstantPosterUpdate(e) {
+      if (isChapterAdminUser) return;
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Please choose an image file (PNG, JPG, WEBP).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const dataUrl = evt.target.result;
+        if (!currentViewingAnnouncementId) return;
+        const idx = announcements.findIndex(item => item.id === currentViewingAnnouncementId);
+        if (idx !== -1) {
+          announcements[idx].image = dataUrl;
+          localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+          const viewPoster = document.getElementById('view-ann-poster-img');
+          if (viewPoster) viewPoster.src = dataUrl;
+          renderAnnouncements();
+          alert('Poster photo updated successfully!');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
     let selectedCreatePosterData = null;
     let selectedEditPosterData = null;
 

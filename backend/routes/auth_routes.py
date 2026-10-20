@@ -26,7 +26,7 @@ def login():
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.role, u.position, u.account_status,
-                       u.signature_image, c.chapter_name
+                       u.signature_image, u.profile_picture, c.chapter_name
                 FROM users u
                 LEFT JOIN chapters c ON c.id = u.chapter_id
                 WHERE LOWER(u.email) = %s
@@ -66,7 +66,8 @@ def login():
         'position': user.get('position') or ('Chief Executive Operation' if user['role'] == 'national_admin' else 'Chapter Coordinator'),
         'chapter_id': user['chapter_id'],
         'chapter_name': user['chapter_name'],
-        'signature_image': user.get('signature_image')
+        'signature_image': user.get('signature_image'),
+        'profile_picture': user.get('profile_picture')
     }
 
     redirect_url = 'ChapterDashboard.php' if user['role'] == 'chapter_admin' else 'Dashboard.php'
@@ -153,7 +154,7 @@ def get_current_user():
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
-                       u.signature_image, c.chapter_name
+                       u.signature_image, u.profile_picture, c.chapter_name
                 FROM users u
                 LEFT JOIN chapters c ON c.id = u.chapter_id
                 WHERE u.id = %s
@@ -179,7 +180,7 @@ def user_profile():
                 if user_id:
                     cur.execute("""
                         SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
-                               u.signature_image, u.requested_at, c.chapter_name, c.chapter_code, c.region
+                               u.signature_image, u.profile_picture, u.requested_at, c.chapter_name, c.chapter_code, c.region
                         FROM users u
                         LEFT JOIN chapters c ON c.id = u.chapter_id
                         WHERE u.id = %s
@@ -188,7 +189,7 @@ def user_profile():
                 else:
                     cur.execute("""
                         SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
-                               u.signature_image, u.requested_at, c.chapter_name, c.chapter_code, c.region
+                               u.signature_image, u.profile_picture, u.requested_at, c.chapter_name, c.chapter_code, c.region
                         FROM users u
                         LEFT JOIN chapters c ON c.id = u.chapter_id
                         WHERE LOWER(u.email) = %s
@@ -212,6 +213,7 @@ def user_profile():
     full_name = (data.get('full_name') or '').strip()
     position = (data.get('position') or '').strip()
     signature_image = data.get('signature_image')
+    profile_picture = data.get('profile_picture')
     current_password = data.get('current_password', '')
     new_password = data.get('new_password', '')
 
@@ -249,6 +251,11 @@ def user_profile():
             if signature_image is not None and signature_image != '':
                 updates.append("signature_image = %s")
                 params.append(signature_image)
+            if profile_picture == 'REMOVE':
+                updates.append("profile_picture = NULL")
+            elif profile_picture:
+                updates.append("profile_picture = %s")
+                params.append(profile_picture)
 
             if updates:
                 params.append(target_id)
@@ -257,7 +264,7 @@ def user_profile():
             # Fetch updated user
             cur.execute("""
                 SELECT u.id, u.chapter_id, u.full_name, u.email, u.role, u.position, u.account_status,
-                       u.signature_image, u.requested_at, c.chapter_name, c.chapter_code, c.region
+                       u.signature_image, u.profile_picture, u.requested_at, c.chapter_name, c.chapter_code, c.region
                 FROM users u
                 LEFT JOIN chapters c ON c.id = u.chapter_id
                 WHERE u.id = %s

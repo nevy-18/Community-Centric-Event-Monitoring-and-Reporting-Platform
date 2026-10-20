@@ -123,6 +123,36 @@
 
       <!-- Profile Form -->
       <form id="topbarProfileForm" onsubmit="handleSaveProfile(event)">
+        <!-- Profile Picture Upload Card -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.95rem 1.1rem; margin-bottom: 0.9rem;">
+          <h4 style="margin: 0 0 0.75rem; font-size: 0.85rem; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+            <i class="ph-bold ph-user-circle" style="color: #2563eb;"></i> Profile Picture
+          </h4>
+          <input type="file" id="profilePhotoFileInput" accept="image/*" style="display: none;" onchange="handleProfilePhotoSelect(event)">
+          <div style="display: flex; align-items: center; gap: 1.1rem;">
+            <div style="position: relative; width: 68px; height: 68px; flex-shrink: 0;">
+              <div id="profilePhotoPreviewCircle" style="width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; font-weight: 800; font-size: 1.35rem; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #bfdbfe; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <span id="profilePhotoInitials">US</span>
+                <img id="profilePhotoImg" src="" alt="Profile Photo" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <button type="button" onclick="document.getElementById('profilePhotoFileInput').click()" title="Change Profile Picture" style="position: absolute; bottom: -2px; right: -2px; background: #2563eb; color: #ffffff; border: 2px solid #ffffff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+                <i class="ph-bold ph-camera"></i>
+              </button>
+            </div>
+            <div style="flex: 1;">
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-sm btn-primary font-roboto" onclick="document.getElementById('profilePhotoFileInput').click()" style="padding: 0.35rem 0.8rem; font-size: 0.78rem;">
+                  <i class="ph-bold ph-upload-simple"></i> Upload Photo
+                </button>
+                <button type="button" id="btnRemoveProfilePhoto" class="btn btn-sm btn-outline font-roboto" onclick="removeProfilePhoto()" style="display: none; padding: 0.35rem 0.8rem; font-size: 0.78rem; color: #dc2626; border-color: #fecdd3;">
+                  Remove
+                </button>
+              </div>
+              <p style="font-size: 0.7rem; color: #64748b; margin: 0.35rem 0 0;">Upload a personal avatar (PNG, JPG, WEBP). It will appear across your topbar, reports, and activity logs.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Personal Details Card -->
         <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.95rem 1.1rem; margin-bottom: 0.9rem;">
           <h4 style="margin: 0 0 0.75rem; font-size: 0.85rem; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
@@ -316,7 +346,13 @@
         if (u) {
           const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
           const avatar = document.querySelector('.profile-avatar');
-          if (avatar) avatar.textContent = initials;
+          if (avatar) {
+            if (u.profile_picture) {
+              avatar.innerHTML = `<img src="${u.profile_picture}" alt="${u.full_name || 'Profile'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+              avatar.textContent = initials;
+            }
+          }
           
           const pName = document.querySelector('.profile-info h4');
           if (pName) pName.textContent = u.full_name || 'User';
@@ -587,6 +623,45 @@
   // ==========================================
   // PROFILE MODAL LOGIC & CONTROLLER
   // ==========================================
+  let selectedProfilePhotoData = null;
+
+  function handleProfilePhotoSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please choose an image file (PNG, JPG, WEBP).');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Photo must be less than 5MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const dataUrl = evt.target.result;
+      selectedProfilePhotoData = dataUrl;
+      const pPhotoImg = document.getElementById('profilePhotoImg');
+      const pPhotoInitials = document.getElementById('profilePhotoInitials');
+      const btnRemove = document.getElementById('btnRemoveProfilePhoto');
+      if (pPhotoImg) { pPhotoImg.src = dataUrl; pPhotoImg.style.display = 'block'; }
+      if (pPhotoInitials) pPhotoInitials.style.display = 'none';
+      if (btnRemove) btnRemove.style.display = 'inline-flex';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeProfilePhoto() {
+    selectedProfilePhotoData = 'REMOVE';
+    const pPhotoImg = document.getElementById('profilePhotoImg');
+    const pPhotoInitials = document.getElementById('profilePhotoInitials');
+    const btnRemove = document.getElementById('btnRemoveProfilePhoto');
+    const input = document.getElementById('profilePhotoFileInput');
+    if (input) input.value = '';
+    if (pPhotoImg) { pPhotoImg.src = ''; pPhotoImg.style.display = 'none'; }
+    if (pPhotoInitials) pPhotoInitials.style.display = 'block';
+    if (btnRemove) btnRemove.style.display = 'none';
+  }
+
   let profileCanvasInited = false;
   let profileCanvasIsDrawing = false;
   let profileCanvasHasSignature = false;
@@ -613,7 +688,29 @@
     // Populate Modal Fields
     const initials = user.full_name ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
     const av = document.getElementById('profileModalAvatarLarge');
-    if (av) av.textContent = initials;
+    if (av) {
+      if (user.profile_picture) {
+        av.innerHTML = `<img src="${user.profile_picture}" alt="${user.full_name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+      } else {
+        av.textContent = initials;
+      }
+    }
+
+    // Populate photo section
+    const pPhotoImg = document.getElementById('profilePhotoImg');
+    const pPhotoInitials = document.getElementById('profilePhotoInitials');
+    const btnRemove = document.getElementById('btnRemoveProfilePhoto');
+    if (user.profile_picture) {
+      if (pPhotoImg) { pPhotoImg.src = user.profile_picture; pPhotoImg.style.display = 'block'; }
+      if (pPhotoInitials) pPhotoInitials.style.display = 'none';
+      if (btnRemove) btnRemove.style.display = 'inline-flex';
+      selectedProfilePhotoData = user.profile_picture;
+    } else {
+      if (pPhotoImg) { pPhotoImg.src = ''; pPhotoImg.style.display = 'none'; }
+      if (pPhotoInitials) { pPhotoInitials.textContent = initials; pPhotoInitials.style.display = 'block'; }
+      if (btnRemove) btnRemove.style.display = 'none';
+      selectedProfilePhotoData = null;
+    }
 
     document.getElementById('profileModalFullName').value = user.full_name || '';
     document.getElementById('profileModalEmail').value = user.email || '';
@@ -816,6 +913,9 @@
       full_name: fullName,
       position: position
     };
+    if (selectedProfilePhotoData) {
+      payload.profile_picture = selectedProfilePhotoData;
+    }
     if (newPass) {
       payload.current_password = currentPass;
       payload.new_password = newPass;
@@ -891,7 +991,13 @@
     if (!u) return;
     const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
     const avatar = document.querySelector('.profile-avatar');
-    if (avatar) avatar.textContent = initials;
+    if (avatar) {
+      if (u.profile_picture) {
+        avatar.innerHTML = `<img src="${u.profile_picture}" alt="${u.full_name || 'Profile'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+      } else {
+        avatar.textContent = initials;
+      }
+    }
     
     const pName = document.querySelector('.profile-info h4');
     if (pName) pName.textContent = u.full_name || 'User';
