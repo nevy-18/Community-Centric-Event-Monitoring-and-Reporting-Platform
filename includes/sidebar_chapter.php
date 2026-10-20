@@ -40,13 +40,11 @@ if (isset($_COOKIE['ytr_chapter_name']) && !empty($_COOKIE['ytr_chapter_name']))
   </nav>
 
   <div class="sidebar-footer">
-    <div class="admin-badge" style="background: rgba(30, 58, 138, 0.5); border: 1px solid rgba(59, 130, 246, 0.3);">
-      <div class="icon" style="background: #1e40af; color: #93c5fd; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 6px;">
-        <i class="ph-fill ph-buildings" style="font-size: 1.25rem;"></i>
-      </div>
+    <div class="admin-badge" style="background: rgba(30, 58, 138, 0.5); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 8px;">
+      <img src="assets/images/LOGO.jpg" alt="YTR" class="icon" style="width: 34px; height: 34px; border-radius: 6px; object-fit: contain; background: #ffffff; padding: 2px; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">
       <div class="sidebar-title">
         <h1 class="font-roboto" id="sidebar-chapter-name" style="font-size: 0.85rem; color: #ffffff;"><?php echo $cookie_ch_name ?: 'CHAPTER WORKSPACE'; ?></h1>
-        <p style="color: #38bdf8; font-size: 0.75rem;">Chapter Admin</p>
+        <p style="color: #38bdf8; font-size: 0.75rem; margin: 0;">Chapter Admin</p>
       </div>
     </div>
 

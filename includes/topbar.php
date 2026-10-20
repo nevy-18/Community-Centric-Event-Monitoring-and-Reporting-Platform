@@ -1,6 +1,7 @@
 <header class="topbar">
-  <div class="topbar-left font-roboto">
+  <div class="topbar-left font-roboto" style="display: flex; align-items: center; gap: 0.65rem;">
     <button id="mobile-menu-btn" class="mobile-menu-btn"><i class="ph ph-list"></i></button>
+    <img src="assets/images/LOGO.jpg" alt="YTR Logo" style="width: 30px; height: 30px; border-radius: 6px; object-fit: contain; background: #ffffff; padding: 1px; box-shadow: 0 1px 3px rgba(0,0,0,0.12);" id="topbar-ytr-brand-logo">
     <span class="role-badge">National</span>
   </div>
 
