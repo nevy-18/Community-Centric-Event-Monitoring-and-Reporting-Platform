@@ -32,11 +32,11 @@ function loadEnv($path) {
 $envPath = __DIR__ . '/../.env';
 loadEnv($envPath);
 
-$dbHost = getenv('DB_HOST') ?: 'localhost';
+$dbHost = getenv('DB_HOST') ?: 'sql313.infinityfree.com';
 $dbPort = getenv('DB_PORT') ?: '3306';
-$dbName = getenv('DB_NAME') ?: 'ytr_event_monitoring';
-$dbUser = getenv('DB_USER') ?: 'root';
-$dbPass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+$dbName = getenv('DB_NAME') ?: 'if0_43221777_ytr_event_monitoring';
+$dbUser = getenv('DB_USER') ?: 'sql313.infinityfree.com';
+$dbPass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : 'rayvhen1438';
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
