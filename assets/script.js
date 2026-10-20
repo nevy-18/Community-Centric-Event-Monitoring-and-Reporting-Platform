@@ -112,7 +112,7 @@ const loginTab = document.getElementById('loginTab');
     // Load real chapters from Python backend API
     async function loadChapters() {
       try {
-        const result = window.YTR_API ? await YTR_API.chapters.getAll() : await (await fetch('https://ytr-backend.onrender.com/api/chapters')).json();
+        const result = window.YTR_API ? await YTR_API.chapters.getAll() : await (await fetch('https://ytr-platform-y99r.onrender.com/api/chapters')).json();
         if (result.status === 'success' && Array.isArray(result.data)) {
           chapterName.innerHTML = '<option value="" selected disabled>Select your chapter</option>';
           result.data.forEach(ch => {
@@ -148,7 +148,7 @@ const loginTab = document.getElementById('loginTab');
 
         const result = window.YTR_API 
           ? await YTR_API.auth.login(email.value.trim(), password.value)
-          : await (await fetch('https://ytr-backend.onrender.com/api/auth/login', {
+          : await (await fetch('https://ytr-platform-y99r.onrender.com/api/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email: email.value.trim(), password: password.value })
@@ -246,7 +246,7 @@ const loginTab = document.getElementById('loginTab');
 
         const result = window.YTR_API 
           ? await YTR_API.auth.register(payload)
-          : await (await fetch('https://ytr-backend.onrender.com/api/auth/register', {
+          : await (await fetch('https://ytr-platform-y99r.onrender.com/api/auth/register', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
@@ -330,7 +330,7 @@ const loginTab = document.getElementById('loginTab');
 
         const result = window.YTR_API
           ? await YTR_API.auth.forgotPassword(emailVal, notesVal)
-          : await (await fetch('https://ytr-backend.onrender.com/api/auth/forgot-password', {
+          : await (await fetch('https://ytr-platform-y99r.onrender.com/api/auth/forgot-password', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email: emailVal, notes: notesVal })

@@ -33,13 +33,13 @@ def compute_proposal_badges(p):
         if due_date_obj:
             diff_days = (due_date_obj - today).days
             if diff_days < 0 and p.get('status') != 'completed':
-                p['due_badge'] = {'type': 'overdue', 'text': f'Overdue by {abs(diff_days)}d', 'days': diff_days}
+                p['due_badge'] = {'type': 'overdue', 'text': f'Overdue by {abs(diff_days)}d', 'label': f'Overdue by {abs(diff_days)}d', 'cls': 'badge overdue', 'days': diff_days}
             elif diff_days == 0 and p.get('status') != 'completed':
-                p['due_badge'] = {'type': 'due_soon', 'text': 'Due Today', 'days': 0}
+                p['due_badge'] = {'type': 'due_soon', 'text': 'Due Today', 'label': 'Due Today', 'cls': 'badge due-soon', 'days': 0}
             elif 1 <= diff_days <= 5 and p.get('status') != 'completed':
-                p['due_badge'] = {'type': 'due_soon', 'text': f'Due in {diff_days}d', 'days': diff_days}
+                p['due_badge'] = {'type': 'due_soon', 'text': f'Due in {diff_days}d', 'label': f'Due in {diff_days}d', 'cls': 'badge due-soon', 'days': diff_days}
             else:
-                p['due_badge'] = {'type': 'on_track', 'text': f'Due in {diff_days}d', 'days': diff_days}
+                p['due_badge'] = {'type': 'on_track', 'text': f'Due in {diff_days}d', 'label': f'Due in {diff_days}d', 'cls': 'badge timer', 'days': diff_days}
         else:
             p['due_badge'] = None
     else:
@@ -62,12 +62,13 @@ def compute_proposal_badges(p):
             hours = int(delta.total_seconds() // 3600)
             days = delta.days
             if days > 0:
-                p['approval_timer'] = f"Approved {days}d ago"
+                timer_txt = f"Approved {days}d ago"
             elif hours > 0:
-                p['approval_timer'] = f"Approved {hours}h ago"
+                timer_txt = f"Approved {hours}h ago"
             else:
                 mins = max(1, int(delta.total_seconds() // 60))
-                p['approval_timer'] = f"Approved {mins}m ago"
+                timer_txt = f"Approved {mins}m ago"
+            p['approval_timer'] = {'label': timer_txt, 'text': timer_txt, 'cls': 'badge timer'}
         else:
             p['approval_timer'] = None
     else:
@@ -129,9 +130,13 @@ def list_proposals():
     elif status_filter == 'revision':
         sql += " AND e.status = 'draft'"
 
-    if chapter_filter != 'all' and chapter_filter:
-        sql += " AND e.chapter_id = %s"
-        params.append(int(chapter_filter))
+    if chapter_filter and chapter_filter != 'all':
+        try:
+            ch_int = int(chapter_filter)
+            sql += " AND e.chapter_id = %s"
+            params.append(ch_int)
+        except (ValueError, TypeError):
+            pass
 
     if search:
         sql += " AND (e.title LIKE %s OR e.venue LIKE %s OR c.chapter_name LIKE %s)"
@@ -196,7 +201,11 @@ def create_proposal():
     try:
         data = request.get_json(silent=True) or request.form.to_dict() or {}
         title = data.get('title', '').strip()
-        chapter_id = data.get('chapter_id') or session.get('chapter_id')
+        raw_ch = data.get('chapter_id') or session.get('chapter_id')
+        try:
+            chapter_id = int(raw_ch) if raw_ch is not None and str(raw_ch).isdigit() else None
+        except (ValueError, TypeError):
+            chapter_id = None
         start_date = data.get('start_date') or data.get('start_datetime')
         end_date = data.get('end_date') or data.get('end_datetime') or start_date
         venue = data.get('venue', '').strip()

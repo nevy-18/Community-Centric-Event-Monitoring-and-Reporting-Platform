@@ -586,7 +586,11 @@
             const raw = localStorage.getItem('ytr_user');
             if (raw) currentUser = JSON.parse(raw);
         } catch(e) {}
-        let chapterId = parseInt((currentUser && currentUser.chapter_id) ? currentUser.chapter_id : (localStorage.getItem('ytr_chapter_id') || '1'));
+        let rawChId = (currentUser && currentUser.chapter_id) ? currentUser.chapter_id : (localStorage.getItem('ytr_chapter_id') || '1');
+        let chapterId = parseInt(rawChId, 10);
+        if (isNaN(chapterId) || chapterId <= 0) {
+            chapterId = 1;
+        }
         let proposalsData = [];
         let currentStatusFilter = 'all';
 
@@ -598,13 +602,20 @@
             try {
                 // Fetch proposals specifically for this chapter
                 const res = await YTR_API.proposals.list('all', chapterId);
-                if (res.ok && res.data) {
+                if (res.ok && Array.isArray(res.data)) {
                     proposalsData = res.data;
                     updateMetrics(proposalsData);
+                    renderProposalsTable();
+                } else {
+                    proposalsData = [];
+                    updateMetrics([]);
                     renderProposalsTable();
                 }
             } catch (err) {
                 console.error('Failed to load chapter proposals:', err);
+                proposalsData = [];
+                updateMetrics([]);
+                renderProposalsTable();
             }
         }
 
@@ -652,8 +663,19 @@
 
             tbody.innerHTML = filtered.map(p => {
                 let statusBadge = '';
-                let timerHtml = p.approval_timer ? `<div style="margin-top: 4px;"><span class="${p.approval_timer.cls}"><i class="ph ph-timer"></i> ${p.approval_timer.label}</span></div>` : '';
-                let dueHtml = p.due_badge ? `<span class="${p.due_badge.cls}" style="margin-left: 4px;"><i class="ph ph-clock"></i> ${p.due_badge.label}</span>` : '';
+                let timerHtml = '';
+                if (p.approval_timer) {
+                    const timerText = typeof p.approval_timer === 'object' ? (p.approval_timer.label || p.approval_timer.text) : p.approval_timer;
+                    const timerCls = (typeof p.approval_timer === 'object' && p.approval_timer.cls) ? p.approval_timer.cls : 'badge timer';
+                    timerHtml = `<div style="margin-top: 4px;"><span class="${timerCls}"><i class="ph ph-timer"></i> ${escapeHtml(timerText)}</span></div>`;
+                }
+
+                let dueHtml = '';
+                if (p.due_badge) {
+                    const dueText = typeof p.due_badge === 'object' ? (p.due_badge.label || p.due_badge.text) : p.due_badge;
+                    const dueCls = (typeof p.due_badge === 'object' && p.due_badge.cls) ? p.due_badge.cls : 'badge timer';
+                    dueHtml = `<span class="${dueCls}" style="margin-left: 4px;"><i class="ph ph-clock"></i> ${escapeHtml(dueText)}</span>`;
+                }
 
                 if (p.status === 'approved') {
                     statusBadge = `<span class="badge approved"><i class="ph ph-check"></i> Approved</span>`;
@@ -787,8 +809,11 @@
                 audienceVal = document.getElementById('p-target-audience-custom').value.trim() || 'Other';
             }
 
+            const turnoutVal = parseInt(document.getElementById('p-turnout').value, 10);
+            const budgetVal = parseFloat(document.getElementById('p-budget').value);
+
             const formData = new FormData();
-            formData.append('chapter_id', chapterId);
+            formData.append('chapter_id', isNaN(chapterId) ? 1 : chapterId);
             formData.append('title', document.getElementById('p-title').value.trim());
             formData.append('ytr_program', document.getElementById('p-program').value);
             formData.append('target_audience', audienceVal);
@@ -796,8 +821,8 @@
             formData.append('venue', document.getElementById('p-venue').value.trim());
             formData.append('start_datetime', document.getElementById('p-start').value);
             formData.append('end_datetime', document.getElementById('p-end').value);
-            formData.append('target_turnout', parseInt(document.getElementById('p-turnout').value));
-            formData.append('budget_amount', parseFloat(document.getElementById('p-budget').value));
+            formData.append('target_turnout', isNaN(turnoutVal) ? 100 : turnoutVal);
+            formData.append('budget_amount', isNaN(budgetVal) ? 0 : budgetVal);
             formData.append('due_date', document.getElementById('p-due').value);
             formData.append('description', document.getElementById('p-desc').value.trim());
 

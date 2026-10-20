@@ -505,7 +505,7 @@
 
     const url = (window.YTR_API && window.YTR_API.system)
       ? window.YTR_API.system.getBackupUrl(fmt)
-      : `https://ytr-backend.onrender.com/api/system/backup?format=${fmt}&download=1`;
+      : `https://ytr-platform-y99r.onrender.com/api/system/backup?format=${fmt}&download=1`;
 
     const a = document.createElement('a');
     a.href = url;
@@ -938,7 +938,7 @@
       if (window.YTR_API && window.YTR_API.auth && window.YTR_API.auth.updateProfile) {
         result = await window.YTR_API.auth.updateProfile(payload);
       } else {
-        const cloudUrl = (window.YTR_API && window.YTR_API.baseUrl) ? window.YTR_API.baseUrl : 'https://ytr-backend.onrender.com/api';
+        const cloudUrl = (window.YTR_API && window.YTR_API.baseUrl) ? window.YTR_API.baseUrl : 'https://ytr-platform-y99r.onrender.com/api';
         const res = await fetch(`${cloudUrl}/auth/profile`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

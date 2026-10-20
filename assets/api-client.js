@@ -3,8 +3,11 @@
  * Centralized API handler communicating with the Python Flask backend.
  */
 
-const CLOUD_API_URL = 'https://ytr-backend.onrender.com/api';
-const isReverseProxiedHost = typeof window !== 'undefined' && window.location.hostname.endsWith('onrender.com') && !window.location.hostname.startsWith('ytr-backend');
+const CLOUD_API_URL = 'https://ytr-platform-y99r.onrender.com/api';
+const isReverseProxiedHost = typeof window !== 'undefined' && (
+  window.location.hostname.endsWith('onrender.com') ||
+  window.location.port === '5000'
+);
 const API_BASE_URL = (typeof window !== 'undefined' && window.YTR_API_URL)
   ? window.YTR_API_URL
   : (isReverseProxiedHost ? '/api' : CLOUD_API_URL);
