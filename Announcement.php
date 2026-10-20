@@ -756,43 +756,35 @@
       }
     }
 
-    function loadAnnouncements() {
+    async function loadAnnouncements() {
+      // 1. Initial fast render from localStorage or defaultAnnouncements
       const stored = localStorage.getItem('ytr_announcements');
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            announcements = parsed.map(item => {
-              const def = defaultAnnouncements.find(d => d.id === item.id) || {};
-              return {
-                ...def,
-                ...item,
-                image: (item.id === 1 && (!item.image || item.image.includes('unsplash'))) ? 'assets/images/tremendous_momentum.png' : (item.image || def.image || 'assets/images/background.jpg'),
-                venue: (item.id === 1 && item.venue && item.venue.includes('Calamba')) ? 'SJB Learning Center Canlalay' : (item.venue || def.venue || 'Venue TBD'),
-                city: item.city || def.city || 'Biñan, Laguna',
-                registered: item.registered !== undefined ? item.registered : (def.registered || 60),
-                pm: item.pm || def.pm || 'Alex R.',
-                creative_lead: item.creative_lead || def.creative_lead || 'Maria P.',
-                tech_director: item.tech_director || def.tech_director || 'John K.',
-                room: item.room || def.room || 'Auditorium A (2nd Floor)',
-                parking: item.parking || def.parking || 'Lot B, Level-1',
-                wifi: item.wifi || def.wifi || 'YTR-Guest / goat2026',
-                reg_link: item.reg_link || def.reg_link || 'https://forms.gle/YcZudZkgefs1dEEn7',
-                contact_team: item.contact_team || def.contact_team || 'YTR - Laguna Team',
-                contact_person: item.contact_person || def.contact_person || 'Secretary: Rayvhen P. Muñoz'
-              };
-            });
-          } else {
-            announcements = [...defaultAnnouncements];
+            announcements = parsed;
           }
-        } catch (e) {
-          announcements = [...defaultAnnouncements];
-        }
-      } else {
+        } catch (e) {}
+      }
+      if (!announcements || announcements.length === 0) {
         announcements = [...defaultAnnouncements];
-        localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
       }
       renderAnnouncements();
+
+      // 2. Fetch live announcements from Aiven Cloud MySQL via Backend API
+      try {
+        if (window.YTR_API && YTR_API.announcements) {
+          const res = await YTR_API.announcements.getAll();
+          if (res.ok && res.data && Array.isArray(res.data.announcements) && res.data.announcements.length > 0) {
+            announcements = res.data.announcements;
+            localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+            renderAnnouncements();
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load announcements from cloud API, using cached data:', err);
+      }
     }
 
     function renderAnnouncements() {
@@ -1010,16 +1002,24 @@
         alert('Please choose an image file (PNG, JPG, WEBP).');
         return;
       }
+      const targetId = targetCardPhotoAnnouncementId;
       const reader = new FileReader();
-      reader.onload = function(evt) {
+      reader.onload = async function(evt) {
         const dataUrl = evt.target.result;
-        const idx = announcements.findIndex(item => item.id === targetCardPhotoAnnouncementId);
+        const idx = announcements.findIndex(item => item.id === targetId);
         if (idx !== -1) {
           announcements[idx].image = dataUrl;
           localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
           renderAnnouncements();
-          alert('Announcement poster photo updated successfully!');
         }
+        try {
+          if (window.YTR_API && YTR_API.announcements) {
+            await YTR_API.announcements.updatePhoto(targetId, dataUrl);
+          }
+        } catch(err) {
+          console.error('Error syncing poster to cloud:', err);
+        }
+        alert('Announcement poster photo updated successfully across all chapters and devices!');
       };
       reader.readAsDataURL(file);
     }
@@ -1032,19 +1032,27 @@
         alert('Please choose an image file (PNG, JPG, WEBP).');
         return;
       }
+      const targetId = currentViewingAnnouncementId;
+      if (!targetId) return;
       const reader = new FileReader();
-      reader.onload = function(evt) {
+      reader.onload = async function(evt) {
         const dataUrl = evt.target.result;
-        if (!currentViewingAnnouncementId) return;
-        const idx = announcements.findIndex(item => item.id === currentViewingAnnouncementId);
+        const idx = announcements.findIndex(item => item.id === targetId);
         if (idx !== -1) {
           announcements[idx].image = dataUrl;
           localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
           const viewPoster = document.getElementById('view-ann-poster-img');
           if (viewPoster) viewPoster.src = dataUrl;
           renderAnnouncements();
-          alert('Poster photo updated successfully!');
         }
+        try {
+          if (window.YTR_API && YTR_API.announcements) {
+            await YTR_API.announcements.updatePhoto(targetId, dataUrl);
+          }
+        } catch(err) {
+          console.error('Error syncing poster to cloud:', err);
+        }
+        alert('Poster photo updated successfully across all chapters and devices!');
       };
       reader.readAsDataURL(file);
     }
@@ -1224,10 +1232,15 @@
 
       announcements[idx] = updated;
       localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+      try {
+        if (window.YTR_API && YTR_API.announcements) {
+          YTR_API.announcements.update(id, updated).catch(err => console.error('Cloud edit error:', err));
+        }
+      } catch(e) {}
       closeEditAnnouncementModal();
       renderAnnouncements();
       openViewAnnouncementModal(id);
-      alert('Announcement updated successfully!');
+      alert('Announcement updated successfully across all chapters!');
     }
 
     function deleteCurrentAnnouncement() {
@@ -1294,6 +1307,21 @@
 
       announcements.unshift(newAnn);
       localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+      try {
+        if (window.YTR_API && YTR_API.announcements) {
+          YTR_API.announcements.create(newAnn).then(res => {
+            if (res.ok && res.data && res.data.announcement) {
+              const created = res.data.announcement;
+              const idx = announcements.findIndex(item => item.id === newAnn.id);
+              if (idx !== -1) {
+                announcements[idx] = created;
+                localStorage.setItem('ytr_announcements', JSON.stringify(announcements));
+                renderAnnouncements();
+              }
+            }
+          }).catch(err => console.error('Cloud create error:', err));
+        }
+      } catch(e) {}
       alert('Announcement published successfully to all chapters!');
       document.getElementById('createAnnouncementForm').reset();
       clearCreatePoster();

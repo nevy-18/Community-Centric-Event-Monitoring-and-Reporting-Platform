@@ -1011,9 +1011,25 @@
       ytrGlobalSignOut();
       return;
     }
-    if (u.chapter_name) {
+    let chName = u.chapter_name || localStorage.getItem('ytr_chapter_name');
+    if (!chName && u.chapter_id) {
+      const map = {
+        1: 'Laguna Chapter',
+        2: 'Batangas Chapter',
+        3: 'Cavite Chapter',
+        4: 'Rizal Chapter',
+        5: 'Quezon Chapter',
+        6: 'Manila Central Chapter'
+      };
+      if (map[u.chapter_id]) chName = map[u.chapter_id];
+    }
+    if (chName) {
       const sbCh = document.getElementById('sidebar-chapter-name');
-      if (sbCh) sbCh.textContent = u.chapter_name.toUpperCase();
+      if (sbCh) sbCh.textContent = chName.toUpperCase();
+      const portalTitle = document.getElementById('chapter-portal-title');
+      if (portalTitle) portalTitle.textContent = `${chName} Workspace`;
+      localStorage.setItem('ytr_chapter_name', chName);
+      document.cookie = "ytr_chapter_name=" + encodeURIComponent(chName) + "; path=/; max-age=86400";
     }
     const initials = u.full_name ? u.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US';
     const avatar = document.querySelector('.profile-avatar');

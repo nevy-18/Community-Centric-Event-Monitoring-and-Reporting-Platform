@@ -1,4 +1,10 @@
-<?php $current_page = strtolower(basename($_SERVER['PHP_SELF'])); ?>
+<?php 
+$current_page = strtolower(basename($_SERVER['PHP_SELF'])); 
+$cookie_ch_name = '';
+if (isset($_COOKIE['ytr_chapter_name']) && !empty($_COOKIE['ytr_chapter_name'])) {
+    $cookie_ch_name = htmlspecialchars(strtoupper($_COOKIE['ytr_chapter_name']));
+}
+?>
 
 <!-- Dark overlay for mobile -->
 <div id="mobile-overlay" class="mobile-overlay"></div>
@@ -39,7 +45,7 @@
         <i class="ph-fill ph-buildings" style="font-size: 1.25rem;"></i>
       </div>
       <div class="sidebar-title">
-        <h1 class="font-roboto" id="sidebar-chapter-name" style="font-size: 0.85rem; color: #ffffff;">Chapter Workspace</h1>
+        <h1 class="font-roboto" id="sidebar-chapter-name" style="font-size: 0.85rem; color: #ffffff;"><?php echo $cookie_ch_name ?: 'CHAPTER WORKSPACE'; ?></h1>
         <p style="color: #38bdf8; font-size: 0.75rem;">Chapter Admin</p>
       </div>
     </div>
@@ -50,3 +56,40 @@
     </a>
   </div>
 </aside>
+
+<script>
+(function() {
+  function syncChapterSidebarName() {
+    try {
+      let chName = localStorage.getItem('ytr_chapter_name');
+      const raw = localStorage.getItem('ytr_user');
+      if (raw) {
+        const u = JSON.parse(raw);
+        if (u.chapter_name) {
+          chName = u.chapter_name;
+        } else if (u.chapter_id) {
+          const map = {
+            1: 'Laguna Chapter',
+            2: 'Batangas Chapter',
+            3: 'Cavite Chapter',
+            4: 'Rizal Chapter',
+            5: 'Quezon Chapter',
+            6: 'Manila Central Chapter'
+          };
+          if (map[u.chapter_id]) chName = map[u.chapter_id];
+        }
+      }
+      if (chName) {
+        const el = document.getElementById('sidebar-chapter-name');
+        if (el) el.textContent = chName.toUpperCase();
+        localStorage.setItem('ytr_chapter_name', chName);
+        document.cookie = "ytr_chapter_name=" + encodeURIComponent(chName) + "; path=/; max-age=86400";
+      }
+    } catch(e) {}
+  }
+  syncChapterSidebarName();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncChapterSidebarName);
+  }
+})();
+</script>

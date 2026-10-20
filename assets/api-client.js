@@ -290,6 +290,36 @@ const YTR_API = {
     }
   },
 
+  // Announcements & Events
+  announcements: {
+    getAll() {
+      return YTR_API.request('/announcements');
+    },
+    updatePhoto(id, image) {
+      return YTR_API.request(`/announcements/${id}/photo`, {
+        method: 'POST',
+        body: JSON.stringify({ image })
+      });
+    },
+    update(id, payload) {
+      return YTR_API.request(`/announcements/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+    },
+    create(payload) {
+      return YTR_API.request('/announcements', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    },
+    delete(id) {
+      return YTR_API.request(`/announcements/${id}`, {
+        method: 'DELETE'
+      });
+    }
+  },
+
   // Notifications & Due Date Alerts
   notifications: {
     getSummary() {

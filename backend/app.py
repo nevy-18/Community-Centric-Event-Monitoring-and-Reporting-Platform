@@ -20,6 +20,7 @@ from backend.routes.reports_routes import reports_bp
 from backend.routes.poster_requests_routes import poster_requests_bp
 from backend.routes.notifications_routes import notifications_bp
 from backend.routes.dashboard_routes import dashboard_bp
+from backend.routes.announcements_routes import announcements_bp
 from backend.routes.system_routes import system_bp
 
 def create_app(config_class=Config):
@@ -38,6 +39,7 @@ def create_app(config_class=Config):
     app.register_blueprint(poster_requests_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(announcements_bp)
     app.register_blueprint(system_bp)
 
     @app.route('/', methods=['GET'])

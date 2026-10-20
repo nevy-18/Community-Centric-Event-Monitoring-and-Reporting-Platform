@@ -162,6 +162,10 @@ const loginTab = document.getElementById('loginTab');
             if (user.chapter_id) {
               localStorage.setItem('ytr_chapter_id', user.chapter_id);
             }
+            if (user.chapter_name) {
+              localStorage.setItem('ytr_chapter_name', user.chapter_name);
+              document.cookie = "ytr_chapter_name=" + encodeURIComponent(user.chapter_name) + "; path=/; max-age=86400";
+            }
             // Set cookies for server-side PHP guards
             document.cookie = "ytr_role=" + encodeURIComponent(user.role) + "; path=/; max-age=86400";
             document.cookie = "ytr_chapter_id=" + encodeURIComponent(user.chapter_id || '') + "; path=/; max-age=86400";
