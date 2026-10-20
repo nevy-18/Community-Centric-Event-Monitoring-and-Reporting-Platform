@@ -811,6 +811,61 @@ class TestYTRBackendAPI(unittest.TestCase):
 
         print("[PASS] Full password reset workflow (request, review, issue, and login) passed.")
 
+    def test_35_report_pictures_drive_link(self):
+        # 1. Fetch unreported event for chapter 1 (Laguna)
+        res_events = self.client.get('/api/chapters/1/unreported-events')
+        self.assertEqual(res_events.status_code, 200)
+        unreported = res_events.get_json()['data']
+        event_id = unreported[0]['id'] if len(unreported) > 0 else 1
+
+        sample_drive_url = "https://drive.google.com/drive/folders/1abc987-ytr-event-photos"
+        sig_dataurl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+
+        # 2. Submit post-event report with photos_drive_link
+        payload = {
+            'event_id': event_id,
+            'chapter_id': 1,
+            'total_participants': 115,
+            'first_timers': 35,
+            'existing_members': 70,
+            'youth_leaders_count': 10,
+            'budget_spent': 17500,
+            'report_summary': 'Youth camp completed with full documentation and Google Drive photo archive.',
+            'signed_by_name': 'Joan Dela Cruz (Chapter Admin)',
+            'e_signature': sig_dataurl,
+            'photos_drive_link': sample_drive_url
+        }
+
+        res_rep = self.client.post('/api/reports', json=payload)
+        self.assertIn(res_rep.status_code, [200, 201])
+        rep_id = res_rep.get_json()['data']['report_id']
+
+        # 3. Verify get_report by ID returns the Google Drive pictures link
+        res_get = self.client.get(f'/api/reports/{rep_id}')
+        self.assertEqual(res_get.status_code, 200)
+        rep_data = res_get.get_json()['data']
+        self.assertEqual(rep_data.get('photos_drive_link'), sample_drive_url)
+
+        # 4. Verify list_reports returns the Google Drive pictures link
+        res_list = self.client.get('/api/reports')
+        self.assertEqual(res_list.status_code, 200)
+        reports = res_list.get_json()['data']
+        matching = [r for r in reports if (r.get('report_id') == rep_id or r.get('id') == rep_id)]
+        self.assertTrue(len(matching) >= 1)
+        self.assertEqual(matching[0].get('photos_drive_link'), sample_drive_url)
+
+        # 5. Verify updating the report with a revised Google Drive album link
+        updated_drive_url = "https://drive.google.com/drive/folders/1xyz-updated-album-hd"
+        payload['photos_drive_link'] = updated_drive_url
+        res_update = self.client.post('/api/reports', json=payload)
+        self.assertIn(res_update.status_code, [200, 201])
+
+        res_get_updated = self.client.get(f'/api/reports/{rep_id}')
+        self.assertEqual(res_get_updated.status_code, 200)
+        self.assertEqual(res_get_updated.get_json()['data'].get('photos_drive_link'), updated_drive_url)
+
+        print("[PASS] Report event pictures Google Drive link submission & retrieval verified.")
+
 if __name__ == '__main__':
     unittest.main()
 

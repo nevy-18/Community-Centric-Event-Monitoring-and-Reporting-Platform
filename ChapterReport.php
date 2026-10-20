@@ -301,6 +301,23 @@
           </div>
         </div>
 
+        <!-- Google Drive Photo Album & Documentation Link -->
+        <div style="margin-bottom: 1.25rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 1rem;">
+          <label style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; font-weight: 700; color: #0369a1; margin-bottom: 0.35rem;">
+            <i class="ph-bold ph-google-drive-logo" style="font-size: 1.2rem; color: #0284c7;"></i>
+            <span>Google Drive / Cloud Album Link (Event Pictures)</span>
+          </label>
+          <div style="position: relative;">
+            <input type="url" id="rep-drive-link" placeholder="https://drive.google.com/drive/folders/... (Google Drive, OneDrive, or Dropbox folder)" style="width: 100%; padding: 0.6rem 0.75rem 0.6rem 2.4rem; border: 1px solid #7dd3fc; border-radius: 6px; font-size: 0.875rem; background: #ffffff; color: #0f172a;">
+            <div style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #0284c7; pointer-events: none;">
+              <i class="ph-bold ph-link"></i>
+            </div>
+          </div>
+          <small style="color: #0369a1; font-size: 0.75rem; margin-top: 0.35rem; display: block;">
+            Submit your shared Google Drive folder link containing event photos, stage shots, attendee group pictures, and video clips for national media and archiving.
+          </small>
+        </div>
+
         <!-- Narrative Summary -->
         <div style="margin-bottom: 1rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">Executive Narrative & Testimonies *</label>
@@ -823,6 +840,10 @@
           ? `<div style="margin-top: 4px;"><a href="${YTR_API.reports.getAttendanceSheetUrl(r.id)}" target="_blank" class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Download Attendance Sheet Document"><i class="ph ph-file-arrow-down"></i> Sheet Attached</a></div>`
           : '';
 
+        const driveBadge = r.photos_drive_link
+          ? `<div style="margin-top: 4px;"><a href="${escapeHtml(r.photos_drive_link)}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Open Event Photos Drive Folder"><i class="ph-bold ph-google-drive-logo"></i> Photos Drive</a></div>`
+          : '';
+
         return `
           <tr>
             <td>
@@ -838,6 +859,7 @@
                 First-Timers: <strong>${r.first_timers || 0}</strong> | Leaders: <strong>${r.youth_leaders_count || 0}</strong>
               </small>
               ${sheetBadge}
+              ${driveBadge}
             </td>
             <td>
               ${threshBadge}
@@ -863,6 +885,8 @@
       clearChapterSigUpload();
       clearAttendanceSheet();
       switchChapterSigMode('draw');
+      const driveInput = document.getElementById('rep-drive-link');
+      if (driveInput) driveInput.value = '';
       if (currentUser && currentUser.full_name) {
         const signerInput = document.getElementById('rep-signer-name');
         if (signerInput && !signerInput.value) {
@@ -915,6 +939,11 @@
       formData.append('recommendations', document.getElementById('rep-recommendations').value.trim());
       formData.append('signed_by_name', document.getElementById('rep-signer-name').value.trim());
       formData.append('attendee_roster', JSON.stringify(rosterList));
+
+      const driveLinkVal = (document.getElementById('rep-drive-link')?.value || '').trim();
+      if (driveLinkVal) {
+        formData.append('photos_drive_link', driveLinkVal);
+      }
 
       if (selectedAttendanceSheetFile) {
         formData.append('attendance_sheet', selectedAttendanceSheetFile);
@@ -1044,6 +1073,25 @@
             </div>
             <a href="${YTR_API.reports.getAttendanceSheetUrl(r.id)}" target="_blank" class="btn btn-outline btn-sm font-roboto print-no-print" style="background: #ffffff; color: #1e40af; border-color: #93c5fd; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem;">
               <i class="ph ph-download-simple"></i> Download Sheet File
+            </a>
+          </div>
+        ` : ''}
+
+        ${r.photos_drive_link ? `
+          <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <div style="background: #e0f2fe; color: #0284c7; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                <i class="ph-bold ph-google-drive-logo"></i>
+              </div>
+              <div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: #0369a1;">Event Pictures &amp; Documentation Album (Google Drive)</div>
+                <div style="font-size: 0.72rem; color: #0284c7; word-break: break-all;">
+                  <a href="${escapeHtml(r.photos_drive_link)}" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">${escapeHtml(r.photos_drive_link)}</a>
+                </div>
+              </div>
+            </div>
+            <a href="${escapeHtml(r.photos_drive_link)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm font-roboto print-no-print" style="background: #ffffff; color: #0369a1; border-color: #7dd3fc; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem;">
+              <i class="ph-bold ph-arrow-square-out"></i> Open Album
             </a>
           </div>
         ` : ''}

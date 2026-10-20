@@ -336,6 +336,20 @@
                     </div>
                   </div>
 
+                  <!-- Event Pictures Google Drive Link -->
+                  <div id="detailDriveLinkBox" class="review-detail-group" style="display: none;">
+                    <label class="font-roboto"><i class="ph-bold ph-google-drive-logo" style="color: #0284c7;"></i> Event Pictures Google Drive</label>
+                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; padding: 0.65rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden; margin-right: 0.5rem;">
+                        <i class="ph-bold ph-images" style="font-size: 1.25rem; color: #0284c7; flex-shrink: 0;"></i>
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #0369a1; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Event Photo Album</span>
+                      </div>
+                      <a id="detailDriveLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm font-roboto" style="background: #fff; font-size: 0.72rem; padding: 0.2rem 0.5rem; text-decoration: none; color: #0284c7; border-color: #7dd3fc; flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px;">
+                        <i class="ph-bold ph-arrow-square-out"></i> Open Album
+                      </a>
+                    </div>
+                  </div>
+
                   <!-- Action Buttons: Print Report -->
                   <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
                     <button class="btn btn-primary font-roboto" style="width: 100%;" onclick="openPrintPreview()">
@@ -473,6 +487,22 @@
             </div>
             <a id="printAttendanceSheetLink" href="#" target="_blank" class="btn btn-outline btn-sm font-roboto print-no-print" style="background: #ffffff; color: #1e40af; border-color: #93c5fd; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; padding: 0.3rem 0.65rem;">
               <i class="ph ph-download-simple"></i> Download Sheet File
+            </a>
+          </div>
+
+          <!-- Event Pictures Google Drive Banner -->
+          <div id="printDriveLinkCard" style="display: none; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <div style="background: #e0f2fe; color: #0284c7; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="ph-bold ph-google-drive-logo"></i>
+              </div>
+              <div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: #0369a1;">Event Pictures &amp; Documentation Album (Google Drive)</div>
+                <div id="printDriveLinkText" style="font-size: 0.7rem; color: #0284c7; word-break: break-all;">-</div>
+              </div>
+            </div>
+            <a id="printDriveLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm font-roboto print-no-print" style="background: #ffffff; color: #0369a1; border-color: #7dd3fc; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; padding: 0.3rem 0.65rem;">
+              <i class="ph-bold ph-arrow-square-out"></i> Open Album
             </a>
           </div>
 
@@ -644,6 +674,10 @@
             ? `<div style="margin-top: 3px;"><a href="${YTR_API.reports.getAttendanceSheetUrl(r.report_id || r.id)}" target="_blank" class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.68rem; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Download Official Attendance Sheet"><i class="ph ph-file-arrow-down"></i> Sheet Attached</a></div>`
             : '';
 
+          let driveBadge = r.photos_drive_link
+            ? `<div style="margin-top: 3px;"><a href="${escapeHtml(r.photos_drive_link)}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.68rem; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Open Event Photos Google Drive"><i class="ph-bold ph-google-drive-logo"></i> Photos Drive</a></div>`
+            : '';
+
           row.innerHTML = `
             <td>
               <div style="display: flex; align-items: center; gap: 0.85rem;">
@@ -655,6 +689,7 @@
                   <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px;">
                     <span class="badge chapter-admin font-roboto">${r.chapter_name || 'Chapter Event'}</span>
                     ${sheetBadge}
+                    ${driveBadge}
                   </div>
                 </div>
               </div>
@@ -769,6 +804,16 @@
         if (sheetBox) sheetBox.style.display = 'block';
       } else {
         if (sheetBox) sheetBox.style.display = 'none';
+      }
+
+      // Sidebar Event Pictures Google Drive Link
+      const driveBox = document.getElementById('detailDriveLinkBox');
+      const driveBtn = document.getElementById('detailDriveLinkBtn');
+      if (r.photos_drive_link) {
+        if (driveBtn) driveBtn.href = r.photos_drive_link;
+        if (driveBox) driveBox.style.display = 'block';
+      } else {
+        if (driveBox) driveBox.style.display = 'none';
       }
     }
 
@@ -1034,6 +1079,18 @@
         if (attSheetCard) attSheetCard.style.display = 'flex';
       } else {
         if (attSheetCard) attSheetCard.style.display = 'none';
+      }
+
+      // Event Pictures Google Drive Card in Print Preview
+      const driveCard = document.getElementById('printDriveLinkCard');
+      const driveAnchor = document.getElementById('printDriveLinkAnchor');
+      const driveText = document.getElementById('printDriveLinkText');
+      if (r.photos_drive_link) {
+        if (driveAnchor) driveAnchor.href = r.photos_drive_link;
+        if (driveText) driveText.textContent = r.photos_drive_link;
+        if (driveCard) driveCard.style.display = 'flex';
+      } else {
+        if (driveCard) driveCard.style.display = 'none';
       }
 
       // 1. Submitter Signatory Block

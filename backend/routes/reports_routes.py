@@ -44,7 +44,7 @@ def list_reports():
 
     sql = """
         SELECT r.id AS report_id, r.total_participants, r.first_timers, r.existing_members,
-               r.youth_leaders_count, r.attendee_roster, r.attendance_sheet_path, r.e_signature, r.signed_by_name,
+               r.youth_leaders_count, r.attendee_roster, r.attendance_sheet_path, r.photos_drive_link, r.e_signature, r.signed_by_name,
                r.signed_at, r.budget_spent, r.report_summary, r.highlights, r.challenges,
                r.recommendations, r.status AS report_status, r.submitted_at,
                e.id AS event_id, e.title AS event_title, e.event_type, e.ytr_program, e.start_datetime, e.end_datetime,
@@ -164,6 +164,7 @@ def submit_report():
     attendee_roster = data.get('attendee_roster', '').strip()
     e_signature = data.get('e_signature', '').strip()
     signed_by_name = data.get('signed_by_name', '').strip()
+    photos_drive_link = (data.get('photos_drive_link') or data.get('drive_link') or '').strip()
     budget_spent = float(data.get('budget_spent') or 0.0)
     report_summary = data.get('report_summary', '').strip()
     highlights = data.get('highlights', '').strip()
@@ -242,11 +243,12 @@ def submit_report():
                     return api_error('Only Chapter-based administrators can submit reports. No authorized chapter admin found for this chapter.', 403)
 
             # Check if report already exists for this event
-            cur.execute("SELECT id, attendance_sheet_path, e_signature FROM event_reports WHERE event_id = %s LIMIT 1", (event_id,))
+            cur.execute("SELECT id, attendance_sheet_path, photos_drive_link, e_signature FROM event_reports WHERE event_id = %s LIMIT 1", (event_id,))
             existing = cur.fetchone()
 
             if existing:
                 final_att_path = attendance_sheet_path if attendance_sheet_path is not None else existing.get('attendance_sheet_path')
+                final_drive_link = photos_drive_link if photos_drive_link != '' else existing.get('photos_drive_link')
                 final_sig = e_signature if e_signature else existing.get('e_signature')
                 cur.execute("""
                     UPDATE event_reports
@@ -256,6 +258,7 @@ def submit_report():
                         youth_leaders_count = %s,
                         attendee_roster = %s,
                         attendance_sheet_path = %s,
+                        photos_drive_link = %s,
                         e_signature = %s,
                         signed_by_name = %s,
                         signed_at = NOW(),
@@ -270,7 +273,7 @@ def submit_report():
                     WHERE id = %s
                 """, (
                     total_participants, first_timers, existing_members, youth_leaders_count,
-                    attendee_roster, final_att_path, final_sig, signed_by_name, budget_spent,
+                    attendee_roster, final_att_path, final_drive_link, final_sig, signed_by_name, budget_spent,
                     report_summary, highlights, challenges, recommendations,
                     existing['id']
                 ))
@@ -280,18 +283,18 @@ def submit_report():
                     INSERT INTO event_reports (
                         event_id, chapter_id, submitted_by, total_participants, first_timers,
                         existing_members, youth_leaders_count, attendee_roster, attendance_sheet_path,
-                        e_signature, signed_by_name, signed_at, budget_spent, report_summary,
+                        photos_drive_link, e_signature, signed_by_name, signed_at, budget_spent, report_summary,
                         highlights, challenges, recommendations, status, submitted_at, created_at
                     ) VALUES (
                         %s, %s, %s, %s, %s,
                         %s, %s, %s, %s,
-                        %s, %s, NOW(), %s, %s,
+                        %s, %s, %s, NOW(), %s, %s,
                         %s, %s, %s, 'approved', NOW(), NOW()
                     )
                 """, (
                     event_id, chapter_id, submitted_by, total_participants, first_timers,
                     existing_members, youth_leaders_count, attendee_roster, attendance_sheet_path,
-                    e_signature, signed_by_name, budget_spent, report_summary, highlights,
+                    photos_drive_link, e_signature, signed_by_name, budget_spent, report_summary, highlights,
                     challenges, recommendations
                 ))
                 rep_id = cur.lastrowid
