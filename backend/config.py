@@ -19,6 +19,7 @@ class Config:
     DB_NAME = os.getenv('DB_NAME', 'ytr_event_monitoring')
     DB_USER = os.getenv('DB_USER', 'root')
     DB_PASS = os.getenv('DB_PASS', '')
+    DB_SSL = os.getenv('DB_SSL', 'auto').lower() in ('true', '1', 'yes') or (os.getenv('DB_SSL', 'auto') == 'auto' and DB_HOST not in ('localhost', '127.0.0.1'))
     
     # App Settings
     APP_NAME = os.getenv('APP_NAME', 'Youth on the Rock Platform')

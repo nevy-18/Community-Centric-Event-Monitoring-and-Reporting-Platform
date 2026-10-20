@@ -6,16 +6,19 @@ from datetime import datetime, date
 
 def get_db_connection():
     """Establish and return a PyMySQL connection with dictionary cursor."""
-    return pymysql.connect(
-        host=Config.DB_HOST,
-        port=Config.DB_PORT,
-        user=Config.DB_USER,
-        password=Config.DB_PASS,
-        database=Config.DB_NAME,
-        charset='utf8mb4',
-        cursorclass=pymysql.cursors.DictCursor,
-        autocommit=False
-    )
+    conn_params = {
+        'host': Config.DB_HOST,
+        'port': Config.DB_PORT,
+        'user': Config.DB_USER,
+        'password': Config.DB_PASS,
+        'database': Config.DB_NAME,
+        'charset': 'utf8mb4',
+        'cursorclass': pymysql.cursors.DictCursor,
+        'autocommit': False
+    }
+    if getattr(Config, 'DB_SSL', False):
+        conn_params['ssl'] = {'check_hostname': False}
+    return pymysql.connect(**conn_params)
 
 @contextmanager
 def get_db():
