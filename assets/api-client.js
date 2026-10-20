@@ -3,7 +3,11 @@
  * Centralized API handler communicating with the Python Flask backend.
  */
 
-const API_BASE_URL = window.YTR_API_URL || 'http://127.0.0.1:5000/api';
+const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const CLOUD_API_URL = 'https://ytr-backend.onrender.com/api';
+const API_BASE_URL = (typeof window !== 'undefined' && window.YTR_API_URL)
+  ? window.YTR_API_URL
+  : (isLocalhost ? 'http://127.0.0.1:5000/api' : CLOUD_API_URL);
 
 const YTR_API = {
   baseUrl: API_BASE_URL,
@@ -37,7 +41,7 @@ const YTR_API = {
         ok: false,
         status: 0,
         statusText: 'Network Error',
-        message: 'Could not connect to the Python backend API (http://127.0.0.1:5000). Please ensure it is running.'
+        message: Could not connect to the backend API (). Please ensure the service is running.'
       };
     }
   },
