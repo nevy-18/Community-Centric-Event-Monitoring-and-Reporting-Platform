@@ -190,7 +190,13 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label font-roboto">Assign Role &amp; Tier</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                  <label class="form-label font-roboto" style="margin-bottom: 0;">Assign Role &amp; Tier</label>
+                  <label style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; color: #1e40af; cursor: pointer; user-select: none; font-weight: 600;" title="Enable to override requested tier and assign either National Admin or Chapter Admin">
+                    <input type="checkbox" id="chkRoleOverride" onchange="handleRoleOverrideToggle(this.checked)" style="accent-color: #2563eb; cursor: pointer;">
+                    <i class="ph-bold ph-sliders"></i> Override Role
+                  </label>
+                </div>
                 <div class="radio-group font-roboto">
                   <label class="radio-label" id="labelRoleNational">
                     <input type="radio" name="assign_role" id="roleNational" value="national_admin" onchange="syncRolePositionOptions('national_admin')"> National Admin
@@ -198,6 +204,9 @@
                   <label class="radio-label" id="labelRoleChapter">
                     <input type="radio" name="assign_role" id="roleChapter" value="chapter_admin" checked onchange="syncRolePositionOptions('chapter_admin')"> Chapter Admin
                   </label>
+                </div>
+                <div id="overrideNotice" style="display: none; margin-top: 0.45rem; padding: 0.4rem 0.65rem; background: #eff6ff; border: 1px dashed #93c5fd; border-radius: 6px; font-size: 0.72rem; color: #1e40af; line-height: 1.4;">
+                  <i class="ph-bold ph-info"></i> <strong>Role Override Active:</strong> You can assign this account to either <strong>National Admin</strong> or <strong>Chapter Admin</strong>.
                 </div>
               </div>
 
@@ -234,9 +243,12 @@
                 </button>
               </div>
 
-              <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #e2e8f0;">
+              <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.5rem;">
                 <button type="button" class="btn btn-outline font-roboto" id="btnOpenResetModal" onclick="openResetPasswordModalForSelected()" style="width: 100%; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.2s;">
                   <i class="ph-bold ph-key"></i> <span>Provide Reset Password</span>
+                </button>
+                <button type="button" class="btn btn-outline font-roboto" id="btnRemoveAccount" onclick="handleRemoveSelectedAccount()" style="width: 100%; border-color: #cbd5e1; color: #64748b; background: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#ef4444'; this.style.color='#ef4444'; this.style.background='#fef2f2';" onmouseout="this.style.borderColor='#cbd5e1'; this.style.color='#64748b'; this.style.background='#fff';">
+                  <i class="ph-bold ph-trash"></i> <span>Remove Account</span>
                 </button>
               </div>
             </div>
@@ -634,6 +646,11 @@
                 <button class="btn btn-outline btn-sm font-roboto" title="Provide Reset Password" onclick='openResetPasswordModal(${JSON.stringify(user)})' style="padding: 0.32rem 0.55rem; color: #b91c1c; border-color: #fca5a5; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center;">
                   <i class="ph-bold ph-key"></i>
                 </button>
+                ${(user.id !== 1 && (!user.email || user.email.toLowerCase() !== 'admin@ytr.org')) ? `
+                  <button class="btn btn-outline btn-sm font-roboto" title="Remove Account" onclick="handleQuickDeleteAccount(${user.id})" style="padding: 0.32rem 0.55rem; color: #dc2626; border-color: #fecaca; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff5f5'">
+                    <i class="ph-bold ph-trash"></i>
+                  </button>
+                ` : ''}
               </div>
             </td>
           `;
@@ -847,6 +864,51 @@
       }
     }
 
+    let currentReviewUser = null;
+
+    function handleRoleOverrideToggle(isOverridden) {
+      const rNat = document.getElementById('roleNational');
+      const rChap = document.getElementById('roleChapter');
+      const lblNat = document.getElementById('labelRoleNational');
+      const lblChap = document.getElementById('labelRoleChapter');
+      const notice = document.getElementById('overrideNotice');
+
+      if (isOverridden) {
+        if (rNat) rNat.disabled = false;
+        if (rChap) rChap.disabled = false;
+        if (lblNat) {
+          lblNat.style.opacity = '1';
+          lblNat.style.cursor = 'pointer';
+          lblNat.title = 'Override Active: National Admin selectable';
+        }
+        if (lblChap) {
+          lblChap.style.opacity = '1';
+          lblChap.style.cursor = 'pointer';
+          lblChap.title = 'Override Active: Chapter Admin selectable';
+        }
+        if (notice) notice.style.display = 'block';
+      } else {
+        if (notice) notice.style.display = 'none';
+        // Re-lock based on current user's requested role/chapter
+        if (currentReviewUser) {
+          const isChapter = (currentReviewUser.role === 'chapter_admin') ||
+                            (Boolean(currentReviewUser.chapter_id) && currentReviewUser.chapter_name !== 'National HQ') ||
+                            CHAPTER_ROLES.includes(currentReviewUser.position);
+          if (isChapter) {
+            lockRoleToChapter('Account requested for Chapter');
+            populatePositionOptions('chapter_admin', currentReviewUser.position);
+            const chSelect = document.getElementById('assignChapterSelect');
+            if (currentReviewUser.chapter_id && chSelect) chSelect.value = currentReviewUser.chapter_id;
+          } else {
+            lockRoleToNational('Account requested for National HQ');
+            populatePositionOptions('national_admin', currentReviewUser.position);
+            const chSelect = document.getElementById('assignChapterSelect');
+            if (chSelect) chSelect.value = '';
+          }
+        }
+      }
+    }
+
     function lockRoleToChapter(reason = 'Account requested for Chapter') {
       const rNat = document.getElementById('roleNational');
       const rChap = document.getElementById('roleChapter');
@@ -922,7 +984,26 @@
     }
 
     function handlePositionSelectChange() {
+      const isOverride = document.getElementById('chkRoleOverride')?.checked;
       const val = document.getElementById('assignPositionSelect').value;
+
+      if (isOverride) {
+        if (CHAPTER_ROLES.includes(val)) {
+          const rChap = document.getElementById('roleChapter');
+          if (rChap) rChap.checked = true;
+          const chGroup = document.getElementById('assignChapterGroup');
+          if (chGroup) chGroup.style.display = 'block';
+        } else if (NATIONAL_POSITIONS.includes(val)) {
+          const rNat = document.getElementById('roleNational');
+          if (rNat) rNat.checked = true;
+          const chGroup = document.getElementById('assignChapterGroup');
+          if (chGroup) chGroup.style.display = 'none';
+          const chSelect = document.getElementById('assignChapterSelect');
+          if (chSelect) chSelect.value = '';
+        }
+        return;
+      }
+
       if (CHAPTER_ROLES.includes(val)) {
         lockRoleToChapter('Chapter position selected');
       } else if (NATIONAL_POSITIONS.includes(val)) {
@@ -931,9 +1012,15 @@
     }
 
     function handleChapterSelectChange() {
+      const isOverride = document.getElementById('chkRoleOverride')?.checked;
       const chSelect = document.getElementById('assignChapterSelect');
       if (chSelect && chSelect.value !== '') {
-        lockRoleToChapter('Chapter selected');
+        if (!isOverride) {
+          lockRoleToChapter('Chapter selected');
+        } else {
+          const rChap = document.getElementById('roleChapter');
+          if (rChap) rChap.checked = true;
+        }
         populatePositionOptions('chapter_admin', document.getElementById('assignPositionSelect').value);
       }
     }
@@ -941,6 +1028,21 @@
     // Select User into Review Panel
     function selectUserForReview(user) {
       selectedUserId = user.id;
+      currentReviewUser = user;
+
+      // Reset override toggle
+      const chkOverride = document.getElementById('chkRoleOverride');
+      if (chkOverride) chkOverride.checked = false;
+      const notice = document.getElementById('overrideNotice');
+      if (notice) notice.style.display = 'none';
+
+      // Update Remove Button state for selected user
+      const btnRemove = document.getElementById('btnRemoveAccount');
+      if (btnRemove) {
+        const isRoot = (user.id === 1) || (user.email && user.email.toLowerCase() === 'admin@ytr.org');
+        btnRemove.style.display = isRoot ? 'none' : 'inline-flex';
+      }
+
       document.getElementById('reviewUserName').textContent = user.full_name;
       document.getElementById('reviewUserEmail').textContent = user.email;
       document.getElementById('reviewUserBadge').textContent = user.account_status.toUpperCase();
@@ -1040,6 +1142,46 @@
       } else {
         alert(res.message || 'Error declining account.');
       }
+    }
+
+    // Account Removal Handlers (National Admin)
+    async function handleQuickDeleteAccount(userId) {
+      const target = allAccountsCache.find(u => Number(u.id) === Number(userId));
+      const userName = target ? target.full_name : 'this user';
+      const userEmail = target && target.email ? ` (${target.email})` : '';
+
+      if (userId === 1 || (target && target.email && target.email.toLowerCase() === 'admin@ytr.org')) {
+        alert('Cannot remove the primary Root Administrator account.');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to permanently remove the account for ${userName}${userEmail}?\n\nThis will safely archive the user record and revoke active portal access.`)) {
+        return;
+      }
+
+      try {
+        const res = await YTR_API.accounts.remove(userId);
+        if (res.status === 'success') {
+          alert(res.message || 'Account successfully removed.');
+          if (selectedUserId === userId) {
+            selectedUserId = null;
+          }
+          loadMetrics();
+          loadAccounts(activeFilter);
+        } else {
+          alert(res.message || 'Error removing account.');
+        }
+      } catch (err) {
+        alert('Failed to remove account: ' + (err.message || 'Server connection error.'));
+      }
+    }
+
+    async function handleRemoveSelectedAccount() {
+      if (!selectedUserId) {
+        alert('Please select an account from the table to remove.');
+        return;
+      }
+      handleQuickDeleteAccount(selectedUserId);
     }
 
     // ==========================================

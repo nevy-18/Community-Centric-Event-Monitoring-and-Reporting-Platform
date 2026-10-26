@@ -25,6 +25,21 @@ const YTR_API = {
       defaultHeaders['Content-Type'] = 'application/json';
     }
 
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const u = localStorage.getItem('ytr_user');
+        if (u) {
+          const parsed = JSON.parse(u);
+          if (parsed.id) defaultHeaders['X-User-Id'] = String(parsed.id);
+          if (parsed.email) defaultHeaders['X-User-Email'] = String(parsed.email);
+        }
+      } catch (e) {}
+    }
+    if (typeof document !== 'undefined' && document.cookie && !defaultHeaders['X-User-Id']) {
+      const matchId = document.cookie.match(/(?:^|;\s*)ytr_user_id=([^;]*)/);
+      if (matchId) defaultHeaders['X-User-Id'] = decodeURIComponent(matchId[1]);
+    }
+
     const config = {
       ...options,
       headers: {
@@ -145,6 +160,11 @@ const YTR_API = {
       return YTR_API.request(`/accounts/${id}/decline`, {
         method: 'POST',
         body: JSON.stringify({ review_note })
+      });
+    },
+    remove(id) {
+      return YTR_API.request(`/accounts/${id}`, {
+        method: 'DELETE'
       });
     },
     uploadSignature(signature_image, user_id = null) {

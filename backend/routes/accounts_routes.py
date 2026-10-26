@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, request, session
 from backend.db import get_db, serialize_rows, serialize_row
 from backend.auth_helpers import api_response, api_error, hash_password
@@ -148,6 +149,75 @@ def decline_account(user_id):
             """, (note, reviewer_id, user_id))
 
     return api_response({}, 'Account request has been declined.')
+
+@accounts_bp.route('/<int:user_id>', methods=['DELETE', 'POST'])
+def remove_account(user_id):
+    """
+    Permanently remove an account.
+    Restricted to National Administrators.
+    """
+    reviewer_id = request.headers.get('X-User-Id') or session.get('user_id')
+    reviewer_email = request.headers.get('X-User-Email') or session.get('user_email')
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            # Check reviewer authority
+            if reviewer_id or reviewer_email:
+                cur.execute("""
+                    SELECT role FROM users 
+                    WHERE id = %s OR LOWER(email) = %s 
+                    LIMIT 1
+                """, (reviewer_id, str(reviewer_email or '').lower()))
+                rev = cur.fetchone()
+                if not rev or rev.get('role') != 'national_admin':
+                    return api_error("Access Denied: Only National Administrators can remove accounts.", 403)
+
+            # Check target user
+            cur.execute("SELECT id, full_name, email, role, position, chapter_id FROM users WHERE id = %s", (user_id,))
+            target_user = cur.fetchone()
+            if not target_user:
+                return api_error("Account not found.", 404)
+
+            # Cannot delete primary root admin
+            if target_user['id'] == 1 or target_user['email'].lower() == 'admin@ytr.org':
+                return api_error("Cannot remove the primary Root Administrator account.", 403)
+
+            # Cannot delete oneself
+            if reviewer_id and str(target_user['id']) == str(reviewer_id):
+                return api_error("You cannot remove your own active logged-in account.", 400)
+
+            # Archive target user into system_data_archives for retrievability
+            try:
+                cur.execute("""
+                    INSERT INTO system_data_archives (batch_id, table_name, record_id, record_data, flushed_mode, flushed_by)
+                    VALUES (%s, 'users', %s, %s, 'account_removal', %s)
+                """, (f"REMOVE-{user_id}", user_id, json.dumps(serialize_row(target_user), default=str), reviewer_id))
+            except Exception:
+                pass
+
+            # Safe deletion with FK handling
+            cur.execute("SET FOREIGN_KEY_CHECKS = 0;")
+            try:
+                cur.execute("DELETE FROM notifications WHERE user_id = %s OR created_by = %s", (user_id, user_id))
+                cur.execute("DELETE FROM password_resets WHERE user_id = %s", (user_id,))
+                cur.execute("UPDATE events SET created_by = NULL WHERE created_by = %s", (user_id,))
+                cur.execute("UPDATE events SET reviewed_by = NULL WHERE reviewed_by = %s", (user_id,))
+                cur.execute("UPDATE event_reports SET submitted_by = NULL WHERE submitted_by = %s", (user_id,))
+                cur.execute("UPDATE event_reports SET reviewed_by = NULL WHERE reviewed_by = %s", (user_id,))
+                cur.execute("UPDATE event_report_files SET uploaded_by = NULL WHERE uploaded_by = %s", (user_id,))
+                cur.execute("UPDATE poster_requests SET requested_by = NULL WHERE requested_by = %s", (user_id,))
+                cur.execute("UPDATE poster_requests SET assigned_to = NULL WHERE assigned_to = %s", (user_id,))
+                cur.execute("UPDATE poster_requests SET reviewed_by = NULL WHERE reviewed_by = %s", (user_id,))
+                cur.execute("UPDATE poster_request_steps SET updated_by = NULL WHERE updated_by = %s", (user_id,))
+                cur.execute("UPDATE poster_request_updates SET updated_by = NULL WHERE updated_by = %s", (user_id,))
+                cur.execute("UPDATE announcements SET created_by = NULL WHERE created_by = %s", (user_id,))
+                cur.execute("UPDATE audit_logs SET user_id = NULL WHERE user_id = %s", (user_id,))
+                cur.execute("UPDATE users SET reviewed_by = NULL WHERE reviewed_by = %s", (user_id,))
+                cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
+            finally:
+                cur.execute("SET FOREIGN_KEY_CHECKS = 1;")
+
+    return api_response({}, f"Account for {target_user['full_name']} ({target_user['email']}) has been successfully removed.")
 
 @accounts_bp.route('/signature', methods=['GET', 'POST'])
 def handle_signature():
