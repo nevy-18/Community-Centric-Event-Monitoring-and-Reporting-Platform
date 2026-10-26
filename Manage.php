@@ -26,8 +26,12 @@
               <p>Review account requests, assign roles, and manage system access.</p>
             </div>
           </div>
-          <div>
-            <button type="button" id="btnHeaderFlush" class="btn btn-outline font-roboto" onclick="openSystemFlushModal()" style="display: none; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button type="button" id="btnHeaderRetrieve" class="btn btn-outline font-roboto" onclick="openSystemFlushModal('archives')" style="display: none; border-color: #a7f3d0; color: #047857; background: #ecfdf5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+              <i class="ph-bold ph-clock-counter-clockwise" style="font-size: 1.1rem; color: #059669;"></i>
+              <span>Retrieve Flushed Data</span>
+            </button>
+            <button type="button" id="btnHeaderFlush" class="btn btn-outline font-roboto" onclick="openSystemFlushModal('flush')" style="display: none; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; align-items: center; gap: 0.5rem; transition: all 0.2s;">
               <i class="ph-bold ph-trash" style="font-size: 1.1rem; color: #dc2626;"></i>
               <span>Flush System Data</span>
             </button>
@@ -365,27 +369,48 @@
     </div>
   </div>
 
-  <!-- SYSTEM DATA FLUSH MODAL -->
+  <!-- SYSTEM DATA FLUSH & RETRIEVAL MODAL -->
   <div id="systemFlushModal" class="modal-overlay hidden" style="display: none;">
-    <div class="modal-md">
-      <!-- Modal Header -->
-      <div class="modal-header-banner" style="background: #fff1f2; border-bottom: 1px solid #fecdd3;">
+    <div class="modal-md modal-flush-dialog">
+      <!-- Modal Header Banner -->
+      <div class="modal-header-banner" id="manageFlushHeaderBanner" style="background: #fff1f2; border-bottom: 1px solid #fecdd3;">
         <div style="display: flex; align-items: center; gap: 0.65rem;">
-          <div style="background: #fee2e2; color: #dc2626; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-            <i class="ph-bold ph-warning-octagon"></i>
+          <div id="manageFlushIconBox" style="background: #fee2e2; color: #dc2626; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-warning-octagon" id="manageFlushIcon"></i>
           </div>
           <div>
-            <h3 style="color: #991b1b; margin: 0; font-size: 1rem;">System Maintenance: Data Flush</h3>
-            <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;">Purge operational activity, reset test records, or restore clean demo state.</p>
+            <h3 style="color: #991b1b; margin: 0; font-size: 1rem;" id="manageFlushTitle">System Maintenance: Data Flush &amp; Retrieval</h3>
+            <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;" id="manageFlushSubtitle">Safely archive operational activity or retrieve previously flushed records.</p>
           </div>
         </div>
         <button type="button" onclick="closeSystemFlushModal()"><i class="ph ph-x"></i></button>
       </div>
 
-      <!-- Modal Body -->
-      <div class="modal-body-scroll" style="background: #ffffff;">
+      <!-- Navigation Tabs -->
+      <div class="flush-modal-tabs">
+        <button type="button" class="flush-tab-btn active flush-mode-danger" id="tabBtnFlushManage" onclick="switchFlushModalTab('flush')">
+          <i class="ph-bold ph-trash"></i>
+          <span>Flush &amp; Archive Data</span>
+        </button>
+        <button type="button" class="flush-tab-btn" id="tabBtnArchivesManage" onclick="switchFlushModalTab('archives')">
+          <i class="ph-bold ph-archive-box"></i>
+          <span>Archived Data &amp; Retrieval</span>
+          <span class="flush-tab-badge" id="flushArchiveBadgeManage">0</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: FLUSH & ARCHIVE PANEL -->
+      <div id="tabPanelFlushManage" class="modal-body-scroll" style="background: #ffffff;">
+        <div class="flush-safe-notice">
+          <i class="ph-bold ph-shield-check"></i>
+          <div>
+            <strong>Safe Archival Protection Active:</strong>
+            Operational data is not permanently deleted. All flushed events, reports, poster requests, and files are automatically preserved in archive tables and hidden from active views. You can retrieve and restore them at any time in the <em>Archived Data &amp; Retrieval</em> tab.
+          </div>
+        </div>
+
         <div style="font-size: 0.825rem; color: #475569; margin-bottom: 0.5rem;">
-          <strong>Current System Records:</strong>
+          <strong>Current Active System Records:</strong>
         </div>
         <div class="flush-stat-grid" id="flushStatGrid">
           <div class="flush-stat-pill">
@@ -417,7 +442,7 @@
               <input type="radio" name="flush_mode_radio" value="activity" checked>
               <div class="flush-option-content">
                 <h5>🧹 Flush Operational Activity (Recommended)</h5>
-                <p>Clears all events, proposals, poster requests, timeline deliverables, reports, notifications, and audit logs. <strong>User accounts and registered chapters remain safe and intact.</strong></p>
+                <p>Archives all events, proposals, poster requests, timeline deliverables, reports, notifications, and audit logs. <strong>User accounts and registered chapters remain safe and intact.</strong></p>
               </div>
             </label>
 
@@ -425,7 +450,7 @@
               <input type="radio" name="flush_mode_radio" value="full">
               <div class="flush-option-content">
                 <h5>🔄 Full Factory Reset</h5>
-                <p>Completely resets all database tables to pristine baseline state (default chapters, default template steps, and default administrative logins).</p>
+                <p>Archives current data and resets all database tables to pristine baseline state (default chapters, default template steps, and default administrative logins).</p>
               </div>
             </label>
 
@@ -433,7 +458,7 @@
               <input type="radio" name="flush_mode_radio" value="demo">
               <div class="flush-option-content">
                 <h5>🚀 Full Reset &amp; Seed Demo Data</h5>
-                <p>Resets the database and immediately populates realistic sample proposals, poster requests, and conducted events with 2-week compliance timers for testing.</p>
+                <p>Archives current data, resets tables, and immediately populates realistic sample proposals, poster requests, and conducted events with 2-week compliance timers for testing.</p>
               </div>
             </label>
           </div>
@@ -445,11 +470,31 @@
         </div>
       </div>
 
+      <!-- TAB 2: ARCHIVED DATA & RETRIEVAL PANEL -->
+      <div id="tabPanelArchivesManage" class="modal-body-scroll" style="background: #f8fafc; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <div>
+            <h4 style="margin: 0; font-size: 0.92rem; color: #0f172a;">Archived System Batches</h4>
+            <p style="margin: 0; font-size: 0.75rem; color: #64748b;">Browse flushed data snapshots and restore records directly back into active tables.</p>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="loadArchivesList()" style="background: #ffffff; gap: 0.35rem; display: inline-flex; align-items: center; cursor: pointer;">
+            <i class="ph-bold ph-arrows-clockwise"></i> Refresh
+          </button>
+        </div>
+
+        <div id="archivesListContainer">
+          <div style="text-align: center; padding: 2rem; color: #64748b;">
+            <i class="ph ph-spinner-gap ph-spin" style="font-size: 1.5rem;"></i>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">Loading archived snapshots...</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Modal Footer -->
-      <div style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.5rem;">
-        <button type="button" class="btn btn-outline font-roboto" onclick="closeSystemFlushModal()">Cancel</button>
+      <div id="manageFlushFooter" style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" class="btn btn-outline font-roboto" onclick="closeSystemFlushModal()">Close</button>
         <button type="button" class="btn btn-danger font-roboto" id="btnExecuteFlush" disabled onclick="executeSystemFlush()" style="background: #dc2626; border-color: #b91c1c; color: white; display: inline-flex; align-items: center; gap: 0.4rem; opacity: 0.5; cursor: not-allowed;">
-          <i class="ph-bold ph-trash"></i> <span id="flushBtnText">Execute Flush</span>
+          <i class="ph-bold ph-trash"></i> <span id="flushBtnText">Execute Flush &amp; Archive</span>
         </button>
       </div>
     </div>
@@ -977,34 +1022,123 @@
     // System Maintenance & Data Flush Handlers
     // ==========================================
     let currentFlushMode = 'activity';
+    let currentActiveFlushTab = 'flush';
 
-    async function openSystemFlushModal() {
+    function switchFlushModalTab(tab) {
+      currentActiveFlushTab = tab;
+      const tabFlush = document.getElementById('tabBtnFlushManage');
+      const tabArchives = document.getElementById('tabBtnArchivesManage');
+      const panelFlush = document.getElementById('tabPanelFlushManage');
+      const panelArchives = document.getElementById('tabPanelArchivesManage');
+      const btnFlush = document.getElementById('btnExecuteFlush');
+      const banner = document.getElementById('manageFlushHeaderBanner');
+      const iconBox = document.getElementById('manageFlushIconBox');
+      const icon = document.getElementById('manageFlushIcon');
+      const title = document.getElementById('manageFlushTitle');
+      const subtitle = document.getElementById('manageFlushSubtitle');
+
+      if (tab === 'archives') {
+        if (tabFlush) {
+          tabFlush.classList.remove('active', 'flush-mode-danger');
+        }
+        if (tabArchives) {
+          tabArchives.classList.add('active', 'flush-mode-archive');
+        }
+        if (panelFlush) panelFlush.style.display = 'none';
+        if (panelArchives) panelArchives.style.display = 'block';
+        if (btnFlush) btnFlush.style.display = 'none';
+
+        if (banner) {
+          banner.style.background = '#f0fdf4';
+          banner.style.borderBottom = '1px solid #bbf7d0';
+        }
+        if (iconBox) {
+          iconBox.style.background = '#dcfce7';
+          iconBox.style.color = '#15803d';
+        }
+        if (icon) icon.className = 'ph-bold ph-archive-box';
+        if (title) {
+          title.textContent = 'System Archives & Data Retrieval Ledger';
+          title.style.color = '#166534';
+        }
+        if (subtitle) {
+          subtitle.textContent = 'Inspect safely archived system data snapshots and restore records back into active tables.';
+          subtitle.style.color = '#15803d';
+        }
+
+        loadArchivesList();
+      } else {
+        if (tabFlush) {
+          tabFlush.classList.add('active', 'flush-mode-danger');
+        }
+        if (tabArchives) {
+          tabArchives.classList.remove('active', 'flush-mode-archive');
+        }
+        if (panelFlush) panelFlush.style.display = 'block';
+        if (panelArchives) panelArchives.style.display = 'none';
+        if (btnFlush) btnFlush.style.display = 'inline-flex';
+
+        if (banner) {
+          banner.style.background = '#fff1f2';
+          banner.style.borderBottom = '1px solid #fecdd3';
+        }
+        if (iconBox) {
+          iconBox.style.background = '#fee2e2';
+          iconBox.style.color = '#dc2626';
+        }
+        if (icon) icon.className = 'ph-bold ph-warning-octagon';
+        if (title) {
+          title.textContent = 'System Maintenance: Data Flush & Retrieval';
+          title.style.color = '#991b1b';
+        }
+        if (subtitle) {
+          subtitle.textContent = 'Safely archive operational activity or retrieve previously flushed records.';
+          subtitle.style.color = '#b91c1c';
+        }
+
+        loadSystemSummaryStats();
+      }
+    }
+
+    async function loadSystemSummaryStats() {
+      try {
+        const res = await YTR_API.system.getSummary();
+        if (res.status === 'success' && res.data && res.data.table_counts) {
+          const tc = res.data.table_counts;
+          const setT = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+          setT('statEvents', tc.events || 0);
+          setT('statRequests', tc.poster_requests || 0);
+          setT('statReports', tc.event_reports || 0);
+          setT('statUsers', tc.users || 0);
+          setT('statFiles', res.data.uploaded_files_count || 0);
+          setT('flushArchiveBadgeManage', res.data.archive_batches_count || 0);
+        }
+      } catch (err) {
+        console.warn('Could not load system summary:', err);
+      }
+    }
+
+    async function openSystemFlushModal(initialTab = 'flush') {
       const modal = document.getElementById('systemFlushModal');
       const input = document.getElementById('flushConfirmationInput');
       
-      input.value = '';
+      if (input) input.value = '';
       selectFlushMode('activity');
       checkFlushConfirmation();
 
       modal.style.display = 'flex';
       modal.classList.remove('hidden');
 
-      // Fetch live counts
-      const res = await YTR_API.system.getSummary();
-      if (res.status === 'success' && res.data && res.data.table_counts) {
-        const tc = res.data.table_counts;
-        document.getElementById('statEvents').textContent = tc.events || 0;
-        document.getElementById('statRequests').textContent = tc.poster_requests || 0;
-        document.getElementById('statReports').textContent = tc.event_reports || 0;
-        document.getElementById('statUsers').textContent = tc.users || 0;
-        document.getElementById('statFiles').textContent = res.data.uploaded_files_count || 0;
-      }
+      switchFlushModalTab(initialTab);
+      loadSystemSummaryStats();
     }
 
     function closeSystemFlushModal() {
       const modal = document.getElementById('systemFlushModal');
-      modal.style.display = 'none';
-      modal.classList.add('hidden');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+      }
     }
 
     function selectFlushMode(mode) {
@@ -1027,15 +1161,17 @@
     function checkFlushConfirmation() {
       const input = document.getElementById('flushConfirmationInput');
       const btn = document.getElementById('btnExecuteFlush');
-      const text = (input.value || '').trim().toUpperCase();
-      if (text === 'FLUSH') {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.style.cursor = 'pointer';
-      } else {
-        btn.disabled = true;
-        btn.style.opacity = '0.5';
-        btn.style.cursor = 'not-allowed';
+      const text = (input ? input.value : '').trim().toUpperCase();
+      if (btn) {
+        if (text === 'FLUSH') {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+        } else {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+          btn.style.cursor = 'not-allowed';
+        }
       }
     }
 
@@ -1043,7 +1179,7 @@
       const input = document.getElementById('flushConfirmationInput');
       const btn = document.getElementById('btnExecuteFlush');
       const btnText = document.getElementById('flushBtnText');
-      const text = (input.value || '').trim().toUpperCase();
+      const text = (input ? input.value : '').trim().toUpperCase();
 
       if (text !== 'FLUSH') {
         alert('Please type "FLUSH" to confirm this action.');
@@ -1052,17 +1188,19 @@
 
       btn.disabled = true;
       btn.style.opacity = '0.6';
-      btnText.textContent = 'Flushing...';
+      btnText.textContent = 'Archiving & Flushing...';
 
       try {
         const res = await YTR_API.system.flush(currentFlushMode, 'FLUSH');
         if (res.status === 'success') {
-          alert('Success! ' + (res.message || 'System data has been flushed.'));
-          closeSystemFlushModal();
+          alert('Success! ' + (res.message || 'System data has been safely flushed and archived.'));
           // Reload page state
           loadMetrics();
           loadAccounts(activeFilter);
           loadChapterOptions();
+          loadSystemSummaryStats();
+          // Switch to archives tab to show the archived batch
+          switchFlushModalTab('archives');
         } else {
           alert('Flush Failed: ' + (res.message || 'An error occurred during flush.'));
         }
@@ -1071,8 +1209,223 @@
       } finally {
         btn.disabled = false;
         btn.style.opacity = '1';
-        btnText.textContent = 'Execute Flush';
+        btnText.textContent = 'Execute Flush & Archive';
         checkFlushConfirmation();
+      }
+    }
+
+    async function loadArchivesList() {
+      const container = document.getElementById('archivesListContainer');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: #64748b;">
+          <i class="ph ph-spinner-gap ph-spin" style="font-size: 1.5rem;"></i>
+          <p style="margin-top: 0.5rem; font-size: 0.8rem;">Loading archived snapshots...</p>
+        </div>
+      `;
+
+      try {
+        const res = await YTR_API.system.getArchives();
+        if (res.status !== 'success' || !Array.isArray(res.data) || res.data.length === 0) {
+          container.innerHTML = `
+            <div class="flush-empty-state">
+              <i class="ph-bold ph-archive-box" style="font-size: 2.2rem; color: #94a3b8; display: block; margin-bottom: 0.5rem;"></i>
+              <h5 style="margin: 0; color: #334155; font-size: 0.95rem; font-weight: 700;">No Archived Batches Found</h5>
+              <p style="margin: 0.35rem 0 0; color: #64748b; font-size: 0.8rem; max-width: 420px; margin-inline: auto;">
+                When system data is flushed, records and uploaded files will be safely moved here and made retrievable at any time.
+              </p>
+            </div>
+          `;
+          const badge = document.getElementById('flushArchiveBadgeManage');
+          if (badge) badge.textContent = '0';
+          return;
+        }
+
+        const batches = res.data;
+        const badge = document.getElementById('flushArchiveBadgeManage');
+        if (badge) badge.textContent = batches.length;
+
+        container.innerHTML = batches.map(b => {
+          const modeLabel = b.flushed_mode === 'activity' ? 'Operational Activity' :
+                            b.flushed_mode === 'full' ? 'Factory Reset' :
+                            b.flushed_mode === 'demo' ? 'Reset & Demo Seed' : b.flushed_mode;
+          
+          const modeBadgeStyle = b.flushed_mode === 'activity' ? 'background: #fef3c7; color: #92400e; border: 1px solid #fde68a;' :
+                                 b.flushed_mode === 'full' ? 'background: #fee2e2; color: #991b1b; border: 1px solid #fecdd3;' :
+                                 'background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;';
+
+          const isRestored = b.is_restored;
+          const statusBadge = isRestored ? 
+            `<span class="archive-batch-badge archive-badge-restored"><i class="ph-bold ph-check-circle"></i> Restored to Active</span>` :
+            `<span class="archive-batch-badge archive-badge-archived"><i class="ph-bold ph-archive"></i> Archived (Hidden)</span>`;
+
+          const flushedDate = b.flushed_at ? new Date(b.flushed_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Unknown date';
+          const restoredDate = b.restored_at ? new Date(b.restored_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
+
+          const tb = b.table_breakdown || {};
+          const samples = (b.sample_events && b.sample_events.length > 0) ? 
+            `<div class="archive-batch-samples"><i class="ph-bold ph-info"></i> Sample Events: <strong>${b.sample_events.map(s => escapeHtml(s)).join(', ')}</strong></div>` : '';
+
+          return `
+            <div class="archive-batch-card" id="archiveCard_${b.batch_id}">
+              <div class="archive-batch-header">
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                  <span class="archive-batch-id">${escapeHtml(b.batch_id)}</span>
+                  <span class="archive-batch-badge" style="${modeBadgeStyle}">${modeLabel}</span>
+                  ${statusBadge}
+                </div>
+                <div style="font-size: 0.72rem; color: #64748b; font-weight: 500;">
+                  <i class="ph-bold ph-clock"></i> ${flushedDate}
+                </div>
+              </div>
+
+              <div class="archive-pill-list">
+                <span class="archive-count-pill"><strong>${tb.events || 0}</strong> Events</span>
+                <span class="archive-count-pill"><strong>${tb.poster_requests || 0}</strong> Requests</span>
+                <span class="archive-count-pill"><strong>${tb.event_reports || 0}</strong> Reports</span>
+                <span class="archive-count-pill"><strong>${b.files_archived || 0}</strong> Files</span>
+                <span class="archive-count-pill"><strong>${b.total_records || 0}</strong> Total Items</span>
+              </div>
+
+              ${samples}
+
+              ${restoredDate ? `<div style="font-size: 0.72rem; color: #059669; margin-bottom: 0.4rem;"><i class="ph-bold ph-arrow-counter-clockwise"></i> Last restored: ${restoredDate}</div>` : ''}
+
+              <div class="archive-card-actions">
+                <button type="button" class="btn-inspect-batch" onclick="toggleArchiveDetails('${b.batch_id}')">
+                  <i class="ph-bold ph-list-dashes"></i> Inspect Records
+                </button>
+                <button type="button" class="btn-restore-batch" id="btnRestore_${b.batch_id}" onclick="restoreArchiveBatch('${b.batch_id}')">
+                  <i class="ph-bold ph-arrow-counter-clockwise"></i> ${isRestored ? 'Retrieve & Restore Again' : 'Retrieve / Restore Data'}
+                </button>
+              </div>
+
+              <div id="archiveDetails_${b.batch_id}" style="display: none; margin-top: 0.75rem; border-top: 1px dashed #e2e8f0; padding-top: 0.65rem;"></div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load archives:', err);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: #dc2626;">
+            <i class="ph-bold ph-warning-circle" style="font-size: 1.5rem;"></i>
+            <p style="margin-top: 0.5rem; font-size: 0.825rem;">Failed to load system archives: ${escapeHtml(err.message)}</p>
+          </div>
+        `;
+      }
+    }
+
+    async function toggleArchiveDetails(batchId) {
+      const targetDiv = document.getElementById('archiveDetails_' + batchId);
+      if (!targetDiv) return;
+
+      if (targetDiv.style.display !== 'none') {
+        targetDiv.style.display = 'none';
+        return;
+      }
+
+      targetDiv.style.display = 'block';
+      targetDiv.innerHTML = `
+        <div style="text-align: center; padding: 1rem; color: #64748b; font-size: 0.75rem;">
+          <i class="ph ph-spinner-gap ph-spin"></i> Fetching itemized records...
+        </div>
+      `;
+
+      try {
+        const res = await YTR_API.system.getArchiveDetails(batchId);
+        if (res.status !== 'success' || !res.data) {
+          targetDiv.innerHTML = `<div style="color: #dc2626; font-size: 0.75rem;">Could not load details.</div>`;
+          return;
+        }
+
+        const data = res.data;
+        const records = data.records || [];
+        const files = data.files || [];
+
+        let rowsHtml = '';
+        if (records.length === 0) {
+          rowsHtml = `<tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 0.5rem;">No serialized records found.</td></tr>`;
+        } else {
+          rowsHtml = records.slice(0, 30).map(r => {
+            const rd = r.record_data || {};
+            const titleOrName = rd.title || rd.name || rd.event_name || rd.subject || rd.filename || `ID: ${r.record_id}`;
+            return `
+              <tr style="border-bottom: 1px solid #f1f5f9; font-size: 0.75rem;">
+                <td style="padding: 0.35rem 0.5rem; font-weight: 600; color: #334155;">${escapeHtml(r.table_name)}</td>
+                <td style="padding: 0.35rem 0.5rem; color: #64748b; font-family: monospace;">#${escapeHtml(String(r.record_id))}</td>
+                <td style="padding: 0.35rem 0.5rem; color: #0f172a;">${escapeHtml(titleOrName)}</td>
+              </tr>
+            `;
+          }).join('');
+          if (records.length > 30) {
+            rowsHtml += `<tr><td colspan="3" style="text-align: center; color: #64748b; font-size: 0.72rem; padding: 0.4rem;">...and ${records.length - 30} more archived records</td></tr>`;
+          }
+        }
+
+        targetDiv.innerHTML = `
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; padding: 0.5rem;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: flex; justify-content: space-between;">
+              <span>Itemized Archive Contents (${records.length} records, ${files.length} files)</span>
+              <a href="#" onclick="event.preventDefault(); document.getElementById('archiveDetails_${batchId}').style.display='none';" style="color: #64748b; font-size: 0.72rem;">Hide</a>
+            </div>
+            <div style="max-height: 180px; overflow-y: auto;">
+              <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #f8fafc; font-size: 0.7rem; color: #64748b; text-transform: uppercase;">
+                    <th style="padding: 0.3rem 0.5rem;">Table</th>
+                    <th style="padding: 0.3rem 0.5rem;">Record ID</th>
+                    <th style="padding: 0.3rem 0.5rem;">Title / Identifier</th>
+                  </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        targetDiv.innerHTML = `<div style="color: #dc2626; font-size: 0.75rem;">Error loading details: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function restoreArchiveBatch(batchId) {
+      const confirmed = confirm(
+        `Are you sure you want to retrieve and restore batch "${batchId}"?\n\n` +
+        `This will copy all archived events, reports, poster requests, deliverables, and files directly back into the active database tables.`
+      );
+      if (!confirmed) return;
+
+      const btn = document.getElementById('btnRestore_' + batchId);
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="ph ph-spinner-gap ph-spin"></i> Retrieving...`;
+      }
+
+      try {
+        const res = await YTR_API.system.restoreArchive(batchId);
+        if (res.status === 'success') {
+          alert('Success! ' + (res.message || `Archive batch ${batchId} was successfully retrieved and restored.`));
+          // Refresh active data
+          loadMetrics();
+          loadAccounts(activeFilter);
+          loadChapterOptions();
+          loadSystemSummaryStats();
+          loadArchivesList();
+        } else {
+          alert('Restoration Failed: ' + (res.message || 'An error occurred during retrieval.'));
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+          }
+        }
+      } catch (err) {
+        alert('Restoration Error: ' + err.message);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
       }
     }
 
@@ -1084,8 +1437,12 @@
           const execPositions = ['Executive Director', 'Regional Director (National)'];
           const isExec = execPositions.includes(u.position) || u.email === 'admin@ytr.org';
           const flushBtn = document.getElementById('btnHeaderFlush');
+          const retrieveBtn = document.getElementById('btnHeaderRetrieve');
           if (flushBtn) {
             flushBtn.style.display = isExec ? 'inline-flex' : 'none';
+          }
+          if (retrieveBtn) {
+            retrieveBtn.style.display = isExec ? 'inline-flex' : 'none';
           }
         }
       } catch (e) {}

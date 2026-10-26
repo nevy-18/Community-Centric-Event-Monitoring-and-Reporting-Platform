@@ -1,29 +1,87 @@
 """
-Youth on the Rock (YTR) - Database Flush and Reset Utility CLI
+Youth on the Rock (YTR) - Database Flush, Archive and Retrieval Utility CLI
 Usage:
-    python backend/flush_data.py                  # Interactive prompt
-    python backend/flush_data.py --mode activity   # Flush operational data only (keep users & chapters)
-    python backend/flush_data.py --mode full       # Factory reset to baseline chapters & users
-    python backend/flush_data.py --mode demo       # Reset and seed full demo dataset with sample events
+    python backend/flush_data.py                  # Interactive flush prompt (auto-archives data)
+    python backend/flush_data.py --mode activity   # Flush operational data (preserves in archive table)
+    python backend/flush_data.py --mode full       # Factory reset to baseline chapters & users (archives prior data)
+    python backend/flush_data.py --mode demo       # Reset and seed demo dataset (archives prior data)
+    python backend/flush_data.py --list            # List all past archive batches
+    python backend/flush_data.py --restore BATCH_ID# Restore archived batch into active database
     python backend/flush_data.py --yes             # Non-interactive confirmation
 """
 import sys
 import argparse
+from datetime import datetime
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from backend.routes.system_routes import get_counts, clear_upload_files
+from backend.routes.system_routes import (
+    get_counts,
+    archive_records_before_flush,
+    archive_upload_files,
+    restore_archive_batch,
+    ensure_archive_tables
+)
 from backend.db import get_db
 from backend.auth_helpers import hash_password
 
+def list_archives():
+    print("=" * 65)
+    print(">> YTR SYSTEM ARCHIVES LEDGER")
+    print("=" * 65)
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            ensure_archive_tables(cur)
+            cur.execute("""
+                SELECT batch_id, flushed_mode,
+                       MIN(flushed_at) AS flushed_at,
+                       MAX(restored_at) AS restored_at,
+                       MAX(is_restored) AS is_restored,
+                       COUNT(*) AS total_records
+                FROM system_data_archives
+                GROUP BY batch_id, flushed_mode
+                ORDER BY flushed_at DESC
+            """)
+            batches = cur.fetchall()
+            if not batches:
+                print("No archive batches found in database.")
+                return
+
+            for b in batches:
+                status = "[RESTORED]" if b['is_restored'] else "[ARCHIVED/HIDDEN]"
+                print(f"Batch: {b['batch_id']} | Mode: {b['flushed_mode']} | Records: {b['total_records']} | Status: {status}")
+                print(f"  Flushed at: {b['flushed_at']}")
+                if b['restored_at']:
+                    print(f"  Restored at: {b['restored_at']}")
+                print("-" * 50)
+
+def run_restore(batch_id):
+    print("=" * 65)
+    print(f">> RESTORING ARCHIVED BATCH: {batch_id}")
+    print("=" * 65)
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            ensure_archive_tables(cur)
+            res = restore_archive_batch(cur, batch_id, user_id=1)
+            if res.get('success'):
+                print(f"[SUCCESS] {res.get('message')}")
+                print("Restored records summary:")
+                for tbl, cnt in res.get('restored_summary', {}).items():
+                    print(f"  - {tbl}: {cnt}")
+            else:
+                print(f"[ERROR] {res.get('message')}")
+
 def run_flush(mode='activity', verbose=True):
+    batch_id = f"FLUSH-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+
     if verbose:
-        print("=" * 60)
-        print(f">> YTR PLATFORM: SYSTEM DATA FLUSH (Mode: {mode.upper()})")
-        print("=" * 60)
+        print("=" * 65)
+        print(f">> YTR PLATFORM: NON-DESTRUCTIVE SYSTEM DATA FLUSH (Mode: {mode.upper()})")
+        print(f">> Archive Batch ID: {batch_id}")
+        print("=" * 65)
 
     with get_db() as conn:
         with conn.cursor() as cur:
@@ -34,9 +92,19 @@ def run_flush(mode='activity', verbose=True):
                 for k, v in before_counts.items():
                     print(f"   - {k}: {v}")
 
+            # 2. Archive active records safely into another table before any clearing
+            archived_summary = archive_records_before_flush(cur, batch_id, mode, user_id=1)
+            archived_files = archive_upload_files(batch_id)
+
+            if verbose:
+                print(f">> Safely archived {sum(archived_summary.values())} record(s) and {archived_files} file(s) into archive tables.")
+                for tbl, cnt in archived_summary.items():
+                    if cnt > 0:
+                        print(f"   * {tbl}: {cnt} preserved")
+
             cur.execute("SET FOREIGN_KEY_CHECKS = 0;")
 
-            # Activity tables
+            # Activity tables to clear from active display
             activity_tables = [
                 'poster_request_updates',
                 'poster_request_steps',
@@ -48,15 +116,13 @@ def run_flush(mode='activity', verbose=True):
                 'audit_logs'
             ]
             for tbl in activity_tables:
-                cur.execute(f"TRUNCATE TABLE {tbl}")
-
-            deleted_files = clear_upload_files()
+                cur.execute(f"TRUNCATE TABLE `{tbl}`")
 
             if mode in ('full', 'demo'):
-                cur.execute("TRUNCATE TABLE announcements")
-                cur.execute("TRUNCATE TABLE users")
-                cur.execute("TRUNCATE TABLE chapters")
-                cur.execute("TRUNCATE TABLE poster_workflow_templates")
+                cur.execute("TRUNCATE TABLE `announcements`")
+                cur.execute("TRUNCATE TABLE `users`")
+                cur.execute("TRUNCATE TABLE `chapters`")
+                cur.execute("TRUNCATE TABLE `poster_workflow_templates`")
 
                 # Chapters
                 chapters = [
@@ -103,19 +169,6 @@ def run_flush(mode='activity', verbose=True):
                         INSERT INTO poster_workflow_templates (id, step_key, step_order, step_title, description, is_active)
                         VALUES (%s, %s, %s, %s, %s, %s)
                     """, (tid, skey, sorder, stitle, sdesc, sact))
-
-                # Announcements
-                announcements = [
-                    (1, 'everyone', None, 'Tremendous Momentum: Youth Camp 2026', 'Join us for spiritual gathering of the year at SJB Learning Center.', 1, '2026-05-21 09:00:00'),
-                    (1, 'everyone', None, '29th YTR Anniversary Celebration', 'Celebrating 29 years of youth transformation nationwide.', 1, '2026-09-26 14:00:00'),
-                    (1, 'chapter_admins', None, 'National Youth Leadership Summit', 'An executive summit for chapter administrators.', 1, '2026-12-19 08:30:00'),
-                    (1, 'specific_chapter', 1, 'Greatest of All Time: Regional Fellowship', 'Praise, worship revival, and inter-campus fellowship.', 1, '2026-09-28 16:00:00')
-                ]
-                for cby, aud, tch, tit, bdy, ip, pa in announcements:
-                    cur.execute("""
-                        INSERT INTO announcements (created_by, target_audience, target_chapter_id, title, body, is_published, published_at)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    """, (cby, aud, tch, tit, bdy, ip, pa))
 
             if mode == 'demo':
                 demo_events = [
@@ -182,24 +235,37 @@ def run_flush(mode='activity', verbose=True):
             cur.execute("SET FOREIGN_KEY_CHECKS = 1;")
 
             if verbose:
-                print(f"[PASS] Cleared {deleted_files} uploaded file(s) from assets/uploads/")
-                print(f"[PASS] Flush operation complete (Mode: {mode})!")
+                print(f"[PASS] Active operational tables cleared (records safely preserved in archive {batch_id})!")
+                print(f"[PASS] To retrieve this data, run: python backend/flush_data.py --restore {batch_id}")
                 after_counts = get_counts(cur)
-                print(">> Post-flush database records:")
+                print(">> Post-flush active database records:")
                 for k, v in after_counts.items():
                     print(f"   - {k}: {v}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Flush or reset YTR platform data.")
+    parser = argparse.ArgumentParser(description="Non-destructive Flush, Archive and Retrieval for YTR Platform Data.")
     parser.add_argument('--mode', choices=['activity', 'full', 'demo'], default='activity',
                         help="Flush mode: 'activity' (clear events/reports/requests), 'full' (factory reset), 'demo' (reset + seed sample events)")
+    parser.add_argument('--list', action='store_true',
+                        help="List all past archive batches")
+    parser.add_argument('--restore', type=str, default=None,
+                        help="Batch ID to restore into active database (e.g. FLUSH-20261027-013000)")
     parser.add_argument('--yes', '-y', action='store_true',
                         help="Skip interactive confirmation")
 
     args = parser.parse_args()
 
+    if args.list:
+        list_archives()
+        return
+
+    if args.restore:
+        run_restore(args.restore)
+        return
+
     if not args.yes:
-        print(f"WARNING: This will flush {args.mode.upper()} data from the database!")
+        print(f"NOTICE: This will move active {args.mode.upper()} data to the archive tables and hide it from the active system.")
+        print("Data is NOT destroyed and can be retrieved at any time.")
         confirm = input("Type 'FLUSH' to proceed: ").strip()
         if confirm != 'FLUSH':
             print("Aborted.")

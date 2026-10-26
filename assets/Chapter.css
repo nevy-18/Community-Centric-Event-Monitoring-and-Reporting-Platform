@@ -1375,3 +1375,337 @@ body.sidebar-mobile-open {
   }
 }
 
+
+
+/* --- SYSTEM FLUSH & ARCHIVE LEDGER STYLES --- */
+.modal-flush-dialog {
+  max-width: 720px !important;
+  width: 95% !important;
+}
+
+.flush-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.flush-stat-pill {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  text-align: center;
+}
+.flush-stat-pill strong {
+  display: block;
+  font-size: 1.15rem;
+  color: #0f172a;
+  line-height: 1.1;
+}
+.flush-stat-pill span {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+
+.flush-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.flush-option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.85rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.flush-option-label:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+.flush-option-label input[type="radio"]:checked ~ .flush-option-content {
+  color: #0f172a;
+}
+.flush-option-label.active {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+.flush-option-label input[type="radio"] {
+  margin-top: 0.25rem;
+  accent-color: #dc2626;
+}
+.flush-option-content h5 {
+  margin: 0 0 0.2rem 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.flush-option-content p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.flush-confirm-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  padding: 0.85rem;
+  margin-top: 0.85rem;
+}
+.flush-confirm-box label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #9f1239;
+  margin-bottom: 0.4rem;
+}
+.flush-confirm-input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 2px solid #fda4af;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #881337;
+  outline: none;
+  background: #ffffff;
+}
+.flush-confirm-input:focus {
+  border-color: #e11d48;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.2);
+}
+
+.flush-modal-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 0.5rem 1.25rem 0;
+  background: #f8fafc;
+}
+
+.flush-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.flush-tab-btn:hover {
+  color: #1e293b;
+}
+
+.flush-tab-btn.active {
+  color: #0284c7;
+  border-bottom-color: #0284c7;
+  font-weight: 700;
+}
+
+.flush-tab-btn.active.flush-mode-danger {
+  color: #dc2626;
+  border-bottom-color: #dc2626;
+}
+
+.flush-tab-btn.active.flush-mode-archive {
+  color: #059669;
+  border-bottom-color: #059669;
+}
+
+.flush-tab-badge {
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.flush-tab-btn.active .flush-tab-badge {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.flush-safe-notice {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 0.75rem 0.95rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.flush-safe-notice i {
+  font-size: 1.25rem;
+  color: #059669;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.archive-batch-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.95rem 1.1rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.archive-batch-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06);
+}
+
+.archive-batch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.archive-batch-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #0f172a;
+  background: #f1f5f9;
+  padding: 0.2rem 0.55rem;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+}
+
+.archive-batch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.archive-badge-restored {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.archive-badge-archived {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.archive-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.4rem 0;
+}
+
+.archive-count-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.archive-batch-samples {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.4rem 0 0.65rem 0;
+}
+
+.archive-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.btn-restore-batch {
+  background: #059669;
+  color: #ffffff;
+  border: 1px solid #047857;
+  padding: 0.45rem 0.95rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s;
+}
+
+.btn-restore-batch:hover {
+  background: #047857;
+}
+
+.btn-restore-batch:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-inspect-batch {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s;
+}
+
+.btn-inspect-batch:hover {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.flush-empty-state {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  margin: 0.5rem 0;
+}

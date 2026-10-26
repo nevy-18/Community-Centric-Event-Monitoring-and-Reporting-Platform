@@ -3,6 +3,7 @@ import pymysql.cursors
 from backend.config import Config
 from contextlib import contextmanager
 from datetime import datetime, date
+from decimal import Decimal
 
 def get_db_connection():
     """Establish and return a PyMySQL connection with dictionary cursor."""
@@ -40,13 +41,15 @@ def get_db():
         conn.close()
 
 def serialize_row(row):
-    """Serialize datetime and date objects in a dictionary to ISO format strings."""
+    """Serialize datetime, date, and Decimal objects in a dictionary."""
     if not row:
         return row
     serialized = dict(row)
     for k, v in serialized.items():
         if isinstance(v, (datetime, date)):
             serialized[k] = v.isoformat()
+        elif isinstance(v, Decimal):
+            serialized[k] = float(v)
     return serialized
 
 def serialize_rows(rows):

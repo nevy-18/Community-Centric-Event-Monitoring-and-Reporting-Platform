@@ -357,6 +357,17 @@ const YTR_API = {
         method: 'POST',
         body: JSON.stringify({ mode, confirmation })
       });
+    },
+    getArchives() {
+      return YTR_API.request('/system/archives');
+    },
+    getArchiveDetails(batchId) {
+      return YTR_API.request('/system/archives/' + encodeURIComponent(batchId));
+    },
+    restoreArchive(batchId) {
+      return YTR_API.request('/system/archives/' + encodeURIComponent(batchId) + '/restore', {
+        method: 'POST'
+      });
     }
   }
 };
