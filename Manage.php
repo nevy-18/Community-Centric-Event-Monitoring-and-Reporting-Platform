@@ -177,12 +177,18 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label font-roboto">Assign Role &amp; Tier</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                  <label class="form-label font-roboto" style="margin-bottom: 0;">Assign Role &amp; Tier</label>
+                  <div style="display: flex; align-items: center; gap: 0.35rem;">
+                    <span id="roleRequestedBadge" style="display: none; font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; font-weight: 600;"></span>
+                    <a href="#" id="linkReassignTier" onclick="toggleRoleTierOverride(event)" style="display: none; font-size: 0.72rem; color: #2563eb; text-decoration: underline; font-weight: 600;">Change Tier</a>
+                  </div>
+                </div>
                 <div class="radio-group font-roboto">
-                  <label class="radio-label">
+                  <label class="radio-label" id="labelRoleNational">
                     <input type="radio" name="assign_role" id="roleNational" value="national_admin" onchange="syncRolePositionOptions('national_admin')"> National Admin
                   </label>
-                  <label class="radio-label">
+                  <label class="radio-label" id="labelRoleChapter">
                     <input type="radio" name="assign_role" id="roleChapter" value="chapter_admin" checked onchange="syncRolePositionOptions('chapter_admin')"> Chapter Admin
                   </label>
                 </div>
@@ -190,24 +196,24 @@
 
               <div class="form-group">
                 <label class="form-label font-roboto">Specific Position / Title</label>
-                <select class="form-select font-roboto" id="assignPositionSelect">
+                <select class="form-select font-roboto" id="assignPositionSelect" onchange="handlePositionSelectChange()">
+                  <optgroup label="── CHAPTER POSITIONS ──" id="optGrpChapter">
+                    <option value="Chapter Coordinator">Chapter Coordinator</option>
+                    <option value="Chapter President">Chapter President</option>
+                    <option value="Regional Director (Chapter)">Regional Director (Chapter)</option>
+                  </optgroup>
                   <optgroup label="── NATIONAL POSITIONS ──" id="optGrpNational">
                     <option value="Chief Executive Operation">Chief Executive Operation</option>
                     <option value="Executive Director">Executive Director</option>
                     <option value="Regional Director (National)">Regional Director (National)</option>
                     <option value="National Youth Officer">National Youth Officer</option>
                   </optgroup>
-                  <optgroup label="── CHAPTER POSITIONS ──" id="optGrpChapter">
-                    <option value="Chapter Coordinator">Chapter Coordinator</option>
-                    <option value="Chapter President">Chapter President</option>
-                    <option value="Regional Director (Chapter)">Regional Director (Chapter)</option>
-                  </optgroup>
                 </select>
               </div>
 
               <div class="form-group" id="assignChapterGroup">
                 <label class="form-label font-roboto">Assign Chapter</label>
-                <select class="form-select font-roboto" id="assignChapterSelect">
+                <select class="form-select font-roboto" id="assignChapterSelect" onchange="handleChapterSelectChange()">
                   <option value="">Loading chapters...</option>
                 </select>
               </div>
@@ -785,19 +791,165 @@
       }
     }
 
-    function syncRolePositionOptions(role) {
-      const posSelect = document.getElementById('assignPositionSelect');
-      const chGroup = document.getElementById('assignChapterGroup');
+    const NATIONAL_POSITIONS = [
+      'Chief Executive Operation',
+      'Executive Director',
+      'Regional Director (National)',
+      'National Youth Officer'
+    ];
+
+    const CHAPTER_ROLES = [
+      'Chapter Coordinator',
+      'Chapter President',
+      'Regional Director (Chapter)'
+    ];
+
+    function populatePositionOptions(role, selectedPosition = null) {
+      const select = document.getElementById('assignPositionSelect');
+      if (!select) return;
+      select.innerHTML = '';
+
       if (role === 'national_admin') {
-        if (chGroup) chGroup.style.display = 'none';
-        if (!posSelect.value || ['Chapter Coordinator', 'Chapter President', 'Regional Director (Chapter)'].includes(posSelect.value)) {
-          posSelect.value = 'Executive Director';
+        const grp = document.createElement('optgroup');
+        grp.label = '── NATIONAL POSITIONS ──';
+        NATIONAL_POSITIONS.forEach(pos => {
+          const opt = document.createElement('option');
+          opt.value = pos;
+          opt.textContent = pos;
+          if (pos === selectedPosition) opt.selected = true;
+          grp.appendChild(opt);
+        });
+        select.appendChild(grp);
+        if (!selectedPosition || !NATIONAL_POSITIONS.includes(selectedPosition)) {
+          select.value = 'Executive Director';
         }
       } else {
-        if (chGroup) chGroup.style.display = 'block';
-        if (!posSelect.value || ['Executive Director', 'Regional Director (National)', 'National Youth Officer'].includes(posSelect.value)) {
-          posSelect.value = 'Chapter Coordinator';
+        const grp = document.createElement('optgroup');
+        grp.label = '── CHAPTER POSITIONS ──';
+        CHAPTER_ROLES.forEach(pos => {
+          const opt = document.createElement('option');
+          opt.value = pos;
+          opt.textContent = pos;
+          if (pos === selectedPosition) opt.selected = true;
+          grp.appendChild(opt);
+        });
+        select.appendChild(grp);
+        if (!selectedPosition || !CHAPTER_ROLES.includes(selectedPosition)) {
+          select.value = 'Chapter Coordinator';
         }
+      }
+    }
+
+    function lockRoleToChapter(reason = 'Account requested for Chapter') {
+      const rNat = document.getElementById('roleNational');
+      const rChap = document.getElementById('roleChapter');
+      const lblNat = document.getElementById('labelRoleNational');
+      const lblChap = document.getElementById('labelRoleChapter');
+      const chGroup = document.getElementById('assignChapterGroup');
+
+      if (rChap) {
+        rChap.checked = true;
+        rChap.disabled = false;
+      }
+      if (rNat) {
+        rNat.checked = false;
+        rNat.disabled = true;
+      }
+
+      if (lblNat) {
+        lblNat.style.opacity = '0.45';
+        lblNat.style.cursor = 'not-allowed';
+        lblNat.title = reason + '; only Chapter Admin role can be selected.';
+      }
+      if (lblChap) {
+        lblChap.style.opacity = '1';
+        lblChap.style.cursor = 'pointer';
+        lblChap.title = '';
+      }
+      if (chGroup) chGroup.style.display = 'block';
+    }
+
+    function lockRoleToNational(reason = 'Account requested for National HQ') {
+      const rNat = document.getElementById('roleNational');
+      const rChap = document.getElementById('roleChapter');
+      const lblNat = document.getElementById('labelRoleNational');
+      const lblChap = document.getElementById('labelRoleChapter');
+      const chGroup = document.getElementById('assignChapterGroup');
+      const chSelect = document.getElementById('assignChapterSelect');
+
+      if (rNat) {
+        rNat.checked = true;
+        rNat.disabled = false;
+      }
+      if (rChap) {
+        rChap.checked = false;
+        rChap.disabled = true;
+      }
+
+      if (lblChap) {
+        lblChap.style.opacity = '0.45';
+        lblChap.style.cursor = 'not-allowed';
+        lblChap.title = reason + '; only National Admin role can be selected.';
+      }
+      if (lblNat) {
+        lblNat.style.opacity = '1';
+        lblNat.style.cursor = 'pointer';
+        lblNat.title = '';
+      }
+      if (chGroup) chGroup.style.display = 'none';
+      if (chSelect) chSelect.value = '';
+    }
+
+    function toggleRoleTierOverride(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const rNat = document.getElementById('roleNational');
+      const rChap = document.getElementById('roleChapter');
+      const lblNat = document.getElementById('labelRoleNational');
+      const lblChap = document.getElementById('labelRoleChapter');
+      const badge = document.getElementById('roleRequestedBadge');
+      const link = document.getElementById('linkReassignTier');
+
+      if (rNat) rNat.disabled = false;
+      if (rChap) rChap.disabled = false;
+      if (lblNat) { lblNat.style.opacity = '1'; lblNat.style.cursor = 'pointer'; lblNat.title = ''; }
+      if (lblChap) { lblChap.style.opacity = '1'; lblChap.style.cursor = 'pointer'; lblChap.title = ''; }
+      if (badge) {
+        badge.textContent = 'Tier Unlocked';
+        badge.style.color = '#b45309';
+        badge.style.background = '#fef3c7';
+        badge.style.border = '1px solid #fde68a';
+      }
+      if (link) link.style.display = 'none';
+    }
+
+    function syncRolePositionOptions(role, selectedPosition = null) {
+      const chGroup = document.getElementById('assignChapterGroup');
+      const posSelect = document.getElementById('assignPositionSelect');
+      const currentPos = selectedPosition || (posSelect ? posSelect.value : null);
+
+      if (role === 'national_admin') {
+        if (chGroup) chGroup.style.display = 'none';
+        populatePositionOptions('national_admin', currentPos);
+      } else {
+        if (chGroup) chGroup.style.display = 'block';
+        populatePositionOptions('chapter_admin', currentPos);
+      }
+    }
+
+    function handlePositionSelectChange() {
+      const val = document.getElementById('assignPositionSelect').value;
+      if (CHAPTER_ROLES.includes(val)) {
+        lockRoleToChapter('Chapter position selected');
+      } else if (NATIONAL_POSITIONS.includes(val)) {
+        lockRoleToNational('National position selected');
+      }
+    }
+
+    function handleChapterSelectChange() {
+      const chSelect = document.getElementById('assignChapterSelect');
+      if (chSelect && chSelect.value !== '') {
+        lockRoleToChapter('Chapter selected');
+        populatePositionOptions('chapter_admin', document.getElementById('assignPositionSelect').value);
       }
     }
 
@@ -811,20 +963,49 @@
       document.getElementById('reviewUserRole').textContent = (user.position ? user.position + ' • ' : '') + (user.role === 'national_admin' ? 'National Admin' : 'Chapter Admin');
       document.getElementById('reviewUserReason').textContent = `Account request submitted for ${user.full_name} (${user.email}). Position: ${user.position || 'Not specified'}. Review authorization and confirm chapter assignment below.`;
 
-      if (user.role === 'national_admin') {
-        document.getElementById('roleNational').checked = true;
-        syncRolePositionOptions('national_admin');
+      const badge = document.getElementById('roleRequestedBadge');
+      const link = document.getElementById('linkReassignTier');
+      const chSelect = document.getElementById('assignChapterSelect');
+
+      // Determine if account requested/belongs to a chapter
+      const isChapter = (user.role === 'chapter_admin') ||
+                        (Boolean(user.chapter_id) && user.chapter_name !== 'National HQ') ||
+                        CHAPTER_ROLES.includes(user.position);
+
+      if (isChapter) {
+        lockRoleToChapter('Account requested for Chapter');
+        populatePositionOptions('chapter_admin', user.position);
+        if (badge) {
+          badge.style.display = 'inline-block';
+          badge.textContent = 'Chapter Account';
+          badge.style.color = '#047857';
+          badge.style.background = '#ecfdf5';
+          badge.style.border = '1px solid #a7f3d0';
+        }
+        if (link) {
+          link.style.display = 'inline-block';
+          link.textContent = 'Change Tier';
+        }
+        if (user.chapter_id && chSelect) {
+          chSelect.value = user.chapter_id;
+        }
       } else {
-        document.getElementById('roleChapter').checked = true;
-        syncRolePositionOptions('chapter_admin');
-      }
-
-      if (user.position) {
-        document.getElementById('assignPositionSelect').value = user.position;
-      }
-
-      if (user.chapter_id) {
-        document.getElementById('assignChapterSelect').value = user.chapter_id;
+        lockRoleToNational('Account requested for National HQ');
+        populatePositionOptions('national_admin', user.position);
+        if (badge) {
+          badge.style.display = 'inline-block';
+          badge.textContent = 'National Account';
+          badge.style.color = '#1e40af';
+          badge.style.background = '#eff6ff';
+          badge.style.border = '1px solid #bfdbfe';
+        }
+        if (link) {
+          link.style.display = 'inline-block';
+          link.textContent = 'Change Tier';
+        }
+        if (chSelect) {
+          chSelect.value = '';
+        }
       }
 
       const approveBtn = document.getElementById('btnApprove');
@@ -846,18 +1027,34 @@
         return;
       }
 
-      const role = document.querySelector('input[name="assign_role"]:checked').value;
+      const roleRadio = document.querySelector('input[name="assign_role"]:checked');
+      if (!roleRadio) {
+        alert('Please select a role (National Admin or Chapter Admin).');
+        return;
+      }
+      const role = roleRadio.value;
       const position = document.getElementById('assignPositionSelect').value;
       const chapterId = document.getElementById('assignChapterSelect').value;
 
-      if (role === 'chapter_admin' && !chapterId) {
-        alert('Please select a chapter for Chapter role.');
-        return;
+      if (role === 'chapter_admin') {
+        if (!chapterId) {
+          alert('Please select an assigned chapter for Chapter Admin role.');
+          return;
+        }
+        if (!CHAPTER_ROLES.includes(position)) {
+          alert('Please select a valid Chapter position for Chapter Admin role.');
+          return;
+        }
+      } else if (role === 'national_admin') {
+        if (!NATIONAL_POSITIONS.includes(position)) {
+          alert('Please select a valid National position for National Admin role.');
+          return;
+        }
       }
 
-      const res = await YTR_API.accounts.approve(selectedUserId, role, chapterId, position);
+      const res = await YTR_API.accounts.approve(selectedUserId, role, role === 'national_admin' ? null : chapterId, position);
       if (res.status === 'success') {
-        alert('Account approved successfully!');
+        alert('Account saved / approved successfully!');
         loadMetrics();
         loadAccounts(activeFilter);
       } else {
