@@ -26,15 +26,28 @@
               <p>Review account requests, assign roles, and manage system access.</p>
             </div>
           </div>
-          <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <button type="button" id="btnHeaderRetrieve" class="btn btn-outline font-roboto" onclick="openSystemFlushModal('archives')" style="display: none; border-color: #a7f3d0; color: #047857; background: #ecfdf5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; align-items: center; gap: 0.5rem; transition: all 0.2s;">
-              <i class="ph-bold ph-clock-counter-clockwise" style="font-size: 1.1rem; color: #059669;"></i>
-              <span>Retrieve Flushed Data</span>
-            </button>
-            <button type="button" id="btnHeaderFlush" class="btn btn-outline font-roboto" onclick="openSystemFlushModal('flush')" style="display: none; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; align-items: center; gap: 0.5rem; transition: all 0.2s;">
-              <i class="ph-bold ph-trash" style="font-size: 1.1rem; color: #dc2626;"></i>
-              <span>Flush System Data</span>
-            </button>
+          <div>
+            <div class="dropdown" id="manageExecutiveDropdown" style="display: none; position: relative;">
+              <button type="button" class="btn btn-outline font-roboto" id="btnManageExecToggle" onclick="toggleManageExecDropdown(event)" style="border-color: #fecdd3; color: #991b1b; background: #fff1f2; font-weight: 600; padding: 0.55rem 1.15rem; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;">
+                <i class="ph-bold ph-shield-check" style="font-size: 1.15rem; color: #dc2626;"></i>
+                <span>Chief Executive Actions</span>
+                <i class="ph-bold ph-caret-down" style="font-size: 0.85rem; color: #991b1b;"></i>
+              </button>
+              <div id="manageExecMenu" style="display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); min-width: 230px; z-index: 1000; padding: 0.4rem 0;">
+                <div style="padding: 0.4rem 1rem 0.2rem; font-size: 0.68rem; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem;">
+                  <i class="ph-bold ph-shield-check"></i> System Maintenance
+                </div>
+                <a href="#" onclick="event.preventDefault(); closeManageExecMenu(); openSystemFlushModal('archives');" style="display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1rem; color: #047857; text-decoration: none; font-size: 0.825rem; font-weight: 600; transition: background 0.15s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='transparent'">
+                  <i class="ph-bold ph-clock-counter-clockwise" style="color: #059669; font-size: 1.1rem;"></i>
+                  <span>Retrieve Flushed Data</span>
+                </a>
+                <div style="height: 1px; background: #f1f5f9; margin: 0.25rem 0;"></div>
+                <a href="#" onclick="event.preventDefault(); closeManageExecMenu(); openSystemFlushModal('flush');" style="display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1rem; color: #b91c1c; text-decoration: none; font-size: 0.825rem; font-weight: 600; transition: background 0.15s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+                  <i class="ph-bold ph-trash" style="color: #dc2626; font-size: 1.1rem;"></i>
+                  <span>Flush System Data</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -380,7 +393,7 @@
           </div>
           <div>
             <h3 style="color: #991b1b; margin: 0; font-size: 1rem;" id="manageFlushTitle">System Maintenance: Data Flush &amp; Retrieval</h3>
-            <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;" id="manageFlushSubtitle">Safely archive operational activity or retrieve previously flushed records.</p>
+            <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;" id="manageFlushSubtitle">Chief Executive Officer Authorization · Safely archive operational activity or retrieve previously flushed records.</p>
           </div>
         </div>
         <button type="button" onclick="closeSystemFlushModal()"><i class="ph ph-x"></i></button>
@@ -1236,7 +1249,7 @@
           title.style.color = '#991b1b';
         }
         if (subtitle) {
-          subtitle.textContent = 'Safely archive operational activity or retrieve previously flushed records.';
+          subtitle.textContent = 'Chief Executive Officer Authorization · Safely archive operational activity or retrieve previously flushed records.';
           subtitle.style.color = '#b91c1c';
         }
 
@@ -1573,20 +1586,36 @@
       }
     }
 
+    function toggleManageExecDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('manageExecMenu');
+      if (menu) {
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+      }
+    }
+
+    function closeManageExecMenu() {
+      const menu = document.getElementById('manageExecMenu');
+      if (menu) menu.style.display = 'none';
+    }
+
+    document.addEventListener('click', (e) => {
+      const dd = document.getElementById('manageExecutiveDropdown');
+      if (dd && !dd.contains(e.target)) {
+        closeManageExecMenu();
+      }
+    });
+
     function checkExecutiveAccess() {
       try {
         const rawUser = localStorage.getItem('ytr_user');
         if (rawUser) {
           const u = JSON.parse(rawUser);
-          const execPositions = ['Executive Director', 'Regional Director (National)'];
-          const isExec = execPositions.includes(u.position) || u.email === 'admin@ytr.org';
-          const flushBtn = document.getElementById('btnHeaderFlush');
-          const retrieveBtn = document.getElementById('btnHeaderRetrieve');
-          if (flushBtn) {
-            flushBtn.style.display = isExec ? 'inline-flex' : 'none';
-          }
-          if (retrieveBtn) {
-            retrieveBtn.style.display = isExec ? 'inline-flex' : 'none';
+          const ceoPositions = ['Chief Executive Operation', 'Chief Executive Officer', 'CEO', 'Chief Executive'];
+          const isCEO = ceoPositions.includes(u.position) || u.email === 'admin@ytr.org';
+          const manageExecDropdown = document.getElementById('manageExecutiveDropdown');
+          if (manageExecDropdown) {
+            manageExecDropdown.style.display = isCEO ? 'inline-block' : 'none';
           }
         }
       } catch (e) {}

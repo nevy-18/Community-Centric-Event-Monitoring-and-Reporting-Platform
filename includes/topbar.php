@@ -60,7 +60,7 @@
       <div id="executive-tools-dropdown-section" style="display: none;">
         <div class="dropdown-divider"></div>
         <div style="padding: 0.35rem 0.75rem 0.2rem; font-size: 0.68rem; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem;">
-          <i class="ph-bold ph-shield-check"></i> Executive Control
+          <i class="ph-bold ph-shield-check"></i> Chief Executive Control
         </div>
         <a href="#" class="dropdown-item" onclick="triggerSystemBackup(event)" style="color: #1e3a8a;">
           <i class="ph-bold ph-download-simple" style="color: #2563eb;"></i> Backup System Data
@@ -69,7 +69,7 @@
           <i class="ph-bold ph-clock-counter-clockwise" style="color: #059669;"></i> Retrieve Flushed Data
         </a>
         <a href="#" class="dropdown-item text-rose" onclick="openTopLevelFlushModal(event, 'flush')">
-          <i class="ph-bold ph-arrow-counter-clockwise" style="color: #dc2626;"></i> Reset System Data
+          <i class="ph-bold ph-arrow-counter-clockwise" style="color: #dc2626;"></i> Flush System Data
         </a>
       </div>
 
@@ -252,7 +252,7 @@
         </div>
         <div>
           <h3 style="color: #991b1b; margin: 0; font-size: 1rem;" id="tbFlushTitle">Executive Control: Reset &amp; Retrieve System Data</h3>
-          <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;" id="tbFlushSubtitle">Executive Director / Regional Director (National) Authorization</p>
+          <p style="color: #b91c1c; margin: 0; font-size: 0.75rem;" id="tbFlushSubtitle">Chief Executive Officer Authorization</p>
         </div>
       </div>
       <button type="button" onclick="closeTopLevelFlushModal()"><i class="ph ph-x"></i></button>
@@ -426,12 +426,12 @@
       if (ddEmail) ddEmail.textContent = u.email || 'user@ytr.org';
 
       // Check Executive Authorization for Reset & Backup:
-      // Restricted to: Executive Director, Regional Director (National), or root admin
-      const execPositions = ['Executive Director', 'Regional Director (National)'];
-      const isExec = execPositions.includes(u.position) || u.email === 'admin@ytr.org';
+      // Restricted strictly to Chief Executive Officer / Operation or root admin
+      const ceoPositions = ['Chief Executive Operation', 'Chief Executive Officer', 'CEO', 'Chief Executive'];
+      const isCEO = ceoPositions.includes(u.position) || u.email === 'admin@ytr.org';
       const execSection = document.getElementById('executive-tools-dropdown-section');
       if (execSection) {
-        execSection.style.display = isExec ? 'block' : 'none';
+        execSection.style.display = isCEO ? 'block' : 'none';
       }
 
       // If Chapter Admin, customize profile dropdown links
@@ -619,7 +619,7 @@
         title.style.color = '#991b1b';
       }
       if (subtitle) {
-        subtitle.textContent = 'Executive Director / Regional Director (National) Authorization';
+        subtitle.textContent = 'Chief Executive Officer Authorization';
         subtitle.style.color = '#b91c1c';
       }
 

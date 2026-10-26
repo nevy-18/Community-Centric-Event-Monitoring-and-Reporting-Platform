@@ -12,10 +12,15 @@ system_bp = Blueprint('system', __name__, url_prefix='/api/system')
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-AUTHORIZED_EXEC_POSITIONS = ['Executive Director', 'Regional Director (National)']
+AUTHORIZED_CEO_POSITIONS = [
+    'Chief Executive Operation',
+    'Chief Executive Officer',
+    'CEO',
+    'Chief Executive'
+]
 
 def is_executive_authorized():
-    """Verify that current requester has Executive Director or Regional Director (National) authority."""
+    """Verify that current requester has Chief Executive Officer authority to flush or retrieve data."""
     user_id = request.headers.get('X-User-Id') or request.args.get('user_id') or session.get('user_id')
     user_email = request.headers.get('X-User-Email') or session.get('user_email')
 
@@ -33,9 +38,9 @@ def is_executive_authorized():
                 """, (user_id, str(user_email or '').lower()))
                 u = cur.fetchone()
                 if u:
-                    pos = u.get('position')
-                    email = u.get('email')
-                    if pos in AUTHORIZED_EXEC_POSITIONS or email in ['admin@ytr.org', 'adminhost@gmail.com']:
+                    pos = str(u.get('position') or '').strip()
+                    email = str(u.get('email') or '').strip().lower()
+                    if pos in AUTHORIZED_CEO_POSITIONS or email == 'admin@ytr.org':
                         return True
                     return False
                 return False
@@ -359,7 +364,7 @@ def backup_system_data():
       - download: '1' or 'true' to trigger browser file attachment
     """
     if not is_executive_authorized():
-        return api_error("Access Denied: Only Executive Director or Regional Director (National) can export system backup.", 403)
+        return api_error("Access Denied: Only the Chief Executive Officer can export system backup.", 403)
 
     fmt = request.args.get('format', 'json').lower()
     download = request.args.get('download', '0') in ('1', 'true', 'yes')
@@ -467,7 +472,7 @@ def flush_system_data():
     Requires confirmation text: 'FLUSH'
     """
     if not is_executive_authorized():
-        return api_error("Access Denied: Only Executive Director or Regional Director (National) can execute system data flush.", 403)
+        return api_error("Access Denied: Only the Chief Executive Officer can execute system data flush.", 403)
 
     payload = request.get_json(silent=True) or {}
     mode = payload.get('mode', 'activity')
@@ -648,7 +653,7 @@ def list_system_archives():
     Restricted to Executive Director and Regional Director (National).
     """
     if not is_executive_authorized():
-        return api_error("Access Denied: Only Executive Director or Regional Director (National) can view system archives.", 403)
+        return api_error("Access Denied: Only the Chief Executive Officer can view system archives.", 403)
 
     try:
         with get_db() as conn:
@@ -735,7 +740,7 @@ def get_archive_details(batch_id):
     Restricted to Executive Director and Regional Director (National).
     """
     if not is_executive_authorized():
-        return api_error("Access Denied: Only Executive Director or Regional Director (National) can view archive details.", 403)
+        return api_error("Access Denied: Only the Chief Executive Officer can view archive details.", 403)
 
     try:
         with get_db() as conn:
@@ -800,7 +805,7 @@ def restore_system_archive(batch_id):
     Restricted to Executive Director and Regional Director (National).
     """
     if not is_executive_authorized():
-        return api_error("Access Denied: Only Executive Director or Regional Director (National) can restore archives.", 403)
+        return api_error("Access Denied: Only the Chief Executive Officer can restore archives.", 403)
 
     user_id = request.headers.get('X-User-Id') or request.args.get('user_id') or session.get('user_id')
 
