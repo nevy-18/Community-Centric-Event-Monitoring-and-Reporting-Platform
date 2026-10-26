@@ -12,30 +12,42 @@
     @media print {
       @page {
         size: A4 portrait;
-        margin: 12mm 15mm;
+        margin: 10mm 12mm;
+      }
+      *, *::before, *::after {
+        box-shadow: none !important;
+        text-shadow: none !important;
       }
       html, body {
         background: #ffffff !important;
-        color: #000000 !important;
+        color: #0f172a !important;
         height: auto !important;
         min-height: 100% !important;
         overflow: visible !important;
         margin: 0 !important;
         padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       .app-wrapper,
       .sidebar,
       .topbar,
       .page-header,
+      .metrics-grid,
       .tabs-container,
       .search-bar,
+      .card,
+      #proposal-modal,
       .print-no-print,
+      .modal-header,
+      .print-status-banner,
+      .print-action-bar,
       button,
       .btn {
         display: none !important;
       }
 
-      /* Unhide the proposal dossier modal container and render it as normal document flow */
+      /* Unhide the proposal dossier modal container and render it as flat normal document flow */
       #proposalDossierModal {
         display: block !important;
         position: static !important;
@@ -65,12 +77,6 @@
         box-shadow: none !important;
         background: transparent !important;
       }
-      #proposalDossierModal > div > div:first-child,
-      #proposalDossierModal .print-action-bar,
-      #proposalDossierModal .print-status-banner,
-      #proposalDossierModal button {
-        display: none !important;
-      }
 
       #printableProposalDossier {
         display: block !important;
@@ -89,14 +95,15 @@
       #printableProposalDossier,
       #printableProposalDossier * {
         visibility: visible !important;
-        color: #000000 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
       #printableProposalDossier table {
         width: 100% !important;
         border-collapse: collapse !important;
-        page-break-inside: auto;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 1rem !important;
       }
       #printableProposalDossier tr {
         page-break-inside: avoid !important;
@@ -104,29 +111,15 @@
       }
       #printableProposalDossier th,
       #printableProposalDossier td {
-        border: 1px solid #94a3b8 !important;
-        color: #000000 !important;
+        border: 1px solid #cbd5e1 !important;
         padding: 6px 10px !important;
       }
       #printableProposalDossier th {
         background: #1a2f63 !important;
         color: #ffffff !important;
       }
-      #dossierTitle,
-      #dossierProgram,
-      #dossierAudience,
-      #dossierChapter,
-      #dossierEventType,
-      #dossierSchedule,
-      #dossierVenue,
-      #dossierTurnout,
-      #dossierBudget,
-      #dossierThreshold,
-      #dossierDueDate,
-      #dossierDescription {
-        color: #000000 !important;
-        visibility: visible !important;
-        font-weight: 700 !important;
+      #printableProposalDossier td {
+        color: #0f172a !important;
       }
       .print-signatures-row {
         display: flex !important;
@@ -135,15 +128,17 @@
         gap: 3rem !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
-        margin-top: 2rem !important;
-        padding-top: 1.25rem !important;
-        border-top: 2px solid #000000 !important;
+        margin-top: 1.5rem !important;
+        padding-top: 1rem !important;
+        border-top: 2px solid #1a2f63 !important;
         visibility: visible !important;
       }
       .print-signatures-row > div {
-        width: 45% !important;
+        width: 46% !important;
         min-height: auto !important;
         visibility: visible !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
       #dossierSubmitterName,
       #dossierSubmitterTitle,
@@ -153,17 +148,18 @@
       #dossierReviewNotes {
         display: block !important;
         visibility: visible !important;
-        color: #000000 !important;
       }
       #dossierSubmitterName,
       #dossierReviewerName {
         font-size: 0.95rem !important;
         font-weight: 900 !important;
+        color: #0f172a !important;
       }
       #dossierSubmitterTitle,
       #dossierReviewerTitle {
         font-size: 0.8rem !important;
         font-weight: 700 !important;
+        color: #1e3a8a !important;
       }
     }
     </style>
@@ -421,7 +417,7 @@
     <!-- PROPOSAL DOSSIER & SOFT COPY MODAL FOR CHAPTER -->
     <div id="proposalDossierModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1050; align-items: center; justify-content: center; padding: 1.5rem;">
         <div style="background: #ffffff; border-radius: 12px; max-width: 820px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 1.75rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+            <div class="print-no-print modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
                 <h3 class="font-roboto" style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
                     <i class="ph-bold ph-file-text" style="color: #2563eb;"></i> Official Event Proposal Dossier (Soft Copy)
                 </h3>
@@ -429,7 +425,7 @@
             </div>
 
             <!-- Toolbar banner -->
-            <div style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div class="print-no-print print-status-banner" style="display: flex; align-items: center; justify-content: space-between; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                 <div style="display: flex; align-items: center; gap: 0.65rem;">
                     <div style="width: 32px; height: 32px; border-radius: 6px; background: #dbeafe; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
                         <i class="ph-bold ph-download-simple"></i>
@@ -446,17 +442,20 @@
             <div id="printableProposalDossier" class="print-document-sheet" style="background: #ffffff; padding: 1.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Roboto', sans-serif;">
                 
                 <!-- Official Letterhead Header -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px double #1a2f63; padding-bottom: 1rem; margin-bottom: 1.5rem;">
-                    <div>
-                        <h2 style="font-size: 1.35rem; font-weight: 900; color: #1a2f63; margin: 0; text-transform: uppercase; letter-spacing: 0.04em;">YOUTH ON THE ROCK NATIONAL MOVEMENT</h2>
-                        <p style="font-size: 0.8rem; color: #475569; margin: 3px 0 0; text-transform: uppercase; font-weight: 700;">Community-Centric Event Monitoring &amp; Reporting Platform</p>
-                        <p style="font-size: 0.75rem; color: #64748b; margin: 1px 0 0;">Official Chapter Event Proposal Dossier &amp; Executive Clearance Record</p>
+                <div class="print-letterhead" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #1a2f63; padding-bottom: 0.85rem; margin-bottom: 1.25rem;">
+                    <div style="display: flex; align-items: center; gap: 0.85rem;">
+                        <img src="assets/images/LOGO.jpg" alt="YTR Logo" style="width: 52px; height: 52px; object-fit: contain; border-radius: 6px; border: 1px solid #cbd5e1; padding: 2px; background: #ffffff; flex-shrink: 0;">
+                        <div>
+                            <h2 style="font-size: 1.25rem; font-weight: 900; color: #1a2f63; margin: 0; text-transform: uppercase; letter-spacing: 0.04em;">YOUTH ON THE ROCK NATIONAL MOVEMENT</h2>
+                            <p style="font-size: 0.78rem; color: #334155; margin: 2px 0 0; text-transform: uppercase; font-weight: 700;">Community-Centric Event Monitoring &amp; Reporting Platform</p>
+                            <p style="font-size: 0.72rem; color: #64748b; margin: 1px 0 0;">Official Chapter Event Proposal Dossier &amp; Executive Clearance Record</p>
+                        </div>
                     </div>
-                    <div style="text-align: right;">
+                    <div style="text-align: right; flex-shrink: 0;">
                         <span id="dossierRefCode" style="display: inline-block; padding: 4px 10px; background: #eff6ff; color: #1e3a8a; font-weight: 800; font-size: 0.78rem; border-radius: 4px; border: 1px solid #bfdbfe;">
                             PROP #YTR-2026-0001
                         </span>
-                        <p id="dossierSubmissionDate" style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">Submitted: Oct 14, 2026</p>
+                        <p id="dossierSubmissionDate" style="font-size: 0.7rem; color: #64748b; margin-top: 4px; font-weight: 600;">Submitted: Oct 14, 2026</p>
                     </div>
                 </div>
 
@@ -571,7 +570,7 @@
 
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+            <div class="print-no-print print-action-bar" style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
                 <button type="button" class="btn btn-outline font-roboto" onclick="closeProposalDossierModal()">Close</button>
                 <button type="button" class="btn btn-primary font-roboto" onclick="window.print()" style="background: #1e3a8a; border-color: #172554;">
                     <i class="ph-bold ph-printer"></i> Print / Save as PDF (Soft Copy)
@@ -857,14 +856,18 @@
         }
 
         async function openProposalDossier(proposalId) {
-            let p = proposalsData.find(item => item.id == proposalId);
-            if (!p) {
-                try {
-                    const res = await YTR_API.proposals.getById(proposalId);
-                    if (res.ok && res.data) p = res.data;
-                } catch(err) {
-                    console.error('Failed to fetch proposal details:', err);
+            let p = null;
+            try {
+                const res = await YTR_API.proposals.getById(proposalId);
+                if ((res.status === 'success' || res.ok) && res.data) {
+                    p = res.data;
                 }
+            } catch(err) {
+                console.warn('API getById failed, using cached proposal data:', err);
+            }
+
+            if (!p) {
+                p = proposalsData.find(item => item.id == proposalId);
             }
 
             if (!p) {
@@ -896,13 +899,14 @@
             let attHtml = '';
 
             if (p.attachment_path) {
+                const fileName = p.attachment_path.split('/').pop() || 'Proposal_Document.pdf';
                 attHtml += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: ${p.drive_link ? '0.75rem' : '0'};">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #ffffff; padding: 0.65rem 0.75rem; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: ${p.drive_link ? '0.65rem' : '0'};>
                         <div>
                             <div style="font-weight: 700; color: #166534;"><i class="ph-bold ph-file-check"></i> Official Proposal Soft Copy Attached</div>
-                            <div style="font-size: 0.72rem; color: #475569; margin-top: 2px;">Verified digital proposal dossier filed with chapter submission.</div>
+                            <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;">File: <strong>${escapeHtml(fileName)}</strong> (Verified chapter submission document)</div>
                         </div>
-                        <a href="${p.attachment_path}" download class="btn btn-primary btn-sm font-roboto print-no-print" style="background: #16a34a; border-color: #15803d; text-decoration: none; padding: 0.4rem 0.75rem;">
+                        <a href="${p.attachment_path}" download class="btn btn-primary btn-sm font-roboto print-no-print" style="background: #16a34a; border-color: #15803d; text-decoration: none; padding: 0.35rem 0.75rem; font-size: 0.78rem;">
                             <i class="ph-bold ph-download-simple"></i> Download File
                         </a>
                     </div>
@@ -934,41 +938,54 @@
 
             if (!p.attachment_path && !p.drive_link) {
                 attHtml = `
-                    <div style="color: #475569; font-style: italic;">
-                        <i class="ph ph-info"></i> No external document or drive link attached. This electronic dossier comprises your complete official proposal record.
+                    <div style="color: #64748b; font-style: italic; font-size: 0.8rem;">
+                        <i class="ph ph-info"></i> No external document or drive link attached. This electronic dossier comprises the complete official proposal record.
                     </div>
                 `;
             }
 
             attInfo.innerHTML = attHtml;
 
-            document.getElementById('dossierSubmitterName').textContent = (currentUser && currentUser.full_name) ? currentUser.full_name : (p.requester_name || 'Chapter Coordinator');
-            document.getElementById('dossierSubmitterTitle').textContent = 'Chapter Administrator';
+            document.getElementById('dossierSubmitterName').textContent = p.requester_name || (currentUser && currentUser.full_name ? currentUser.full_name : 'Chapter Coordinator');
+            document.getElementById('dossierSubmitterTitle').textContent = p.requester_position || 'Chapter Administrator';
             document.getElementById('dossierSubmitterStamp').textContent = 'Verified Chapter Submission';
 
             const statusBadge = document.getElementById('dossierStatusBadge');
             const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
             const isPending = p.status === 'pending_approval';
+
             if (isApproved) {
                 statusBadge.className = 'badge approved font-roboto';
+                statusBadge.style.cssText = 'background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-size: 0.75rem; padding: 3px 8px; font-weight: 800;';
                 statusBadge.textContent = 'OFFICIALLY APPROVED';
+                document.getElementById('dossierReviewerName').textContent = p.reviewer_name || 'Hamilton Jones Dela';
+                document.getElementById('dossierReviewerTitle').textContent = p.reviewer_position || 'Chief Executive Operation';
+                document.getElementById('dossierReviewNotes').textContent = p.review_note ? `Note: "${p.review_note}"` : 'Cleared for Chapter Execution';
             } else if (isPending) {
                 statusBadge.className = 'badge pending font-roboto';
+                statusBadge.style.cssText = 'background: #fef9c3; color: #854d0e; border: 1px solid #fde047; font-size: 0.75rem; padding: 3px 8px; font-weight: 800;';
                 statusBadge.textContent = 'PENDING NATIONAL REVIEW';
+                document.getElementById('dossierReviewerName').textContent = 'Pending Review Clearance';
+                document.getElementById('dossierReviewerTitle').textContent = 'National Secretariat Review Board';
+                document.getElementById('dossierReviewNotes').textContent = 'Official review pending by National Secretariat';
             } else {
                 statusBadge.className = 'badge rose font-roboto';
+                statusBadge.style.cssText = 'background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; font-size: 0.75rem; padding: 3px 8px; font-weight: 800;';
                 statusBadge.textContent = 'REVISION REQUESTED';
+                document.getElementById('dossierReviewerName').textContent = p.reviewer_name || 'National Secretariat';
+                document.getElementById('dossierReviewerTitle').textContent = p.reviewer_position || 'Executive Reviewer';
+                document.getElementById('dossierReviewNotes').textContent = p.review_note ? `Revision Note: "${p.review_note}"` : 'Action requested prior to endorsement';
             }
 
-            document.getElementById('dossierReviewerName').textContent = p.reviewer_name || 'Hamilton Jones Dela';
-            document.getElementById('dossierReviewerTitle').textContent = p.reviewer_position || 'Chief Executive Operation';
-            document.getElementById('dossierReviewNotes').textContent = p.review_note ? `Note: "${p.review_note}"` : (isApproved ? 'Cleared for Chapter Execution' : 'Awaiting Review Outcome');
-
-            document.getElementById('proposalDossierModal').style.display = 'flex';
+            const modal = document.getElementById('proposalDossierModal');
+            modal.classList.add('open');
+            modal.style.display = 'flex';
         }
 
         function closeProposalDossierModal() {
-            document.getElementById('proposalDossierModal').style.display = 'none';
+            const modal = document.getElementById('proposalDossierModal');
+            modal.classList.remove('open');
+            modal.style.display = 'none';
         }
 
         function escapeHtml(str) {

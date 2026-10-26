@@ -41,6 +41,9 @@ switch ($action) {
         $sql = "
             SELECT e.id, e.chapter_id, e.title, e.description, e.event_type,
                    e.start_datetime, e.end_datetime, e.venue, e.status,
+                   e.ytr_program, e.target_audience,
+                   e.target_turnout, e.budget_amount, e.budget_threshold, e.due_date,
+                   e.attachment_path, e.drive_link,
                    e.created_at, e.review_note,
                    c.chapter_name, c.chapter_code,
                    u.full_name AS requester_name
