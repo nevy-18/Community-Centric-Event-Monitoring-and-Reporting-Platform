@@ -269,7 +269,7 @@
           </div>
           <div>
             <h3 style="color: #166534; margin: 0; font-size: 1rem;">Assign Regional Director</h3>
-            <p style="color: #15803d; margin: 0; font-size: 0.75rem;">Designate official Regional Director for chapter report endorsement and print certification.</p>
+            <p style="color: #15803d; margin: 0; font-size: 0.75rem;">Chief Executive Operation Authorization · Designate official Regional Director for chapter report endorsement and print certification.</p>
           </div>
         </div>
         <button type="button" onclick="closeAssignDirectorModal()"><i class="ph ph-x"></i></button>
@@ -718,9 +718,15 @@
             </td>
             <td style="text-align: center;"><span class="badge approved font-roboto">ACTIVE</span></td>
             <td style="text-align: center;">
-              <button class="btn btn-outline font-roboto" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; margin: 0 auto; display: inline-flex; align-items: center; gap: 0.35rem;" onclick='openAssignDirectorModal(${JSON.stringify(ch)})'>
-                <i class="ph ph-pencil-simple"></i> Assign Director
-              </button>
+              ${isChiefExecutiveUser() ? `
+                <button class="btn btn-outline font-roboto" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; margin: 0 auto; display: inline-flex; align-items: center; gap: 0.35rem;" onclick='openAssignDirectorModal(${JSON.stringify(ch)})'>
+                  <i class="ph ph-pencil-simple"></i> Assign Director
+                </button>
+              ` : `
+                <button class="btn btn-outline font-roboto" disabled title="Only the Chief Executive Operation can assign Regional Directors" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; margin: 0 auto; display: inline-flex; align-items: center; gap: 0.35rem; opacity: 0.55; cursor: not-allowed; background: #f8fafc; color: #94a3b8; border-color: #cbd5e1;">
+                  <i class="ph-bold ph-lock-key"></i> Restricted (CEO Only)
+                </button>
+              `}
             </td>
           `;
           tbody.appendChild(row);
@@ -730,6 +736,10 @@
 
     // Modal Handlers for Regional Director Assignment
     function openAssignDirectorModal(ch) {
+      if (!isChiefExecutiveUser()) {
+        alert('Access Denied: Only the Chief Executive Operation can assign Regional Directors for chapters.');
+        return;
+      }
       document.getElementById('assignDirectorChapterId').value = ch.id;
       document.getElementById('assignDirectorChapterTitle').textContent = ch.chapter_name + ` (${ch.chapter_code})`;
       document.getElementById('assignDirectorChapterRegion').textContent = `${ch.region || 'Region'} · ${ch.province || ''} · ${ch.city_municipality || ''}`;
@@ -764,6 +774,10 @@
     }
 
     async function saveDirectorAssignment() {
+      if (!isChiefExecutiveUser()) {
+        alert('Access Denied: Only the Chief Executive Operation can assign Regional Directors for chapters.');
+        return;
+      }
       const chId = document.getElementById('assignDirectorChapterId').value;
       const dirName = document.getElementById('assignDirectorNameInput').value.trim();
       const btn = document.getElementById('btnSaveDirectorAssignment');
@@ -1748,19 +1762,24 @@
       }
     });
 
-    function checkExecutiveAccess() {
+    function isChiefExecutiveUser() {
       try {
         const rawUser = localStorage.getItem('ytr_user');
         if (rawUser) {
           const u = JSON.parse(rawUser);
           const ceoPositions = ['Chief Executive Operation', 'Chief Executive Officer', 'CEO', 'Chief Executive'];
-          const isCEO = ceoPositions.includes(u.position) || u.email === 'admin@ytr.org';
-          const manageExecDropdown = document.getElementById('manageExecutiveDropdown');
-          if (manageExecDropdown) {
-            manageExecDropdown.style.display = isCEO ? 'inline-block' : 'none';
-          }
+          return (u.position && ceoPositions.includes(u.position.trim())) || (u.email && u.email.toLowerCase() === 'admin@ytr.org');
         }
       } catch (e) {}
+      return false;
+    }
+
+    function checkExecutiveAccess() {
+      const isCEO = isChiefExecutiveUser();
+      const manageExecDropdown = document.getElementById('manageExecutiveDropdown');
+      if (manageExecDropdown) {
+        manageExecDropdown.style.display = isCEO ? 'inline-block' : 'none';
+      }
     }
 
     // Initialize on page load
