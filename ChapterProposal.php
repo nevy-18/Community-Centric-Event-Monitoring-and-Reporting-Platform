@@ -901,7 +901,7 @@
             if (p.attachment_path) {
                 const fileName = p.attachment_path.split('/').pop() || 'Proposal_Document.pdf';
                 attHtml += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #ffffff; padding: 0.65rem 0.75rem; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: ${p.drive_link ? '0.65rem' : '0'};>
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #ffffff; padding: 0.65rem 0.75rem; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: ${p.drive_link ? '0.65rem' : '0'};">
                         <div>
                             <div style="font-weight: 700; color: #166534;"><i class="ph-bold ph-file-check"></i> Official Proposal Soft Copy Attached</div>
                             <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;">File: <strong>${escapeHtml(fileName)}</strong> (Verified chapter submission document)</div>

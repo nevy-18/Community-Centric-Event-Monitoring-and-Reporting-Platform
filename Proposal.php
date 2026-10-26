@@ -113,6 +113,11 @@
         box-shadow: none !important;
         background: transparent !important;
       }
+      #proposalDossierModal .modal-body {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+      }
 
       #printableProposalDossier {
         display: block !important;
@@ -460,9 +465,12 @@
         </div>
 
       </main>
+    </div> <!-- /.main-wrapper -->
+  </div> <!-- /.app-wrapper -->
+
   <!-- PROPOSAL DOSSIER & SOFT COPY MODAL -->
-  <div id="proposalDossierModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box" style="max-width: 820px;">
+  <div id="proposalDossierModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1050; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div class="modal-box" style="max-width: 820px; width: 100%; max-height: 90vh; overflow-y: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
       <div class="modal-header print-no-print">
         <h3 class="font-roboto" style="font-size: 1.1rem; color: #0f172a; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
           <i class="ph-bold ph-file-text" style="color: #2563eb;"></i> Official Event Proposal Dossier (Soft Copy)
@@ -587,9 +595,9 @@
           </div>
 
           <!-- Section 5: Official Endorsements & Evaluation Block -->
-          <div class="print-signatures-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
+          <div class="print-signatures-row" style="display: flex; justify-content: space-between; gap: 3rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 2px solid #1a2f63;">
             <!-- Prepared By -->
-            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 95px; text-align: left;">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; min-height: 95px; text-align: left;">
               <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
                 Prepared &amp; Submitted by:
               </div>
@@ -603,7 +611,7 @@
             </div>
 
             <!-- Evaluated By -->
-            <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 95px; text-align: left;">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; min-height: 95px; text-align: left;">
               <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
                 National Secretariat Evaluation:
               </div>
@@ -777,10 +785,14 @@
             `;
             tbody.appendChild(row);
 
-            if (idx === 0 && !activeProposalId) {
-              selectProposalRecord(p);
-            }
           });
+
+          if (allProposalsData.length > 0) {
+            const currentExists = allProposalsData.some(p => p.id === activeProposalId);
+            if (!activeProposalId || !currentExists) {
+              selectProposalRecord(allProposalsData[0]);
+            }
+          }
         } else {
           tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #ef4444;"><i class="ph ph-warning-circle" style="font-size: 1.5rem; margin-bottom: 0.25rem;"></i><br>' + (res.message || 'Unable to load proposals from backend.') + '</td></tr>';
         }
@@ -1025,6 +1037,10 @@
     async function openProposalDossier(proposalId) {
       const pid = proposalId || activeProposalId;
       if (!pid) {
+        if (allProposalsData && allProposalsData.length > 0) {
+          selectProposalRecord(allProposalsData[0]);
+          return openProposalDossier(allProposalsData[0].id);
+        }
         alert('Please select a proposal first.');
         return;
       }
@@ -1076,7 +1092,7 @@
       if (p.attachment_path) {
         const fileName = p.attachment_path.split('/').pop() || 'Proposal_Document.pdf';
         attHtml += `
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #ffffff; padding: 0.65rem 0.75rem; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: ${p.drive_link ? '0.65rem' : '0'};>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: #ffffff; padding: 0.65rem 0.75rem; border-radius: 6px; border: 1px solid #bbf7d0; margin-bottom: ${p.drive_link ? '0.65rem' : '0'};">
             <div>
               <div style="font-weight: 700; color: #166534;"><i class="ph-bold ph-file-check"></i> Official Proposal Soft Copy Attached</div>
               <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;">File: <strong>${escapeHtml(fileName)}</strong> (Verified chapter submission document)</div>
