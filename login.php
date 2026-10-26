@@ -190,13 +190,11 @@
 
               <div class="field" id="chapterField">
 
-                <label for="chapterName">Chapter</label>
+                <label for="chapterName">Partner Chapter</label>
 
                 <select id="chapterName" name="chapter_id">
 
-                  <option value="" selected disabled>Select your chapter</option>
-
-                  <option value="chapter_to_be_configured">Other / Not listed</option>
+                  <option value="1" selected>Laguna Chapter partner Chapter</option>
 
                 </select>
 

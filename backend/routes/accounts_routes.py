@@ -110,8 +110,8 @@ def approve_account(user_id):
     if role not in ['national_admin', 'chapter_admin']:
         return api_error('Invalid role specified.', 400)
 
-    if role == 'chapter_admin' and not chapter_id:
-        return api_error('Chapter Admin accounts must be assigned to a valid chapter.', 400)
+    if role == 'chapter_admin':
+        chapter_id = 1  # Always assign to Laguna Chapter (Partner Chapter)
 
     if not position:
         position = 'Executive Director' if role == 'national_admin' else 'Chapter Coordinator'

@@ -88,7 +88,7 @@
                 <div>
                   <h5 class="metric-title font-roboto">Chapter Admins</h5>
                   <p class="metric-value font-roboto" id="metricChapter">...</p>
-                  <p class="metric-sub font-roboto">Manage assigned chapters</p>
+                  <p class="metric-sub font-roboto">Laguna Chapter partner Chapter</p>
                 </div>
               </div>
             </div>
@@ -117,7 +117,7 @@
                     <tr>
                       <th>Applicant</th>
                       <th>Email</th>
-                      <th>Chapter</th>
+                      <th>Partner Chapter</th>
                       <th style="text-align: center;">Requested Role</th>
                       <th>Date Requested</th>
                       <th style="text-align: center;">Status</th>
@@ -163,7 +163,7 @@
 
               <div class="review-details">
                 <div class="review-detail-group">
-                  <label class="font-roboto"><i class="ph-fill ph-flag"></i> Chapter</label>
+                  <label class="font-roboto"><i class="ph-fill ph-buildings"></i> Partner Chapter</label>
                   <p class="font-roboto" id="reviewUserChapter">--</p>
                 </div>
                 <div class="review-detail-group">
@@ -228,10 +228,12 @@
               </div>
 
               <div class="form-group" id="assignChapterGroup">
-                <label class="form-label font-roboto">Assign Chapter</label>
-                <select class="form-select font-roboto" id="assignChapterSelect" onchange="handleChapterSelectChange()">
-                  <option value="">Loading chapters...</option>
-                </select>
+                <label class="form-label font-roboto">Partner Chapter</label>
+                <div style="display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.85rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #1e40af;">
+                  <i class="ph-fill ph-buildings" style="font-size: 1.15rem; color: #2563eb;"></i>
+                  <span>Laguna Chapter partner Chapter</span>
+                  <input type="hidden" id="assignChapterSelect" value="1">
+                </div>
               </div>
 
               <div class="button-group">
@@ -552,16 +554,12 @@
     // Load Chapters for Dropdown
     async function loadChapterOptions() {
       const res = await YTR_API.chapters.getAll();
-      const select = document.getElementById('assignChapterSelect');
       if (res.status === 'success' && Array.isArray(res.data)) {
         chaptersList = res.data;
-        select.innerHTML = '<option value="">Select Chapter (for Chapter Admin)</option>';
-        res.data.forEach(ch => {
-          const opt = document.createElement('option');
-          opt.value = ch.id;
-          opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
-          select.appendChild(opt);
-        });
+        const select = document.getElementById('assignChapterSelect');
+        if (select && select.tagName === 'SELECT') {
+          select.innerHTML = '<option value="1" selected>Laguna Chapter partner Chapter</option>';
+        }
       }
     }
 
@@ -575,7 +573,7 @@
           <tr>
             <th>Applicant</th>
             <th>Email</th>
-            <th>Chapter</th>
+            <th>Partner Chapter</th>
             <th style="text-align: center;">Requested Role</th>
             <th>Date Requested</th>
             <th style="text-align: center;">Status</th>
@@ -633,7 +631,7 @@
               </div>
             </td>
             <td class="td-sub">${escapeHtml(user.email)}</td>
-            <td class="td-sub">${escapeHtml(user.chapter_name || 'National HQ')}</td>
+            <td class="td-sub">${user.role === 'national_admin' ? 'National HQ' : 'Laguna Chapter partner Chapter'}</td>
             <td style="text-align: center;">
               <span class="${roleBadgeClass} font-roboto">${roleLabel}</span>
               ${user.position ? `<div style="font-size: 0.72rem; color: #475569; font-weight: 600; margin-top: 3px;"><i class="ph ph-identification-badge"></i> ${escapeHtml(user.position)}</div>` : ''}
@@ -672,7 +670,7 @@
       if (thead) {
         thead.innerHTML = `
           <tr>
-            <th>Chapter Branch</th>
+            <th>Partner Chapter</th>
             <th>Chapter Code</th>
             <th>Region / Province</th>
             <th>Assigned Regional Director</th>
@@ -950,6 +948,8 @@
         lblChap.title = '';
       }
       if (chGroup) chGroup.style.display = 'block';
+      const chSelect = document.getElementById('assignChapterSelect');
+      if (chSelect) chSelect.value = '1';
     }
 
     function lockRoleToNational(reason = 'Account requested for National HQ') {
@@ -1074,15 +1074,13 @@
       if (isChapter) {
         lockRoleToChapter('Account requested for Chapter');
         populatePositionOptions('chapter_admin', user.position);
-        if (user.chapter_id && chSelect) {
-          chSelect.value = user.chapter_id;
-        }
+        document.getElementById('reviewUserChapter').textContent = 'Laguna Chapter partner Chapter';
+        if (chSelect) chSelect.value = '1';
       } else {
         lockRoleToNational('Account requested for National HQ');
         populatePositionOptions('national_admin', user.position);
-        if (chSelect) {
-          chSelect.value = '';
-        }
+        document.getElementById('reviewUserChapter').textContent = 'National HQ';
+        if (chSelect) chSelect.value = '';
       }
       const approveBtn = document.getElementById('btnApprove');
       const declineBtn = document.getElementById('btnDecline');
@@ -1112,23 +1110,22 @@
       const position = document.getElementById('assignPositionSelect').value;
       const chapterId = document.getElementById('assignChapterSelect').value;
 
+      let finalChapterId = null;
       if (role === 'chapter_admin') {
-        if (!chapterId) {
-          alert('Please select an assigned chapter for Chapter Admin role.');
-          return;
-        }
+        finalChapterId = 1; // Always Laguna Chapter partner Chapter
         if (!CHAPTER_ROLES.includes(position)) {
           alert('Please select a valid Chapter position for Chapter Admin role.');
           return;
         }
       } else if (role === 'national_admin') {
+        finalChapterId = null;
         if (!NATIONAL_POSITIONS.includes(position)) {
           alert('Please select a valid National position for National Admin role.');
           return;
         }
       }
 
-      const res = await YTR_API.accounts.approve(selectedUserId, role, role === 'national_admin' ? null : chapterId, position);
+      const res = await YTR_API.accounts.approve(selectedUserId, role, finalChapterId, position);
       if (res.status === 'success') {
         alert('Account saved / approved successfully!');
         loadMetrics();

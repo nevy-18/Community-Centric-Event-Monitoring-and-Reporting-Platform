@@ -114,11 +114,12 @@ const loginTab = document.getElementById('loginTab');
       try {
         const result = window.YTR_API ? await YTR_API.chapters.getAll() : await (await fetch('https://ytr-platform-y99r.onrender.com/api/chapters')).json();
         if (result.status === 'success' && Array.isArray(result.data)) {
-          chapterName.innerHTML = '<option value="" selected disabled>Select your chapter</option>';
+          chapterName.innerHTML = '';
           result.data.forEach(ch => {
             const opt = document.createElement('option');
             opt.value = ch.id;
-            opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
+            opt.textContent = ch.chapter_name + ' partner Chapter';
+            if (Number(ch.id) === 1) opt.selected = true;
             chapterName.appendChild(opt);
           });
         }
