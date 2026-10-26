@@ -177,13 +177,7 @@
               </div>
 
               <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                  <label class="form-label font-roboto" style="margin-bottom: 0;">Assign Role &amp; Tier</label>
-                  <div style="display: flex; align-items: center; gap: 0.35rem;">
-                    <span id="roleRequestedBadge" style="display: none; font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; font-weight: 600;"></span>
-                    <a href="#" id="linkReassignTier" onclick="toggleRoleTierOverride(event)" style="display: none; font-size: 0.72rem; color: #2563eb; text-decoration: underline; font-weight: 600;">Change Tier</a>
-                  </div>
-                </div>
+                <label class="form-label font-roboto">Assign Role &amp; Tier</label>
                 <div class="radio-group font-roboto">
                   <label class="radio-label" id="labelRoleNational">
                     <input type="radio" name="assign_role" id="roleNational" value="national_admin" onchange="syncRolePositionOptions('national_admin')"> National Admin
@@ -900,28 +894,6 @@
       if (chSelect) chSelect.value = '';
     }
 
-    function toggleRoleTierOverride(e) {
-      if (e && e.preventDefault) e.preventDefault();
-      const rNat = document.getElementById('roleNational');
-      const rChap = document.getElementById('roleChapter');
-      const lblNat = document.getElementById('labelRoleNational');
-      const lblChap = document.getElementById('labelRoleChapter');
-      const badge = document.getElementById('roleRequestedBadge');
-      const link = document.getElementById('linkReassignTier');
-
-      if (rNat) rNat.disabled = false;
-      if (rChap) rChap.disabled = false;
-      if (lblNat) { lblNat.style.opacity = '1'; lblNat.style.cursor = 'pointer'; lblNat.title = ''; }
-      if (lblChap) { lblChap.style.opacity = '1'; lblChap.style.cursor = 'pointer'; lblChap.title = ''; }
-      if (badge) {
-        badge.textContent = 'Tier Unlocked';
-        badge.style.color = '#b45309';
-        badge.style.background = '#fef3c7';
-        badge.style.border = '1px solid #fde68a';
-      }
-      if (link) link.style.display = 'none';
-    }
-
     function syncRolePositionOptions(role, selectedPosition = null) {
       const chGroup = document.getElementById('assignChapterGroup');
       const posSelect = document.getElementById('assignPositionSelect');
@@ -963,8 +935,6 @@
       document.getElementById('reviewUserRole').textContent = (user.position ? user.position + ' • ' : '') + (user.role === 'national_admin' ? 'National Admin' : 'Chapter Admin');
       document.getElementById('reviewUserReason').textContent = `Account request submitted for ${user.full_name} (${user.email}). Position: ${user.position || 'Not specified'}. Review authorization and confirm chapter assignment below.`;
 
-      const badge = document.getElementById('roleRequestedBadge');
-      const link = document.getElementById('linkReassignTier');
       const chSelect = document.getElementById('assignChapterSelect');
 
       // Determine if account requested/belongs to a chapter
@@ -975,39 +945,16 @@
       if (isChapter) {
         lockRoleToChapter('Account requested for Chapter');
         populatePositionOptions('chapter_admin', user.position);
-        if (badge) {
-          badge.style.display = 'inline-block';
-          badge.textContent = 'Chapter Account';
-          badge.style.color = '#047857';
-          badge.style.background = '#ecfdf5';
-          badge.style.border = '1px solid #a7f3d0';
-        }
-        if (link) {
-          link.style.display = 'inline-block';
-          link.textContent = 'Change Tier';
-        }
         if (user.chapter_id && chSelect) {
           chSelect.value = user.chapter_id;
         }
       } else {
         lockRoleToNational('Account requested for National HQ');
         populatePositionOptions('national_admin', user.position);
-        if (badge) {
-          badge.style.display = 'inline-block';
-          badge.textContent = 'National Account';
-          badge.style.color = '#1e40af';
-          badge.style.background = '#eff6ff';
-          badge.style.border = '1px solid #bfdbfe';
-        }
-        if (link) {
-          link.style.display = 'inline-block';
-          link.textContent = 'Change Tier';
-        }
         if (chSelect) {
           chSelect.value = '';
         }
       }
-
       const approveBtn = document.getElementById('btnApprove');
       const declineBtn = document.getElementById('btnDecline');
 
