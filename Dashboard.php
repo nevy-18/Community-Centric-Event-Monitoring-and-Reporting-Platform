@@ -10,7 +10,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- Centralized CSS -->
-  <link rel="stylesheet" href="assets/National.css">
+  <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
   <script src="assets/api-client.js"></script>
 </head>
 <body>
@@ -93,7 +93,7 @@
                 Sorted by deadline urgency. Once submitted and validated, events are automatically cleared from the active action list.
               </p>
             </div>
-            <div class="search-bar" style="margin: 0; min-width: 260px;">
+            <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
               <i class="ph ph-magnifying-glass"></i>
               <input type="text" id="chapter-search" class="font-roboto" placeholder="Search Chapter, Event, or Region..." oninput="filterChapterTable()">
             </div>

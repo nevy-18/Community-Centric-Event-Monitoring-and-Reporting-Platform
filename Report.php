@@ -9,7 +9,7 @@
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
-  <link rel="stylesheet" href="assets/National.css">
+  <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
   <style>
     /* Modal styles */
     .modal-overlay {

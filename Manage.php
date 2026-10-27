@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YTR | Manage Accounts</title>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" href="assets/National.css">
+  <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
 </head>
 <body>
   <div class="app-wrapper">

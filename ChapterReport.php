@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
   
   <!-- Centralized CSS -->
-  <link rel="stylesheet" href="assets/Chapter.css">
+  <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
   <script src="assets/api-client.js"></script>
   <style>
     @media print {
@@ -338,7 +338,7 @@
               <h2 class="font-roboto" style="color: var(--primary); font-size: 1.25rem; font-weight: bold; margin: 0;">My Chapter Submitted Reports</h2>
               <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.25rem 0 0;">Historical record of event evaluations, turnout performance, and e-signatures.</p>
             </div>
-            <div class="search-bar" style="margin: 0; min-width: 240px;">
+            <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
               <i class="ph ph-magnifying-glass"></i>
               <input type="text" id="report-search" placeholder="Search event title..." oninput="filterReportsTable()">
             </div>

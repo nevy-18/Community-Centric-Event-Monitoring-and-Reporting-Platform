@@ -1,3 +1,317 @@
+<style>
+/* ============================================================
+   GLOBAL ANTI-CRAMP & NO-SCROLL RESPONSIVE STYLES
+   Bypasses external cache: guarantees zero cramping & zero horizontal scroll
+   ============================================================ */
+html, body {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+.app-wrapper, .main-wrapper, .page-content {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+/* TOPBAR ANTI-CRAMP */
+.topbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  padding: 0 1.25rem !important;
+  gap: 0.75rem !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+.topbar-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  flex-shrink: 0 !important;
+}
+.role-badge {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  padding: 0.25rem 0.65rem !important;
+  border-radius: 9999px !important;
+  max-width: 140px !important;
+  flex-shrink: 0 !important;
+}
+.topbar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  flex-shrink: 0 !important;
+}
+.profile-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 0.2rem 0.4rem !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+}
+.profile-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 800 !important;
+  font-size: 0.85rem !important;
+}
+.profile-info {
+  display: flex !important;
+  flex-direction: column !important;
+  text-align: left !important;
+  min-width: 0 !important;
+  max-width: 150px !important;
+  overflow: hidden !important;
+}
+.profile-info h4 {
+  margin: 0 !important;
+  font-size: 0.825rem !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.25 !important;
+  color: #0f172a !important;
+}
+.profile-info p {
+  margin: 0 !important;
+  font-size: 0.68rem !important;
+  color: #64748b !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.2 !important;
+}
+
+/* TABLET & MOBILE VIEW (<= 900px):
+   ELIMINATE CRAMPED TOPBAR: HIDE USERNAME & ROLE BADGE ON SMALL SCREENS.
+   Only Show Hamburger, Logo, Bell, and Circular Avatar */
+@media (max-width: 900px) {
+  .topbar {
+    padding: 0 0.75rem !important;
+    height: 56px !important;
+  }
+  .role-badge {
+    display: none !important; /* HIDE CRAMPED BADGE */
+  }
+  .profile-info {
+    display: none !important; /* HIDE CRAMPED PROFILE TEXT */
+  }
+  .profile-btn {
+    padding: 0 !important;
+    gap: 0.35rem !important;
+  }
+  .topbar-icons {
+    display: flex !important;
+    border-right: none !important;
+    padding-right: 0 !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* ============================================================
+   MOBILE NO-SCROLL TABLES & TABS (<= 900px)
+   ============================================================ */
+@media (max-width: 900px) {
+  /* 1. NO-SCROLL TABS: WRAP CLEANLY INSTEAD OF HORIZONTAL SCROLL */
+  .tabs-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    gap: 0.4rem !important;
+    padding: 0 !important;
+    border-bottom: none !important;
+    width: 100% !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .tab-btn {
+    flex: 1 1 auto !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.8rem !important;
+    border-radius: 8px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+  }
+  .tab-btn.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+    font-weight: 700 !important;
+  }
+  .tab-controls-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+  .filters, .search-bar {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .search-bar input {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* 2. NO-SCROLL TABLES: STACKED RESPONSIVE CARDS */
+  .table-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+  .table-responsive {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .table-responsive table:not(.printable-table) {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .table-responsive table:not(.printable-table) thead {
+    display: none !important;
+  }
+  .table-responsive table:not(.printable-table) tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.85rem !important;
+    width: 100% !important;
+  }
+  .table-responsive table:not(.printable-table) tr {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    padding: 1rem 1.15rem !important;
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.08) !important;
+    box-sizing: border-box !important;
+    margin-bottom: 0 !important;
+  }
+  .table-responsive table:not(.printable-table) td[colspan] {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 2.25rem 1rem !important;
+    border: none !important;
+  }
+  .table-responsive table:not(.printable-table) td[colspan]::before {
+    display: none !important;
+  }
+  .table-responsive table:not(.printable-table) td:not([colspan]) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.55rem 0 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    border-top: none !important;
+    font-size: 0.835rem !important;
+    text-align: right !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 0.75rem !important;
+  }
+  .table-responsive table:not(.printable-table) td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    text-align: left !important;
+    margin-right: auto !important;
+    flex-shrink: 0 !important;
+  }
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan]) {
+    padding-top: 0 !important;
+    padding-bottom: 0.75rem !important;
+    border-bottom: 1.5px solid #e2e8f0 !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan])::before {
+    display: none !important;
+  }
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan]) .td-user {
+    width: 100% !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    padding-top: 0.85rem !important;
+    justify-content: stretch !important;
+    margin-top: 0.25rem !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan])::before {
+    display: none !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) .btn,
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) a.btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) > div {
+    width: 100% !important;
+    display: flex !important;
+    gap: 0.5rem !important;
+    justify-content: stretch !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) > div > .btn {
+    flex: 1 1 auto !important;
+  }
+
+  /* 3. MODALS RESPONSIVENESS */
+  .modal-overlay {
+    padding: 0.5rem !important;
+  }
+  .modal-md, .modal-xl, .modal-lg, .modal-card, .modal-flush-dialog, .modal-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 94dvh !important;
+    margin: 0 !important;
+  }
+  .modal-body-scroll {
+    max-height: calc(94dvh - 120px) !important;
+  }
+}
+</style>
+
 <header class="topbar">
   <div class="topbar-left font-roboto" style="display: flex; align-items: center; gap: 0.65rem;">
     <button id="mobile-menu-btn" class="mobile-menu-btn"><i class="ph ph-list"></i></button>

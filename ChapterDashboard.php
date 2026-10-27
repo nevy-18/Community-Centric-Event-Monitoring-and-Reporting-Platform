@@ -10,7 +10,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- Centralized CSS -->
-  <link rel="stylesheet" href="assets/Chapter.css">
+  <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
   <script src="assets/api-client.js"></script>
 </head>
 <body>
@@ -108,7 +108,7 @@
                     <h2 class="font-roboto" style="color: var(--primary); font-size: 1.25rem; font-weight: bold; margin: 0;">Centralized Activity & Pending Monitoring</h2>
                     <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.25rem 0 0;">Monitor proposals, poster pipelines, attendance thresholds, and post-event deadlines.</p>
                   </div>
-                  <div class="search-bar" style="margin: 0; min-width: 220px;">
+                  <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
                     <i class="ph ph-magnifying-glass"></i>
                     <input type="text" id="chapter-events-search" class="font-roboto" placeholder="Search event or topic..." oninput="renderMonitoringTable()">
                   </div>

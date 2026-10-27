@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter Event Proposals | YTR Portal</title>
-    <link rel="stylesheet" href="assets/Chapter.css">
+    <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="assets/api-client.js"></script>
     <style>
@@ -235,7 +235,7 @@
                         <button class="tab-btn" id="tab-revision" onclick="filterByStatus('draft', this)"><i class="ph ph-warning-circle"></i> Needs Revision</button>
                     </div>
                     <div class="filters">
-                        <div class="search-bar" style="margin: 0; min-width: 240px;">
+                        <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
                             <i class="ph ph-magnifying-glass"></i>
                             <input type="text" id="proposal-search" placeholder="Search event title..." oninput="handleSearch()">
                         </div>

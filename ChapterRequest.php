@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter Poster Requests | YTR Portal</title>
-    <link rel="stylesheet" href="assets/Chapter.css">
+    <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
     <!-- Include Phosphor Icons for icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="assets/api-client.js"></script>
@@ -97,7 +97,7 @@
                         </button>
                     </div>
                     <div class="filters">
-                        <div class="search-bar" style="margin: 0; min-width: 240px;">
+                        <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
                             <i class="ph ph-magnifying-glass"></i>
                             <input type="text" id="poster-search" placeholder="Search event title..." oninput="handleSearch()">
                         </div>

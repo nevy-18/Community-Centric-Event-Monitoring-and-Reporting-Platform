@@ -11,9 +11,9 @@
   
   <!-- Centralized CSS based on Role -->
   <?php if ($is_chapter_admin): ?>
-    <link rel="stylesheet" href="assets/Chapter.css">
+    <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
   <?php else: ?>
-    <link rel="stylesheet" href="assets/National.css">
+    <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
   <?php endif; ?>
   <script src="assets/api-client.js"></script>
 
