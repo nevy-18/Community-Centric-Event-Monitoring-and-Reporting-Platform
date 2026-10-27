@@ -51,11 +51,8 @@
           </div>
         </div>
 
-        <!-- 2-Column Responsive Layout -->
-        <div class="two-column-layout">
-          
-          <!-- LEFT COLUMN (Metrics & Table) -->
-          <div class="layout-main">
+        <!-- Full Width Layout -->
+        <div class="layout-main" style="width: 100%;">
             
             <!-- Metrics -->
             <div class="metrics-grid">
@@ -136,127 +133,132 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN (Review Panel) -->
-          <div class="layout-sidebar">
-            <h2 class="review-panel-title font-roboto">Review</h2>
-
-            <!-- Card 1: Account Access Request -->
-            <div class="review-card">
-              <div class="review-header">
-                <div class="review-header-icon"><i class="ph-fill ph-user"></i></div>
-                <div class="review-header-text">
-                  <h4 class="font-roboto">Account Access Request</h4>
-                  <p>Review the details and approve or reject this account request.</p>
-                </div>
-              </div>
-
-              <div class="review-user-info">
-                <div class="review-user-profile">
-                  <img src="https://placehold.co/40x40/e2e8f0/64748b" alt="User Avatar">
-                  <div>
-                    <h5 class="font-roboto" id="reviewUserName">Select an account</h5>
-                    <p id="reviewUserEmail">Click "Review" on any account</p>
-                  </div>
-                </div>
-                <span class="badge pending font-roboto" id="reviewUserBadge">--</span>
-              </div>
-
-              <div class="review-details">
-                <div class="review-detail-group">
-                  <label class="font-roboto"><i class="ph-fill ph-buildings"></i> Partner Chapter</label>
-                  <p class="font-roboto" id="reviewUserChapter">--</p>
-                </div>
-                <div class="review-detail-group">
-                  <label class="font-roboto"><i class="ph-fill ph-user-circle"></i> Requested Role</label>
-                  <p class="font-roboto" id="reviewUserRole">--</p>
-                </div>
-                <div class="review-detail-group">
-                  <label class="font-roboto"><i class="ph-fill ph-file-text"></i> Reason for Request</label>
-                  <div class="reason-box font-roboto" id="reviewUserReason">
-                    Select a user from the table to view their account details, assign role, and review access.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card 2: Access & Role -->
-            <div class="review-card">
-              <div class="review-header">
-                <div class="review-header-icon"><i class="ph-fill ph-shield-check"></i></div>
-                <div class="review-header-text">
-                  <h4 class="font-roboto">Access & Role</h4>
-                  <p>Manage user permissions, security clearance level, and account access controls.</p>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
-                  <label class="form-label font-roboto" style="margin-bottom: 0;">Assign Role &amp; Tier</label>
-                  <label style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; color: #1e40af; cursor: pointer; user-select: none; font-weight: 600;" title="Enable to override requested tier and assign either National Admin or Chapter Admin">
-                    <input type="checkbox" id="chkRoleOverride" onchange="handleRoleOverrideToggle(this.checked)" style="accent-color: #2563eb; cursor: pointer;">
-                    <i class="ph-bold ph-sliders"></i> Override Role
-                  </label>
-                </div>
-                <div class="radio-group font-roboto">
-                  <label class="radio-label" id="labelRoleNational">
-                    <input type="radio" name="assign_role" id="roleNational" value="national_admin" onchange="syncRolePositionOptions('national_admin')"> National Admin
-                  </label>
-                  <label class="radio-label" id="labelRoleChapter">
-                    <input type="radio" name="assign_role" id="roleChapter" value="chapter_admin" checked onchange="syncRolePositionOptions('chapter_admin')"> Chapter Admin
-                  </label>
-                </div>
-                <div id="overrideNotice" style="display: none; margin-top: 0.45rem; padding: 0.4rem 0.65rem; background: #eff6ff; border: 1px dashed #93c5fd; border-radius: 6px; font-size: 0.72rem; color: #1e40af; line-height: 1.4;">
-                  <i class="ph-bold ph-info"></i> <strong>Role Override Active:</strong> You can assign this account to either <strong>National Admin</strong> or <strong>Chapter Admin</strong>.
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label font-roboto">Specific Position / Title</label>
-                <select class="form-select font-roboto" id="assignPositionSelect" onchange="handlePositionSelectChange()">
-                  <optgroup label="── CHAPTER POSITIONS ──" id="optGrpChapter">
-                    <option value="Chapter Coordinator">Chapter Coordinator</option>
-                    <option value="Chapter President">Chapter President</option>
-                    <option value="Regional Director (Chapter)">Regional Director (Chapter)</option>
-                  </optgroup>
-                  <optgroup label="── NATIONAL POSITIONS ──" id="optGrpNational">
-                    <option value="Chief Executive Operation">Chief Executive Operation</option>
-                    <option value="Executive Director">Executive Director</option>
-                    <option value="Regional Director (National)">Regional Director (National)</option>
-                    <option value="National Youth Officer">National Youth Officer</option>
-                  </optgroup>
-                </select>
-              </div>
-
-              <div class="form-group" id="assignChapterGroup">
-                <label class="form-label font-roboto">Partner Chapter</label>
-                <div style="display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.85rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #1e40af;">
-                  <i class="ph-fill ph-buildings" style="font-size: 1.15rem; color: #2563eb;"></i>
-                  <span>Laguna Chapter partner Chapter</span>
-                  <input type="hidden" id="assignChapterSelect" value="1">
-                </div>
-              </div>
-
-              <div class="button-group">
-                <button class="btn btn-outline-danger font-roboto" id="btnDecline" onclick="handleDeclineAccount()">
-                  <i class="ph ph-x"></i> Decline
-                </button>
-                <button class="btn btn-primary font-roboto" id="btnApprove" onclick="handleApproveAccount()">
-                  <i class="ph ph-check"></i> Approve
-                </button>
-              </div>
-
-              <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.5rem;">
-                <button type="button" class="btn btn-outline font-roboto" id="btnOpenResetModal" onclick="openResetPasswordModalForSelected()" style="width: 100%; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.2s;">
-                  <i class="ph-bold ph-key"></i> <span>Provide Reset Password</span>
-                </button>
-                <button type="button" class="btn btn-outline font-roboto" id="btnRemoveAccount" onclick="handleRemoveSelectedAccount()" style="width: 100%; border-color: #cbd5e1; color: #64748b; background: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#ef4444'; this.style.color='#ef4444'; this.style.background='#fef2f2';" onmouseout="this.style.borderColor='#cbd5e1'; this.style.color='#64748b'; this.style.background='#fff';">
-                  <i class="ph-bold ph-trash"></i> <span>Remove Account</span>
-                </button>
-              </div>
-            </div>
-
+        </div>
+      
+  <!-- MODAL: ACCOUNT REVIEW & ACCESS MANAGEMENT (POP UP VIEW) -->
+  <div id="accountReviewModal" class="modal-overlay hidden" style="display: none;" onclick="if (event.target === this) closeAccountReviewModal()">
+    <div class="modal-md" style="max-width: 580px; width: 95%; max-height: 90vh; background: #ffffff; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <div class="modal-header-banner" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background: #eff6ff; color: #2563eb; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+            <i class="ph-fill ph-user-circle"></i>
+          </div>
+          <div>
+            <h3 class="font-roboto" style="color: #0f172a; margin: 0; font-size: 1.05rem; font-weight: 800;">Review Account Access</h3>
+            <p class="font-roboto" style="color: #64748b; margin: 0; font-size: 0.78rem;">Authorize account, configure role &amp; position, or revoke access</p>
           </div>
         </div>
+        <button type="button" onclick="closeAccountReviewModal()" style="background: none; border: none; font-size: 1.4rem; color: #64748b; cursor: pointer; padding: 0.2rem; display: flex; align-items: center; justify-content: center; border-radius: 6px;" title="Close"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="modal-body-scroll" style="background: #ffffff; padding: 1.25rem; overflow-y: auto; max-height: calc(90vh - 130px);">
+        <!-- Card 1: Account Info -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+          <div class="review-user-profile" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <img src="https://placehold.co/40x40/e2e8f0/64748b" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+              <div>
+                <h5 class="font-roboto" id="reviewUserName" style="margin: 0; font-size: 0.95rem; color: #0f172a; font-weight: 700;">Select an account</h5>
+                <p id="reviewUserEmail" style="margin: 0; font-size: 0.75rem; color: #64748b;">user@ytr.org</p>
+              </div>
+            </div>
+            <span class="badge pending font-roboto" id="reviewUserBadge">--</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.65rem;">
+            <div class="review-detail-group">
+              <label class="font-roboto"><i class="ph-fill ph-buildings"></i> Partner Chapter</label>
+              <p class="font-roboto" id="reviewUserChapter" style="margin: 2px 0 0; font-size: 0.825rem; font-weight: 700; color: #0f172a;">--</p>
+            </div>
+            <div class="review-detail-group">
+              <label class="font-roboto"><i class="ph-fill ph-user-circle"></i> Requested Role</label>
+              <p class="font-roboto" id="reviewUserRole" style="margin: 2px 0 0; font-size: 0.825rem; font-weight: 700; color: #0f172a;">--</p>
+            </div>
+          </div>
+
+          <div class="review-detail-group">
+            <label class="font-roboto"><i class="ph-fill ph-file-text"></i> Reason for Request</label>
+            <div class="reason-box font-roboto" id="reviewUserReason" style="font-size: 0.78rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.5rem 0.75rem; line-height: 1.4; color: #475569;">
+              Account details
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Access & Role Assignment Form -->
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background: #ffffff;">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+              <label class="form-label font-roboto" style="margin-bottom: 0; font-weight: 700; font-size: 0.85rem;">Assign Role &amp; Tier</label>
+              <label style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; color: #1e40af; cursor: pointer; user-select: none; font-weight: 600;" title="Enable to override requested tier and assign either National Admin or Chapter Admin">
+                <input type="checkbox" id="chkRoleOverride" onchange="handleRoleOverrideToggle(this.checked)" style="accent-color: #2563eb; cursor: pointer;">
+                <i class="ph-bold ph-sliders"></i> Override Role
+              </label>
+            </div>
+            <div class="radio-group font-roboto">
+              <label class="radio-label" id="labelRoleNational">
+                <input type="radio" name="assign_role" id="roleNational" value="national_admin" onchange="syncRolePositionOptions('national_admin')"> National Admin
+              </label>
+              <label class="radio-label" id="labelRoleChapter">
+                <input type="radio" name="assign_role" id="roleChapter" value="chapter_admin" checked onchange="syncRolePositionOptions('chapter_admin')"> Chapter Admin
+              </label>
+            </div>
+            <div id="overrideNotice" style="display: none; margin-top: 0.45rem; padding: 0.4rem 0.65rem; background: #eff6ff; border: 1px dashed #93c5fd; border-radius: 6px; font-size: 0.72rem; color: #1e40af; line-height: 1.4;">
+              <i class="ph-bold ph-info"></i> <strong>Role Override Active:</strong> You can assign this account to either <strong>National Admin</strong> or <strong>Chapter Admin</strong>.
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label font-roboto" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Specific Position / Title</label>
+            <select class="form-select font-roboto" id="assignPositionSelect" onchange="handlePositionSelectChange()" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+              <optgroup label="── CHAPTER POSITIONS ──" id="optGrpChapter">
+                <option value="Chapter Coordinator">Chapter Coordinator</option>
+                <option value="Chapter President">Chapter President</option>
+                <option value="Regional Director (Chapter)">Regional Director (Chapter)</option>
+              </optgroup>
+              <optgroup label="── NATIONAL POSITIONS ──" id="optGrpNational">
+                <option value="Chief Executive Operation">Chief Executive Operation</option>
+                <option value="Executive Director">Executive Director</option>
+                <option value="Regional Director (National)">Regional Director (National)</option>
+                <option value="National Youth Officer">National Youth Officer</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-group" id="assignChapterGroup" style="margin-bottom: 1rem;">
+            <label class="form-label font-roboto" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Partner Chapter</label>
+            <div style="display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.85rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #1e40af;">
+              <i class="ph-fill ph-buildings" style="font-size: 1.15rem; color: #2563eb;"></i>
+              <span>Laguna Chapter partner Chapter</span>
+              <input type="hidden" id="assignChapterSelect" value="1">
+            </div>
+          </div>
+
+          <div class="button-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-top: 1rem;">
+            <button class="btn btn-outline-danger font-roboto" id="btnDecline" onclick="handleDeclineAccount()">
+              <i class="ph ph-x"></i> Decline
+            </button>
+            <button class="btn btn-primary font-roboto" id="btnApprove" onclick="handleApproveAccount()">
+              <i class="ph ph-check"></i> Approve
+            </button>
+          </div>
+
+          <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.5rem;">
+            <button type="button" class="btn btn-outline font-roboto" id="btnOpenResetModal" onclick="openResetPasswordModalForSelected()" style="width: 100%; border-color: #fca5a5; color: #b91c1c; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.2s;">
+              <i class="ph-bold ph-key"></i> <span>Provide Reset Password</span>
+            </button>
+            <button type="button" class="btn btn-outline font-roboto" id="btnRemoveAccount" onclick="handleRemoveSelectedAccount()" style="width: 100%; border-color: #cbd5e1; color: #64748b; background: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.52rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.825rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#ef4444'; this.style.color='#ef4444'; this.style.background='#fef2f2';" onmouseout="this.style.borderColor='#cbd5e1'; this.style.color='#64748b'; this.style.background='#fff';">
+              <i class="ph-bold ph-trash"></i> <span>Remove Account</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-outline font-roboto" onclick="closeAccountReviewModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
       </main>
     </div>
   </div>
@@ -654,10 +656,7 @@
           `;
           tbody.appendChild(row);
 
-          // Select first user by default
-          if (index === 0 && !selectedUserId) {
-            selectUserForReview(user);
-          }
+          // Modal opens when user clicks Review button
         });
       }
     }
@@ -1039,9 +1038,22 @@
       }
     }
 
-    // Select User into Review Panel
+    function closeAccountReviewModal() {
+      const modal = document.getElementById('accountReviewModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    // Select User into Review Panel (Pop Up View)
     function selectUserForReview(user) {
       selectedUserId = user.id;
+      const modal = document.getElementById('accountReviewModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
       currentReviewUser = user;
 
       // Reset override toggle
@@ -1127,6 +1139,7 @@
 
       const res = await YTR_API.accounts.approve(selectedUserId, role, finalChapterId, position);
       if (res.status === 'success') {
+        closeAccountReviewModal();
         alert('Account saved / approved successfully!');
         loadMetrics();
         loadAccounts(activeFilter);
@@ -1147,6 +1160,7 @@
 
       const res = await YTR_API.accounts.decline(selectedUserId, reason);
       if (res.status === 'success') {
+        closeAccountReviewModal();
         alert('Account has been declined.');
         loadMetrics();
         loadAccounts(activeFilter);
@@ -1173,6 +1187,7 @@
       try {
         const res = await YTR_API.accounts.remove(userId);
         if (res.status === 'success') {
+          closeAccountReviewModal();
           alert(res.message || 'Account successfully removed.');
           if (selectedUserId === userId) {
             selectedUserId = null;

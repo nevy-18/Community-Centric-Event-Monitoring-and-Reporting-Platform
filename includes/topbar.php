@@ -518,8 +518,16 @@
     if(overlay) overlay.addEventListener('click', () => toggleSidebar(false));
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
-        toggleSidebar(false);
+      if (e.key === 'Escape') {
+        if (sidebar && sidebar.classList.contains('open')) {
+          toggleSidebar(false);
+        }
+        if (typeof closeProposalReviewModal === 'function') closeProposalReviewModal();
+        if (typeof closeReportReviewModal === 'function') closeReportReviewModal();
+        if (typeof closeAccountReviewModal === 'function') closeAccountReviewModal();
+        if (typeof closeProfileModal === 'function') closeProfileModal();
+        if (typeof closeTopLevelFlushModal === 'function') closeTopLevelFlushModal();
+        if (typeof closeTimelineModal === 'function') closeTimelineModal();
       }
     });
 

@@ -343,124 +343,121 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN (Preview Panel) -->
-          <div class="layout-sidebar">
-            <h2 class="review-panel-title font-roboto">Report Overview</h2>
+        </div>
 
-            <!-- Detail Panel Content -->
-            <div id="reportDetailCard" class="review-card">
-              <div id="emptyReportState" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
-                <div style="width: 52px; height: 52px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.85rem;">
-                  <i class="ph ph-clipboard-text"></i>
-                </div>
-                <h4 class="font-roboto" style="color: #0f172a; font-size: 0.95rem; font-weight: bold; margin-bottom: 0.35rem;">No Event Selected</h4>
-                <p style="font-size: 0.75rem; line-height: 1.4;">Click <strong>View</strong> on any event report row to inspect turnout metrics, attendee roster, threshold rate, and e-signatures.</p>
-              </div>
-
-              <div id="activeReportContent" style="display: none;">
-                <div class="review-header">
-                  <div class="review-header-icon"><i class="ph-fill ph-file-text"></i></div>
-                  <div class="review-header-text">
-                    <h4 id="detailEventTitle" class="font-roboto" style="color: #0f172a; font-weight: 800;">Event Name</h4>
-                    <p id="detailChapterName" style="color: #2563eb; font-weight: 600;">Chapter Name</p>
-                  </div>
-                </div>
-
-                <div class="review-details">
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-calendar-blank"></i> Date & Venue</label>
-                    <p id="detailDateVenue" class="font-roboto" style="font-size: 0.8rem; font-weight: bold; color: #0f172a;">-</p>
-                  </div>
-
-                  <!-- Turnout Threshold Progress -->
-                  <div style="background: #f8fafc; padding: 0.85rem; border-radius: 0.5rem; border: 1px solid var(--border);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                      <span style="font-size: 0.7rem; color: #334155; font-weight: 700;">Attendance Threshold</span>
-                      <span id="detailTurnoutBadge" class="badge threshold-met font-roboto">100% Target</span>
-                    </div>
-                    <div class="threshold-bar">
-                      <div id="detailTurnoutProgressBar" class="threshold-fill met" style="width: 100%;"></div>
-                    </div>
-                    <p id="detailTurnoutText" style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">120 attendees out of 100 target.</p>
-                  </div>
-
-                  <!-- 4-Column Turnout Breakdown -->
-                  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; background: #f8fafc; padding: 0.65rem; border-radius: 0.5rem; border: 1px solid var(--border); margin: 0.25rem 0;">
-                    <div style="text-align: center;">
-                      <span style="font-size: 0.65rem; color: #64748b; display: block;">Total</span>
-                      <strong id="detailTotal" style="color: #0f172a; font-size: 1rem;">0</strong>
-                    </div>
-                    <div style="text-align: center;">
-                      <span style="font-size: 0.65rem; color: #16a34a; display: block;">1st Timers</span>
-                      <strong id="detailFirstTimers" style="color: #16a34a; font-size: 1rem;">0</strong>
-                    </div>
-                    <div style="text-align: center;">
-                      <span style="font-size: 0.65rem; color: #2563eb; display: block;">Members</span>
-                      <strong id="detailMembers" style="color: #2563eb; font-size: 1rem;">0</strong>
-                    </div>
-                    <div style="text-align: center;">
-                      <span style="font-size: 0.65rem; color: #9333ea; display: block;">Leaders</span>
-                      <strong id="detailLeaders" style="color: #9333ea; font-size: 1rem;">0</strong>
-                    </div>
-                  </div>
-
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-article"></i> Executive Summary</label>
-                    <div id="detailNotes" class="reason-box font-roboto" style="font-size: 0.75rem; max-height: 90px; overflow-y: auto;">
-                      -
-                    </div>
-                  </div>
-
-                  <!-- Submitter Verification Block -->
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-user-check"></i> Submitting Chapter Coordinator</label>
-                    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem;">
-                      <p id="detailSignedByName" style="font-size: 0.85rem; font-weight: bold; color: #0f172a; margin: 0;">-</p>
-                      <p id="detailSignedDate" style="font-size: 0.7rem; color: #64748b; margin: 2px 0 0;">-</p>
-                      <span id="detailVerificationBadge" class="badge approved font-roboto" style="font-size: 0.65rem; margin-top: 6px; display: inline-flex;"><i class="ph ph-shield-check"></i> Verified Chapter Dossier</span>
-                    </div>
-                  </div>
-
-                  <!-- Uploaded Attendance Sheet Document -->
-                  <div id="detailAttendanceSheetBox" class="review-detail-group" style="display: none;">
-                    <label class="font-roboto"><i class="ph-fill ph-file-arrow-down"></i> Official Attendance Sheet</label>
-                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 0.65rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
-                      <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="ph-bold ph-file-text" style="font-size: 1.25rem; color: #1e40af;"></i>
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #1e3a8a;">Signed Attendance Sheet</span>
-                      </div>
-                      <a id="detailAttendanceSheetBtn" href="#" target="_blank" class="btn btn-outline btn-sm font-roboto" style="background: #fff; font-size: 0.72rem; padding: 0.2rem 0.5rem; text-decoration: none; color: #1d4ed8; border-color: #93c5fd;">
-                        <i class="ph ph-download-simple"></i> Download
-                      </a>
-                    </div>
-                  </div>
-
-                  <!-- Event Pictures Google Drive Link -->
-                  <div id="detailDriveLinkBox" class="review-detail-group" style="display: none;">
-                    <label class="font-roboto"><i class="ph-bold ph-google-drive-logo" style="color: #0284c7;"></i> Event Pictures Google Drive</label>
-                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; padding: 0.65rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
-                      <div style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden; margin-right: 0.5rem;">
-                        <i class="ph-bold ph-images" style="font-size: 1.25rem; color: #0284c7; flex-shrink: 0;"></i>
-                        <span style="font-size: 0.75rem; font-weight: 700; color: #0369a1; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Event Photo Album</span>
-                      </div>
-                      <a id="detailDriveLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm font-roboto" style="background: #fff; font-size: 0.72rem; padding: 0.2rem 0.5rem; text-decoration: none; color: #0284c7; border-color: #7dd3fc; flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px;">
-                        <i class="ph-bold ph-arrow-square-out"></i> Open Album
-                      </a>
-                    </div>
-                  </div>
-
-                  <!-- Action Buttons: Print Report -->
-                  <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
-                    <button class="btn btn-primary font-roboto" style="width: 100%;" onclick="openPrintPreview()">
-                      <i class="ph ph-printer"></i> Print Official Report
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+      
+  <!-- MODAL: EVENT REPORT OVERVIEW (POP UP VIEW) -->
+  <div id="reportReviewModal" class="modal-overlay hidden" style="display: none;" onclick="if (event.target === this) closeReportReviewModal()">
+    <div class="modal-md" style="max-width: 650px; width: 95%; max-height: 90vh; background: #ffffff; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <div class="modal-header-banner" style="background: #eff6ff; border-bottom: 1px solid #bfdbfe; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background: #dbeafe; color: #1e40af; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+            <i class="ph-fill ph-file-text"></i>
+          </div>
+          <div>
+            <h3 id="modalReportEventTitle" class="font-roboto" style="color: #1e3a8a; margin: 0; font-size: 1.05rem; font-weight: 800;">Event Report Overview</h3>
+            <p id="modalReportChapterName" class="font-roboto" style="color: #2563eb; margin: 0; font-size: 0.78rem; font-weight: 600;">Laguna Chapter partner Chapter</p>
           </div>
         </div>
+        <button type="button" onclick="closeReportReviewModal()" style="background: none; border: none; font-size: 1.4rem; color: #64748b; cursor: pointer; padding: 0.2rem; display: flex; align-items: center; justify-content: center; border-radius: 6px;" title="Close"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="modal-body-scroll" style="background: #ffffff; padding: 1.25rem; overflow-y: auto; max-height: calc(90vh - 130px);">
+        <div class="review-detail-group" style="margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-calendar-blank"></i> Date &amp; Venue</label>
+          <p id="detailDateVenue" class="font-roboto" style="font-size: 0.85rem; font-weight: bold; color: #0f172a; margin: 3px 0 0;">-</p>
+        </div>
+
+        <!-- Attendance Threshold Progress -->
+        <div style="background: #f8fafc; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 0.75rem; color: #334155; font-weight: 700;">Attendance Turnout Rate</span>
+            <span id="detailTurnoutBadge" class="badge threshold-met font-roboto">100% Target</span>
+          </div>
+          <div class="threshold-bar">
+            <div id="detailTurnoutProgressBar" class="threshold-fill met" style="width: 100%;"></div>
+          </div>
+          <p id="detailTurnoutText" style="font-size: 0.72rem; color: #64748b; margin-top: 4px; margin-bottom: 0;">120 attendees out of 100 target.</p>
+        </div>
+
+        <!-- 4-Column Turnout Breakdown -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 0.85rem;">
+          <div style="text-align: center;">
+            <span style="font-size: 0.68rem; color: #64748b; display: block;">Total</span>
+            <strong id="detailTotal" style="color: #0f172a; font-size: 1.05rem;">0</strong>
+          </div>
+          <div style="text-align: center;">
+            <span style="font-size: 0.68rem; color: #16a34a; display: block;">1st Timers</span>
+            <strong id="detailFirstTimers" style="color: #16a34a; font-size: 1.05rem;">0</strong>
+          </div>
+          <div style="text-align: center;">
+            <span style="font-size: 0.68rem; color: #2563eb; display: block;">Members</span>
+            <strong id="detailMembers" style="color: #2563eb; font-size: 1.05rem;">0</strong>
+          </div>
+          <div style="text-align: center;">
+            <span style="font-size: 0.68rem; color: #9333ea; display: block;">Leaders</span>
+            <strong id="detailLeaders" style="color: #9333ea; font-size: 1.05rem;">0</strong>
+          </div>
+        </div>
+
+        <div class="review-detail-group" style="margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-article"></i> Executive Summary</label>
+          <div id="detailNotes" class="reason-box font-roboto" style="font-size: 0.8rem; max-height: 120px; overflow-y: auto; background: #f8fafc; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid #e2e8f0; line-height: 1.45;">
+            -
+          </div>
+        </div>
+
+        <!-- Submitter Verification Block -->
+        <div class="review-detail-group" style="margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-user-check"></i> Submitting Chapter Coordinator</label>
+          <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem;">
+            <p id="detailSignedByName" style="font-size: 0.85rem; font-weight: bold; color: #0f172a; margin: 0;">-</p>
+            <p id="detailSignedDate" style="font-size: 0.72rem; color: #64748b; margin: 2px 0 0;">-</p>
+            <span id="detailVerificationBadge" class="badge approved font-roboto" style="font-size: 0.68rem; margin-top: 6px; display: inline-flex;"><i class="ph ph-shield-check"></i> Verified Chapter Dossier</span>
+          </div>
+        </div>
+
+        <!-- Attendance Sheet Document -->
+        <div id="detailAttendanceSheetBox" class="review-detail-group" style="display: none; margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-file-arrow-down"></i> Official Attendance Sheet</label>
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <i class="ph-bold ph-file-text" style="font-size: 1.25rem; color: #1e40af;"></i>
+              <span style="font-size: 0.78rem; font-weight: 700; color: #1e3a8a;">Signed Attendance Sheet</span>
+            </div>
+            <a id="detailAttendanceSheetBtn" href="#" target="_blank" class="btn btn-outline btn-sm font-roboto" style="background: #fff; font-size: 0.75rem; padding: 0.3rem 0.65rem; text-decoration: none; color: #1d4ed8; border-color: #93c5fd; border-radius: 6px;">
+              <i class="ph ph-download-simple"></i> Download
+            </a>
+          </div>
+        </div>
+
+        <!-- Event Pictures Google Drive Link -->
+        <div id="detailDriveLinkBox" class="review-detail-group" style="display: none; margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-bold ph-google-drive-logo" style="color: #0284c7;"></i> Event Pictures Google Drive</label>
+          <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden; margin-right: 0.5rem;">
+              <i class="ph-bold ph-images" style="font-size: 1.25rem; color: #0284c7; flex-shrink: 0;"></i>
+              <span style="font-size: 0.78rem; font-weight: 700; color: #0369a1; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Event Photo Album</span>
+            </div>
+            <a id="detailDriveLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm font-roboto" style="background: #fff; font-size: 0.75rem; padding: 0.3rem 0.65rem; text-decoration: none; color: #0284c7; border-color: #7dd3fc; border-radius: 6px; display: inline-flex; align-items: center; gap: 3px;">
+              <i class="ph-bold ph-arrow-square-out"></i> Open Album
+            </a>
+          </div>
+        </div>
+
+        <!-- Print Action Button -->
+        <div style="margin-top: 1rem;">
+          <button class="btn btn-primary font-roboto" style="width: 100%; padding: 0.65rem 1rem; border-radius: 8px;" onclick="openPrintPreview()">
+            <i class="ph ph-printer"></i> Print Official Report
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-outline font-roboto" onclick="closeReportReviewModal()">Close</button>
+      </div>
+    </div>
+  </div>
 
       </main>
     </div>

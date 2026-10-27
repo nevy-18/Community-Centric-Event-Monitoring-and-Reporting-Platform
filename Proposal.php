@@ -266,11 +266,8 @@
           </div>
         </div>
 
-        <!-- 2-COLUMN LAYOUT -->
-        <div class="two-column-layout">
-          
-          <!-- LEFT COLUMN: CHAPTER PROPOSALS LIST -->
-          <div class="layout-main">
+        <!-- Full Width Layout -->
+        <div class="layout-main" style="width: 100%;">
             
             <!-- High-Contrast Visual Pending Queue Banner -->
             <div id="pendingReviewBanner" class="pending-alert-banner" style="display: none;">
@@ -340,129 +337,108 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN: PROPOSAL REVIEW & DETAILS PANEL -->
-          <div class="layout-sidebar">
-            <h2 class="review-panel-title font-roboto">Proposal Evaluation</h2>
+        </div>
 
-            <div id="proposalDetailCard" class="review-card">
-              <!-- Empty state before click -->
-              <div id="emptyProposalState" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
-                <div style="width: 52px; height: 52px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.85rem;">
-                  <i class="ph ph-file-text"></i>
-                </div>
-                <h4 class="font-roboto" style="color: var(--primary); font-size: 0.95rem; font-weight: bold; margin-bottom: 0.35rem;">Select a Proposal</h4>
-                <p style="font-size: 0.75rem; line-height: 1.4;">Click <strong>Review</strong> or <strong>View</strong> on any chapter proposal to inspect schedule, budget, objectives, and submit approval decisions.</p>
-              </div>
+      
+  <!-- MODAL: PROPOSAL EVALUATION & REVIEW (POP UP VIEW) -->
+  <div id="proposalReviewModal" class="modal-overlay hidden" style="display: none;" onclick="if (event.target === this) closeProposalReviewModal()">
+    <div class="modal-md" style="max-width: 640px; width: 95%; max-height: 90vh; background: #ffffff; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <div class="modal-header-banner" style="background: #eff6ff; border-bottom: 1px solid #bfdbfe; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background: #dbeafe; color: #1e40af; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+            <i class="ph-fill ph-file-plus"></i>
+          </div>
+          <div>
+            <h3 id="modalProposalTitle" class="font-roboto" style="color: #1e3a8a; margin: 0; font-size: 1.05rem; font-weight: 800;">Proposal Evaluation</h3>
+            <p id="modalProposalChapter" class="font-roboto" style="color: #2563eb; margin: 0; font-size: 0.78rem; font-weight: 600;">Laguna Chapter partner Chapter</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeProposalReviewModal()" style="background: none; border: none; font-size: 1.4rem; color: #64748b; cursor: pointer; padding: 0.2rem; display: flex; align-items: center; justify-content: center; border-radius: 6px;" title="Close"><i class="ph ph-x"></i></button>
+      </div>
 
-              <!-- Populated State -->
-              <div id="activeProposalContent" style="display: none;">
-                <div class="review-header">
-                  <div class="review-header-icon"><i class="ph-fill ph-file-plus"></i></div>
-                  <div class="review-header-text">
-                    <h4 id="detailProposalTitle" class="font-roboto">Annual Youth Leadership Camp</h4>
-                    <p id="detailProposalChapter" class="font-roboto">Laguna Chapter</p>
-                  </div>
-                </div>
+      <div class="modal-body-scroll" style="background: #ffffff; padding: 1.25rem; overflow-y: auto; max-height: calc(90vh - 130px);">
+        <!-- Badges Container -->
+        <div id="detailProposalBadges" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;"></div>
 
-                <div class="review-details">
-                  <!-- Badges Container (Due status, Timer upon approval) -->
-                  <div id="detailProposalBadges" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;"></div>
+        <div class="review-detail-group" style="margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-compass"></i> YTR Program Pillar</label>
+          <div style="margin-top: 3px;">
+            <span id="detailProposalProgram" class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.78rem; font-weight: 700; padding: 4px 8px;">
+              Lead up (Youth Leadership)
+            </span>
+          </div>
+        </div>
 
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-compass"></i> YTR Program Pillar</label>
-                    <div style="margin-top: 3px;">
-                      <span id="detailProposalProgram" class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.78rem; font-weight: 700; padding: 4px 8px;">
-                        Lead up (Youth Leadership)
-                      </span>
-                    </div>
-                  </div>
+        <div class="review-detail-group" style="margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-users-three"></i> Target Audience</label>
+          <div style="margin-top: 3px;">
+            <span id="detailProposalAudience" class="badge font-roboto" style="background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 0.78rem; font-weight: 700; padding: 4px 8px;">
+              Open for All
+            </span>
+          </div>
+        </div>
 
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-users-three"></i> Target Audience</label>
-                    <div style="margin-top: 3px;">
-                      <span id="detailProposalAudience" class="badge font-roboto" style="background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 0.78rem; font-weight: 700; padding: 4px 8px;">
-                        Open for All
-                      </span>
-                    </div>
-                  </div>
+        <div class="review-detail-group" style="margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-calendar-blank"></i> Proposed Schedule &amp; Venue</label>
+          <p id="detailProposalSchedule" class="font-roboto" style="font-size: 0.85rem; color: #0f172a; font-weight: bold; margin: 3px 0 0;">-</p>
+          <p id="detailApprovalTimer" style="font-size: 0.75rem; color: #166534; font-weight: 700; margin-top: 2px;"></p>
+        </div>
 
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-calendar-blank"></i> Proposed Schedule & Venue</label>
-                    <p id="detailProposalSchedule" class="font-roboto" style="font-size: 0.8rem; color: #0f172a; font-weight: bold;">-</p>
-                    <p id="detailApprovalTimer" style="font-size: 0.75rem; color: #166534; font-weight: 700; margin-top: 2px;"></p>
-                  </div>
-
-                  <!-- Threshold Cards: Target Turnout & Budget -->
-                  <div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 0.25rem 0;">
-                    <div style="background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
-                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <span style="font-size: 0.7rem; color: #334155; font-weight: bold;">Attendance Threshold</span>
-                        <strong id="detailProposalTurnout" style="color: #1a2f63; font-size: 0.85rem;">100 Target</strong>
-                      </div>
-                      <div class="threshold-bar">
-                        <div id="detailTurnoutFill" class="threshold-fill met" style="width: 100%;"></div>
-                      </div>
-                    </div>
-
-                    <div style="background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
-                      <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.7rem; color: #334155; font-weight: bold;">Budget Threshold</span>
-                        <span id="detailProposalBudget" class="badge threshold-met font-roboto">₱0 / ₱25,000 Cap</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-article"></i> Objectives & Description</label>
-                    <div id="detailProposalNotes" class="reason-box font-roboto" style="font-size: 0.75rem; max-height: 120px; overflow-y: auto;">
-                      -
-                    </div>
-                  </div>
-
-                  <div class="review-detail-group">
-                    <label class="font-roboto"><i class="ph-fill ph-file-text"></i> Event Proposal Soft Copy &amp; Dossier</label>
-                    <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 4px;">
-                      <button type="button" class="btn btn-primary btn-sm font-roboto" id="btnOpenProposalDossier" onclick="openProposalDossier(activeProposalId)" style="background: #1e3a8a; border-color: #172554; display: flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.5rem 0.75rem; width: 100%; text-decoration: none;">
-                        <i class="ph-bold ph-printer"></i> View &amp; Download Soft Copy (Dossier PDF)
-                      </button>
-                      <div id="detailProposalAttachmentContainer"></div>
-                    </div>
-                  </div>
-
-                  <!-- Decision Actions -->
-                  <div id="proposalActionButtons" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                      <button class="btn btn-outline-danger font-roboto" onclick="alert('Revision feedback request has been sent to the chapter coordinator.');">
-                        <i class="ph ph-pencil-simple"></i> Request Revision
-                      </button>
-                      <button class="btn btn-primary font-roboto" onclick="alert('Proposal has been officially approved! Poster creation request created.');">
-                        <i class="ph ph-check"></i> Approve
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <!-- Attendance & Budget Thresholds -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin: 0.85rem 0;">
+          <div style="background: #f8fafc; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="font-size: 0.7rem; color: #334155; font-weight: bold;">Attendance Threshold</span>
+              <strong id="detailProposalTurnout" style="color: #1a2f63; font-size: 0.85rem;">100 Target</strong>
             </div>
-
-            <!-- Guidelines Card -->
-            <div class="review-card" style="margin-top: 1rem;">
-              <div class="review-header">
-                <div class="review-header-icon" style="background: #f0fdf4; color: #16a34a;"><i class="ph-fill ph-shield-check"></i></div>
-                <div class="review-header-text">
-                  <h4 class="font-roboto">National Review Criteria</h4>
-                  <p>Standard evaluation policy</p>
-                </div>
-              </div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; display: flex; flex-direction: column; gap: 0.5rem;">
-                <p>✓ Minimum 3 weeks lead time prior to date.</p>
-                <p>✓ Complete itemized budget calculation.</p>
-                <p>✓ Verified chapter leadership endorsement.</p>
-              </div>
+            <div class="threshold-bar">
+              <div id="detailTurnoutFill" class="threshold-fill met" style="width: 100%;"></div>
             </div>
-
           </div>
 
+          <div style="background: #f8fafc; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.7rem; color: #334155; font-weight: bold;">Budget Threshold</span>
+              <span id="detailProposalBudget" class="badge threshold-met font-roboto">₱0 / ₱25,000 Cap</span>
+            </div>
+          </div>
         </div>
+
+        <div class="review-detail-group" style="margin-bottom: 0.85rem;">
+          <label class="font-roboto"><i class="ph-fill ph-article"></i> Objectives &amp; Concept Description</label>
+          <div id="detailProposalNotes" class="reason-box font-roboto" style="font-size: 0.8rem; max-height: 140px; overflow-y: auto; line-height: 1.45; background: #f8fafc; padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+            -
+          </div>
+        </div>
+
+        <div class="review-detail-group" style="margin-bottom: 1rem;">
+          <label class="font-roboto"><i class="ph-fill ph-file-text"></i> Event Proposal Soft Copy &amp; Dossier</label>
+          <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 4px;">
+            <button type="button" class="btn btn-primary btn-sm font-roboto" id="btnOpenProposalDossier" onclick="openProposalDossier(activeProposalId)" style="background: #1e3a8a; border-color: #172554; display: flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.55rem 0.75rem; width: 100%; text-decoration: none; border-radius: 6px;">
+              <i class="ph-bold ph-printer"></i> View &amp; Download Soft Copy (Dossier PDF)
+            </button>
+            <div id="detailProposalAttachmentContainer"></div>
+          </div>
+        </div>
+
+        <!-- Decision Actions -->
+        <div id="proposalActionButtons" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;">
+            <button class="btn btn-outline-danger font-roboto" onclick="handleReviewDecision('draft')">
+              <i class="ph ph-pencil-simple"></i> Request Revision
+            </button>
+            <button class="btn btn-primary font-roboto" onclick="handleReviewDecision('approved')">
+              <i class="ph ph-check"></i> Approve Proposal
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 0.85rem 1.25rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-outline font-roboto" onclick="closeProposalReviewModal()">Close</button>
+      </div>
+    </div>
+  </div>
 
       </main>
     </div> <!-- /.main-wrapper -->
@@ -787,11 +763,9 @@
 
           });
 
-          if (allProposalsData.length > 0) {
+          if (allProposalsData.length > 0 && activeProposalId) {
             const currentExists = allProposalsData.some(p => p.id === activeProposalId);
-            if (!activeProposalId || !currentExists) {
-              selectProposalRecord(allProposalsData[0]);
-            }
+            if (!currentExists) activeProposalId = null;
           }
         } else {
           tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #ef4444;"><i class="ph ph-warning-circle" style="font-size: 1.5rem; margin-bottom: 0.25rem;"></i><br>' + (res.message || 'Unable to load proposals from backend.') + '</td></tr>';
@@ -802,9 +776,26 @@
       }
     }
 
-    // Select proposal to review in sidebar
+    function closeProposalReviewModal() {
+      const modal = document.getElementById('proposalReviewModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    // Select proposal to review (Pop Up View)
     function selectProposalRecord(p) {
       activeProposalId = p.id;
+      const modal = document.getElementById('proposalReviewModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+      const titleModal = document.getElementById('modalProposalTitle');
+      if (titleModal) titleModal.textContent = p.title;
+      const chapModal = document.getElementById('modalProposalChapter');
+      if (chapModal) chapModal.textContent = p.chapter_name || 'Laguna Chapter partner Chapter';
       document.getElementById('emptyProposalState').style.display = 'none';
       document.getElementById('activeProposalContent').style.display = 'block';
 
