@@ -194,7 +194,7 @@
 
                 <select id="chapterName" name="chapter_id">
 
-                  <option value="1" selected>Laguna Chapter partner Chapter</option>
+                  <option value="1" selected>Laguna Chapter</option>
 
                 </select>
 

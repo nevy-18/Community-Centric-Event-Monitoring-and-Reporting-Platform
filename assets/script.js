@@ -118,7 +118,7 @@ const loginTab = document.getElementById('loginTab');
           result.data.forEach(ch => {
             const opt = document.createElement('option');
             opt.value = ch.id;
-            opt.textContent = ch.chapter_name + ' partner Chapter';
+            opt.textContent = ch.chapter_name;
             if (Number(ch.id) === 1) opt.selected = true;
             chapterName.appendChild(opt);
           });

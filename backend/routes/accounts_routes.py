@@ -111,7 +111,13 @@ def approve_account(user_id):
         return api_error('Invalid role specified.', 400)
 
     if role == 'chapter_admin':
-        chapter_id = 1  # Always assign to Laguna Chapter (Partner Chapter)
+        if not chapter_id:
+            chapter_id = 1  # Default to Laguna Chapter if none provided
+        else:
+            try:
+                chapter_id = int(chapter_id)
+            except (ValueError, TypeError):
+                chapter_id = 1
 
     if not position:
         position = 'Executive Director' if role == 'national_admin' else 'Chapter Coordinator'

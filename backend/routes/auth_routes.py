@@ -115,7 +115,13 @@ def register():
         return api_error('Invalid role or position selected.', 400)
 
     if db_role == 'chapter_admin':
-        chapter_id = 1  # Always default to Laguna Chapter (Partner Chapter)
+        if not chapter_id:
+            chapter_id = 1  # Default to Laguna Chapter if none provided
+        else:
+            try:
+                chapter_id = int(chapter_id)
+            except (ValueError, TypeError):
+                chapter_id = 1
 
     with get_db() as conn:
         with conn.cursor() as cur:

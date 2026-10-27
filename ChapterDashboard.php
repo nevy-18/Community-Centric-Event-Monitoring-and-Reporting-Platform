@@ -40,7 +40,7 @@
             <div id="chapter-selector-wrapper" style="display: flex; align-items: center; gap: 0.35rem; background: #ffffff; padding: 0.3rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px;">
               <label for="chapter-switch-select" style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Active Chapter:</label>
               <select id="chapter-switch-select" class="chapter-pill-select" onchange="onChapterChange(this.value)" style="border: none; outline: none; background: transparent; padding: 0.2rem 0.4rem; font-size: 0.85rem; font-weight: 700; color: #1e3a8a; cursor: pointer;">
-                <option value="1">Laguna Chapter partner Chapter</option>
+                <option value="1">Laguna Chapter</option>
               </select>
             </div>
           </div>

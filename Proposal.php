@@ -350,7 +350,7 @@
           </div>
           <div>
             <h3 id="modalProposalTitle" class="font-roboto" style="color: #1e3a8a; margin: 0; font-size: 1.05rem; font-weight: 800;">Proposal Evaluation</h3>
-            <p id="modalProposalChapter" class="font-roboto" style="color: #2563eb; margin: 0; font-size: 0.78rem; font-weight: 600;">Laguna Chapter partner Chapter</p>
+            <p id="modalProposalChapter" class="font-roboto" style="color: #2563eb; margin: 0; font-size: 0.78rem; font-weight: 600;">Laguna Chapter</p>
           </div>
         </div>
         <button type="button" onclick="closeProposalReviewModal()" style="background: none; border: none; font-size: 1.4rem; color: #64748b; cursor: pointer; padding: 0.2rem; display: flex; align-items: center; justify-content: center; border-radius: 6px;" title="Close"><i class="ph ph-x"></i></button>
@@ -795,7 +795,7 @@
       const titleModal = document.getElementById('modalProposalTitle');
       if (titleModal) titleModal.textContent = p.title;
       const chapModal = document.getElementById('modalProposalChapter');
-      if (chapModal) chapModal.textContent = p.chapter_name || 'Laguna Chapter partner Chapter';
+      if (chapModal) chapModal.textContent = p.chapter_name || 'Laguna Chapter';
       document.getElementById('emptyProposalState').style.display = 'none';
       document.getElementById('activeProposalContent').style.display = 'block';
 

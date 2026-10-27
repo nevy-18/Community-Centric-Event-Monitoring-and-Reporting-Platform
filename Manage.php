@@ -85,7 +85,7 @@
                 <div>
                   <h5 class="metric-title font-roboto">Chapter Admins</h5>
                   <p class="metric-value font-roboto" id="metricChapter">...</p>
-                  <p class="metric-sub font-roboto">Laguna Chapter partner Chapter</p>
+                  <p class="metric-sub font-roboto">Partner Chapter Admins</p>
                 </div>
               </div>
             </div>
@@ -226,11 +226,10 @@
 
           <div class="form-group" id="assignChapterGroup" style="margin-bottom: 1rem;">
             <label class="form-label font-roboto" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Partner Chapter</label>
-            <div style="display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.85rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #1e40af;">
-              <i class="ph-fill ph-buildings" style="font-size: 1.15rem; color: #2563eb;"></i>
-              <span>Laguna Chapter partner Chapter</span>
-              <input type="hidden" id="assignChapterSelect" value="1">
-            </div>
+            <select class="form-select font-roboto" id="assignChapterSelect" onchange="handleChapterSelectChange()" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+              <option value="">Select Partner Chapter...</option>
+              <option value="1">Laguna Chapter</option>
+            </select>
           </div>
 
           <div class="button-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-top: 1rem;">
@@ -560,7 +559,13 @@
         chaptersList = res.data;
         const select = document.getElementById('assignChapterSelect');
         if (select && select.tagName === 'SELECT') {
-          select.innerHTML = '<option value="1" selected>Laguna Chapter partner Chapter</option>';
+          select.innerHTML = '<option value="">Select Partner Chapter...</option>';
+          res.data.forEach(ch => {
+            const opt = document.createElement('option');
+            opt.value = ch.id;
+            opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
+            select.appendChild(opt);
+          });
         }
       }
     }
@@ -633,7 +638,7 @@
               </div>
             </td>
             <td data-label="Email" class="td-sub">${escapeHtml(user.email)}</td>
-            <td data-label="Partner Chapter" class="td-sub">${user.role === 'national_admin' ? 'National HQ' : 'Laguna Chapter partner Chapter'}</td>
+            <td data-label="Partner Chapter" class="td-sub">${escapeHtml(user.role === 'national_admin' ? 'National HQ' : (user.chapter_name || 'Laguna Chapter'))}</td>
             <td data-label="Requested Role" style="text-align: center;">
               <span class="${roleBadgeClass} font-roboto">${roleLabel}</span>
               ${user.position ? `<div style="font-size: 0.72rem; color: #475569; font-weight: 600; margin-top: 3px;"><i class="ph ph-identification-badge"></i> ${escapeHtml(user.position)}</div>` : ''}
@@ -948,7 +953,7 @@
       }
       if (chGroup) chGroup.style.display = 'block';
       const chSelect = document.getElementById('assignChapterSelect');
-      if (chSelect) chSelect.value = '1';
+      if (chSelect && !chSelect.value) chSelect.value = '1';
     }
 
     function lockRoleToNational(reason = 'Account requested for National HQ') {
@@ -1035,6 +1040,11 @@
           if (rChap) rChap.checked = true;
         }
         populatePositionOptions('chapter_admin', document.getElementById('assignPositionSelect').value);
+        const selectedOpt = chSelect.options[chSelect.selectedIndex];
+        if (selectedOpt && selectedOpt.textContent) {
+          const revChap = document.getElementById('reviewUserChapter');
+          if (revChap) revChap.textContent = selectedOpt.textContent;
+        }
       }
     }
 
@@ -1086,8 +1096,19 @@
       if (isChapter) {
         lockRoleToChapter('Account requested for Chapter');
         populatePositionOptions('chapter_admin', user.position);
-        document.getElementById('reviewUserChapter').textContent = 'Laguna Chapter partner Chapter';
-        if (chSelect) chSelect.value = '1';
+        document.getElementById('reviewUserChapter').textContent = user.chapter_name || 'Laguna Chapter';
+        if (chSelect) {
+          if (chSelect.options.length <= 1 && chaptersList.length > 0) {
+            chSelect.innerHTML = '<option value="">Select Partner Chapter...</option>';
+            chaptersList.forEach(ch => {
+              const opt = document.createElement('option');
+              opt.value = ch.id;
+              opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
+              chSelect.appendChild(opt);
+            });
+          }
+          chSelect.value = user.chapter_id ? String(user.chapter_id) : '1';
+        }
       } else {
         lockRoleToNational('Account requested for National HQ');
         populatePositionOptions('national_admin', user.position);
@@ -1124,7 +1145,12 @@
 
       let finalChapterId = null;
       if (role === 'chapter_admin') {
-        finalChapterId = 1; // Always Laguna Chapter partner Chapter
+        const selectedChap = document.getElementById('assignChapterSelect')?.value;
+        if (!selectedChap) {
+          alert('Please select a Partner Chapter for Chapter Admin role.');
+          return;
+        }
+        finalChapterId = parseInt(selectedChap, 10) || 1;
         if (!CHAPTER_ROLES.includes(position)) {
           alert('Please select a valid Chapter position for Chapter Admin role.');
           return;

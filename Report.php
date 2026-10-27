@@ -356,7 +356,7 @@
           </div>
           <div>
             <h3 id="modalReportEventTitle" class="font-roboto" style="color: #1e3a8a; margin: 0; font-size: 1.05rem; font-weight: 800;">Event Report Overview</h3>
-            <p id="modalReportChapterName" class="font-roboto" style="color: #2563eb; margin: 0; font-size: 0.78rem; font-weight: 600;">Laguna Chapter partner Chapter</p>
+            <p id="modalReportChapterName" class="font-roboto" style="color: #2563eb; margin: 0; font-size: 0.78rem; font-weight: 600;">Laguna Chapter</p>
           </div>
         </div>
         <button type="button" onclick="closeReportReviewModal()" style="background: none; border: none; font-size: 1.4rem; color: #64748b; cursor: pointer; padding: 0.2rem; display: flex; align-items: center; justify-content: center; border-radius: 6px;" title="Close"><i class="ph ph-x"></i></button>
@@ -838,6 +838,8 @@
 
       const chapterEl = document.getElementById('detailChapterName');
       if (chapterEl) chapterEl.textContent = r.chapter_name || 'National Secretariat';
+      const chapModal = document.getElementById('modalReportChapterName');
+      if (chapModal) chapModal.textContent = r.chapter_name || 'Laguna Chapter';
 
       const scheduleEl = document.getElementById('detailDateVenue');
       if (scheduleEl) scheduleEl.textContent = (r.start_datetime ? r.start_datetime.substring(0, 10) : 'TBD') + ' • ' + (r.venue || 'TBD');
