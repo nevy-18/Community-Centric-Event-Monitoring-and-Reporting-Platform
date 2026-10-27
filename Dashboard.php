@@ -318,14 +318,14 @@
 
         return `
           <tr>
-            <td>
+            <td data-label="Chapter Name">
               <div style="font-weight: 700; color: #0f172a; font-size: 0.925rem;">${escapeHtml(item.chapter_name)}</div>
               <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
                 <span>${escapeHtml(item.region || 'Region')}</span>
                 <span class="badge" style="margin-left: 0.35rem; font-size: 0.68rem; padding: 2px 6px;">${escapeHtml(item.chapter_code || '')}</span>
               </div>
             </td>
-            <td>
+            <td data-label="Event Conducted">
               <div style="font-weight: 700; color: #1e3a8a; font-size: 0.9rem;">${escapeHtml(item.event_title)}</div>
               ${progBadge ? `<div style="margin-top: 3px; margin-bottom: 2px;">${progBadge}</div>` : ''}
               <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
@@ -333,13 +333,13 @@
                 ${item.venue ? ` &bull; <span>${escapeHtml(item.venue)}</span>` : ''}
               </div>
             </td>
-            <td>
+            <td data-label="Report Submitted?">
               ${submittedBadge}
             </td>
-            <td>
+            <td data-label="Status">
               ${statusBadgeHtml}
             </td>
-            <td>
+            <td data-label="Deadline & Days Left">
               <div>
                 ${daysLeftBadge}
                 <div style="font-size: 0.75rem; color: #475569; margin-top: 0.25rem;">
@@ -347,7 +347,7 @@
                 </div>
               </div>
             </td>
-            <td style="text-align: right;">
+            <td data-label="Action" style="text-align: right;">
               ${actionBtn}
             </td>
           </tr>

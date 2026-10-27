@@ -612,7 +612,7 @@
           const hasPendingReset = Number(user.password_reset_pending) === 1;
 
           row.innerHTML = `
-            <td>
+            <td data-label="Applicant">
               <div class="td-user">
                 <img src="https://placehold.co/32x32/e2e8f0/64748b" alt="Avatar">
                 <div>
@@ -632,15 +632,15 @@
                 </div>
               </div>
             </td>
-            <td class="td-sub">${escapeHtml(user.email)}</td>
-            <td class="td-sub">${user.role === 'national_admin' ? 'National HQ' : 'Laguna Chapter partner Chapter'}</td>
-            <td style="text-align: center;">
+            <td data-label="Email" class="td-sub">${escapeHtml(user.email)}</td>
+            <td data-label="Partner Chapter" class="td-sub">${user.role === 'national_admin' ? 'National HQ' : 'Laguna Chapter partner Chapter'}</td>
+            <td data-label="Requested Role" style="text-align: center;">
               <span class="${roleBadgeClass} font-roboto">${roleLabel}</span>
               ${user.position ? `<div style="font-size: 0.72rem; color: #475569; font-weight: 600; margin-top: 3px;"><i class="ph ph-identification-badge"></i> ${escapeHtml(user.position)}</div>` : ''}
             </td>
-            <td class="td-sub" style="font-size: 0.8rem;">${reqDate}</td>
-            <td style="text-align: center;"><span class="${statusBadgeClass} font-roboto">${user.account_status.toUpperCase()}</span></td>
-            <td style="text-align: center;">
+            <td data-label="Date Requested" class="td-sub" style="font-size: 0.8rem;">${reqDate}</td>
+            <td data-label="Status" style="text-align: center;"><span class="${statusBadgeClass} font-roboto">${user.account_status.toUpperCase()}</span></td>
+            <td data-label="Actions" style="text-align: center;">
               <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;">
                 <button class="btn btn-primary btn-sm font-roboto" onclick='selectUserForReview(${JSON.stringify(user)})'>Review</button>
                 <button class="btn btn-outline btn-sm font-roboto" title="Provide Reset Password" onclick='openResetPasswordModal(${JSON.stringify(user)})' style="padding: 0.32rem 0.55rem; color: #b91c1c; border-color: #fca5a5; background: #fff5f5; display: inline-flex; align-items: center; justify-content: center;">

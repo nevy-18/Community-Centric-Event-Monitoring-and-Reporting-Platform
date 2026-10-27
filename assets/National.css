@@ -54,24 +54,33 @@ body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(
 .sign-out:hover .icon { background: rgba(244,63,94,0.3); color: #fda4af; }
 
 /* --- TOPBAR --- */
-.topbar { height: 64px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; z-index: 40; flex-shrink: 0; }
-.topbar-left { display: flex; align-items: center; gap: 1rem; }
-.role-badge { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase; }
-.topbar-right { display: flex; align-items: center; gap: 1.25rem; position: relative; }
-.topbar-icons { display: flex; align-items: center; gap: 1rem; padding-right: 1.25rem; border-right: 1px solid var(--border); color: var(--text-muted); }
-.icon-btn { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: inherit; transition: color 0.2s; position: relative; }
-.icon-btn:hover { color: var(--primary); }
-.notification-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: #f43f5e; border-radius: 50%; border: 1px solid var(--white); }
-.profile-btn { display: flex; align-items: center; gap: 0.75rem; background: none; border: none; cursor: pointer; text-align: left; }
-.profile-avatar { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #d1d5db; background: #f9fafb; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; }
+.topbar { min-height: 60px; height: 64px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; z-index: 40; flex-shrink: 0; gap: 0.75rem; }
+.topbar-left { display: flex; align-items: center; gap: 0.75rem; min-width: 0; flex-shrink: 1; }
+.role-badge { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 0.75rem; font-weight: bold; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase; white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; max-width: 150px; flex-shrink: 0; }
+.topbar-right { display: flex; align-items: center; gap: 1rem; position: relative; flex-shrink: 0; }
+.topbar-icons { display: flex; align-items: center; gap: 0.75rem; padding-right: 1rem; border-right: 1px solid var(--border); color: var(--text-muted); flex-shrink: 0; }
+.icon-btn { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: inherit; transition: color 0.2s; position: relative; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; }
+.icon-btn:hover { color: var(--primary); background: #f8fafc; }
+.notification-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #f43f5e; border-radius: 50%; border: 1.5px solid var(--white); }
+.profile-btn { display: flex; align-items: center; gap: 0.6rem; background: none; border: none; cursor: pointer; text-align: left; padding: 0.25rem 0.5rem; border-radius: 9999px; max-width: 220px; overflow: hidden; }
+.profile-btn:hover { background: #f8fafc; }
+.profile-avatar { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #d1d5db; background: #f9fafb; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; flex-shrink: 0; }
+.profile-info { display: flex; flex-direction: column; text-align: left; min-width: 0; max-width: 140px; overflow: hidden; }
 .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 0.5rem; width: 14rem; background: var(--white); border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid var(--border); overflow: hidden; font-family: 'Roboto', sans-serif;}
 .dropdown-menu.show { display: block; }
 .dropdown-header { padding: 0.75rem 1rem; border-bottom: 1px solid #f3f4f6; background: #f9fafb; }
 .dropdown-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1rem; color: #374151; text-decoration: none; font-size: 0.875rem; transition: background 0.2s; }
 .dropdown-item:hover { background: #f9fafb; color: var(--primary); }
 .dropdown-divider { border-top: 1px solid #f3f4f6; }
-.profile-info h4 { font-size: 0.875rem; font-weight: bold; color: var(--text-main); line-height: 1.2; }
-.profile-info p { font-size: 0.7rem; color: var(--text-muted); }
+.profile-info h4 { font-size: 0.85rem; font-weight: bold; color: var(--text-main); line-height: 1.25; margin: 0; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+.profile-info p { font-size: 0.7rem; color: var(--text-muted); line-height: 1.2; margin: 0; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+
+/* Tablet intermediate breakpoint to prevent crowding */
+@media (max-width: 992px) {
+  .profile-info p { display: none !important; }
+  .profile-info { max-width: 110px; }
+  .role-badge { max-width: 110px; font-size: 0.7rem; }
+}
 .text-rose { color: #f43f5e !important; }
 
 /* --- METRICS GRID --- */
@@ -604,29 +613,164 @@ body.sidebar-mobile-open {
     white-space: nowrap !important;
   }
 
-  /* Data Tables Mobile Touch Scroll */
-  .table-section {
-    border-radius: 0.75rem !important;
-    margin-bottom: 1rem !important;
-    overflow: hidden !important;
-    width: 100% !important;
-  }
+  /* ============================================================
+     MOBILE NO-SCROLL CARD TRANSFORMATION FOR DATA TABLES
+     Transforms wide table rows into modern, stacked mobile cards
+     with no horizontal scrolling required.
+     ============================================================ */
   .table-responsive {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow-x: visible !important;
+    width: 100% !important;
+    -webkit-overflow-scrolling: auto !important;
+  }
+
+  .table-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .table-responsive table:not(.printable-table) {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    border-collapse: separate !important;
+    background: transparent !important;
+  }
+
+  .table-responsive table:not(.printable-table) thead {
+    display: none !important;
+  }
+
+  .table-responsive table:not(.printable-table) tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.85rem !important;
     width: 100% !important;
   }
-  .table-responsive table {
-    min-width: 620px !important;
+
+  /* Each table row becomes a clean, elevated mobile card */
+  .table-responsive table:not(.printable-table) tr {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    padding: 1rem 1.15rem !important;
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    box-sizing: border-box !important;
+    margin-bottom: 0 !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
   }
+
+  .table-responsive table:not(.printable-table) tr:hover {
+    box-shadow: 0 4px 14px -3px rgba(15, 23, 42, 0.12) !important;
+  }
+
+  /* Colspan messages (Loading / Empty states) */
+  .table-responsive table:not(.printable-table) td[colspan] {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 2.25rem 1rem !important;
+    border: none !important;
+    color: #64748b !important;
+  }
+  .table-responsive table:not(.printable-table) td[colspan]::before {
+    display: none !important;
+  }
+
+  /* Standard card data rows */
+  .table-responsive table:not(.printable-table) td:not([colspan]) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.55rem 0 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    border-top: none !important;
+    font-size: 0.835rem !important;
+    text-align: right !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Label on the left from data-label */
+  .table-responsive table:not(.printable-table) td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    text-align: left !important;
+    margin-right: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Primary header / title cell (first cell) */
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan]) {
+    padding-top: 0 !important;
+    padding-bottom: 0.75rem !important;
+    border-bottom: 1.5px solid #e2e8f0 !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan])::before {
+    display: none !important;
+  }
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan]) .td-user {
+    width: 100% !important;
+  }
+
+  /* Action buttons cell (last cell) */
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    padding-top: 0.85rem !important;
+    justify-content: stretch !important;
+    margin-top: 0.25rem !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan])::before {
+    display: none !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) .btn,
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) a.btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) > div {
+    width: 100% !important;
+    display: flex !important;
+    gap: 0.5rem !important;
+    justify-content: stretch !important;
+  }
+  .table-responsive table:not(.printable-table) td:last-child:not([colspan]) > div > .btn {
+    flex: 1 1 auto !important;
+  }
+
+  /* Cell contents formatting */
+  .table-responsive table:not(.printable-table) td:not(:first-child):not(:last-child) > * {
+    max-width: 65% !important;
+  }
+
   .table-header {
-    padding: 0.75rem 1rem !important;
+    padding: 0.75rem 0.5rem !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 0.65rem !important;
   }
   .table-header h2 {
-    font-size: 1rem !important;
+    font-size: 1.05rem !important;
   }
   .table-header .search-bar {
     width: 100% !important;
@@ -670,7 +814,7 @@ body.sidebar-mobile-open {
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .metrics-grid {
     grid-template-columns: 1fr !important;
   }
@@ -678,8 +822,40 @@ body.sidebar-mobile-open {
     padding: 0 0.5rem;
   }
   .role-badge {
-    display: none;
+    display: none !important;
   }
+  .topbar-icons {
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+  .table-responsive table:not(.printable-table) tr {
+    padding: 0.85rem !important;
+  }
+}
+
+/* Explicitly preserve printable soft-copy dossier document table layout */
+.printable-document table,
+#proposalDossierModal table,
+#reportPrintModal table,
+#proposal-modal table {
+  display: table !important;
+  width: 100% !important;
+}
+.printable-document tr,
+#proposalDossierModal tr,
+#reportPrintModal tr,
+#proposal-modal tr {
+  display: table-row !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.printable-document td,
+#proposalDossierModal td,
+#reportPrintModal td,
+#proposal-modal td {
+  display: table-cell !important;
 }
 
 /* --- PRINTABLE REPORT STYLING --- */

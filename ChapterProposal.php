@@ -742,7 +742,7 @@
 
                 return `
                     <tr>
-                        <td>
+                        <td data-label="Event Details">
                             <div style="font-weight: 700; color: #0f172a;">${escapeHtml(p.title)}</div>
                             <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px;">
                                 <small style="color: #64748b; text-transform: uppercase;">${escapeHtml(p.event_type || 'Event')}</small>
@@ -751,25 +751,25 @@
                                 ${docBadges}
                             </div>
                         </td>
-                        <td>
+                        <td data-label="Schedule & Location">
                             <div style="font-size: 0.85rem; color: #1e293b;">${escapeHtml(p.start_datetime ? p.start_datetime.substring(0, 10) : 'Date TBD')}</div>
                             <small style="color: #64748b;">${escapeHtml(p.venue || 'Venue TBD')}</small>
                         </td>
-                        <td>
+                        <td data-label="Turnout Threshold">
                             <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 700;">
                                 <i class="ph ph-users"></i> Target: ${p.target_turnout || 100}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Budget Allocation">
                             <span style="font-weight: 600; color: #0f172a;">PHP ${(p.budget_amount || 0).toLocaleString()}</span>
                             ${dueHtml}
                         </td>
-                        <td>
+                        <td data-label="Status & Review Notes">
                             ${statusBadge}
                             ${timerHtml}
                             ${p.review_note ? `<p style="margin: 4px 0 0; font-size: 0.75rem; color: #64748b; font-style: italic;">"${escapeHtml(p.review_note)}"</p>` : ''}
                         </td>
-                        <td>${actions}</td>
+                        <td data-label="Actions">${actions}</td>
                     </tr>
                 `;
             }).join('');

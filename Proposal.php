@@ -720,7 +720,7 @@
 
             row.className = 'proposal-row';
             row.innerHTML = `
-              <td>
+              <td data-label="Event Proposal">
                 <div class="td-user">
                   <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
                     <i class="ph-fill ph-compass"></i>
@@ -738,17 +738,17 @@
                   </div>
                 </div>
               </td>
-              <td><span class="badge chapter-admin font-roboto">${escapeHtml(p.chapter_name || 'All Chapters')}</span></td>
-              <td>
-                <p class="font-roboto" style="font-size: 0.825rem; font-weight: bold; color: #0f172a;">${startDate}</p>
-                <p class="td-sub font-roboto"><i class="ph ph-map-pin"></i> ${escapeHtml(p.venue || 'TBD')}</p>
+              <td data-label="Chapter"><span class="badge chapter-admin font-roboto">${escapeHtml(p.chapter_name || 'All Chapters')}</span></td>
+              <td data-label="Schedule & Venue">
+                <p class="font-roboto" style="font-size: 0.825rem; font-weight: bold; color: #0f172a; margin: 0;">${startDate}</p>
+                <p class="td-sub font-roboto" style="margin: 2px 0 0;"><i class="ph ph-map-pin"></i> ${escapeHtml(p.venue || 'TBD')}</p>
               </td>
-              <td style="text-align: center;">
-                <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem; color: #0f172a;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> ${targetTurnout} Target</p>
-                <p class="td-sub font-roboto">₱${budgetFormatted}</p>
+              <td data-label="Target / Budget" style="text-align: center;">
+                <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem; color: #0f172a; margin: 0;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> ${targetTurnout} Target</p>
+                <p class="td-sub font-roboto" style="margin: 2px 0 0;">₱${budgetFormatted}</p>
               </td>
-              <td style="text-align: center;">${statusBadge}</td>
-              <td style="text-align: center;">
+              <td data-label="Status" style="text-align: center;">${statusBadge}</td>
+              <td data-label="Action" style="text-align: center;">
                 <div style="display: flex; gap: 0.35rem; justify-content: center; align-items: center;">
                   <button class="btn btn-primary btn-sm font-roboto" onclick="selectProposalById(${p.id})">
                     <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}

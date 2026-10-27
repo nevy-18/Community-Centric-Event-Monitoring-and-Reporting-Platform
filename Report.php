@@ -775,7 +775,7 @@
             : '';
 
           row.innerHTML = `
-            <td>
+            <td data-label="Event & Chapter">
               <div style="display: flex; align-items: center; gap: 0.85rem;">
                 <div style="width: 38px; height: 38px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
                   <i class="ph-fill ph-file-text"></i>
@@ -790,35 +790,44 @@
                 </div>
               </div>
             </td>
-            <td>
+            <td data-label="Date & Venue">
               <p class="font-roboto" style="font-weight: bold; font-size: 0.8rem; color: #0f172a; margin: 0;">${startDate}</p>
               <p style="font-size: 0.7rem; color: #64748b; margin: 2px 0 0;"><i class="ph ph-map-pin"></i> ${r.venue || 'TBD'}</p>
             </td>
-            <td style="text-align: center;">
+            <td data-label="Turnout vs Target" style="text-align: center;">
               <strong style="color: #0f172a; font-size: 0.9rem;">${totalAtt} / ${targetAtt}</strong>
               <div style="margin-top: 3px;">${thresholdBadge}</div>
             </td>
-            <td style="text-align: center; font-weight: bold; color: #16a34a;">${r.first_timers || 0}</td>
-            <td style="text-align: center; font-weight: bold; color: #2563eb;">${r.existing_members || 0}</td>
-            <td style="text-align: center;">${statusBadge}</td>
-            <td style="text-align: center;">
+            <td data-label="1st Timers" style="text-align: center; font-weight: bold; color: #16a34a;">${r.first_timers || 0}</td>
+            <td data-label="Members" style="text-align: center; font-weight: bold; color: #2563eb;">${r.existing_members || 0}</td>
+            <td data-label="Submission Status" style="text-align: center;">${statusBadge}</td>
+            <td data-label="Action" style="text-align: center;">
               <button class="btn btn-primary btn-sm font-roboto" style="margin: 0 auto;" onclick='selectReportRecord(${JSON.stringify(r)})'>
                 <i class="ph ph-eye"></i> View
               </button>
             </td>
           `;
           tbody.appendChild(row);
-
-          if (idx === 0 && !selectedReportData) {
-            selectReportRecord(r);
-          }
         });
       }
     }
 
-    // Select Report Record into Sidebar Overview
+    function closeReportReviewModal() {
+      const modal = document.getElementById('reportReviewModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    // Select Report Record and Open Pop-Up Modal
     function selectReportRecord(r) {
       selectedReportData = r;
+      const modal = document.getElementById('reportReviewModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
       const emptyState = document.getElementById('emptyReportState');
       const activeContent = document.getElementById('activeReportContent');
       if (emptyState) emptyState.style.display = 'none';

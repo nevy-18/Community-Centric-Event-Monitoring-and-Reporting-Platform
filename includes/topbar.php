@@ -412,10 +412,10 @@
       const topbarBadge = document.querySelector('.topbar-left .role-badge');
       if (topbarBadge) {
         if (u.role === 'chapter_admin') {
-          topbarBadge.textContent = (u.chapter_name || 'Chapter') + (u.position ? ' • ' + u.position : '');
+          topbarBadge.textContent = u.chapter_name || 'Laguna Chapter';
           topbarBadge.style.cssText = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700;';
         } else {
-          topbarBadge.textContent = 'National' + (u.position ? ' • ' + u.position : '');
+          topbarBadge.textContent = 'National';
         }
       }
 
@@ -1405,12 +1405,42 @@
     const topbarBadge = document.querySelector('.topbar-left .role-badge');
     if (topbarBadge) {
       if (u.role === 'chapter_admin') {
-        topbarBadge.textContent = (u.chapter_name || 'Chapter') + (u.position ? ' • ' + u.position : '');
+        topbarBadge.textContent = u.chapter_name || 'Laguna Chapter';
         topbarBadge.style.cssText = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-weight: 700;';
       } else {
-        topbarBadge.textContent = 'National' + (u.position ? ' • ' + u.position : '');
+        topbarBadge.textContent = 'National';
       }
     }
   }
+
+  // Mobile Card View: Automatically apply data-label from thead th to tbody td for all tables
+  function applyMobileTableLabels() {
+    document.querySelectorAll('.table-responsive table:not(.printable-table)').forEach(table => {
+      if (table.closest('.printable-document') || table.closest('#proposalDossierModal') || table.closest('#reportPrintModal')) return;
+      const ths = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      if (ths.length === 0) return;
+      table.querySelectorAll('tbody tr').forEach(row => {
+        const tds = row.querySelectorAll('td');
+        if (tds.length === 1 && tds[0].hasAttribute('colspan')) return;
+        tds.forEach((td, idx) => {
+          if (!td.getAttribute('data-label') && ths[idx]) {
+            td.setAttribute('data-label', ths[idx]);
+          }
+        });
+      });
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    applyMobileTableLabels();
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver(() => applyMobileTableLabels());
+      document.querySelectorAll('.table-responsive tbody').forEach(tb => {
+        observer.observe(tb, { childList: true });
+      });
+    }
+    // Also run periodically for any late AJAX loads
+    setInterval(applyMobileTableLabels, 1500);
+  });
 
 </script>

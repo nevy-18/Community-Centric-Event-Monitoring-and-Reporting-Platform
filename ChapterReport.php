@@ -1204,14 +1204,14 @@
 
         return `
           <tr>
-            <td>
+            <td data-label="Event Details">
               <div style="font-weight: 700; color: #0f172a;">${escapeHtml(r.event_title)}</div>
               <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px; margin-bottom: 3px;">
                 ${getProgramBadge(r.ytr_program || 'Lead up (Youth Leadership)')}
               </div>
               <small style="color: #64748b;"><i class="ph ph-calendar"></i> ${escapeHtml(r.submitted_at ? r.submitted_at.substring(0, 10) : 'Recent')}</small>
             </td>
-            <td>
+            <td data-label="Attendance Breakdown">
               <div style="font-size: 0.9rem; font-weight: 700; color: #0f172a;">${r.total_participants} Total</div>
               <small style="color: #64748b;">
                 First-Timers: <strong>${r.first_timers || 0}</strong> | Leaders: <strong>${r.youth_leaders_count || 0}</strong>
@@ -1219,15 +1219,15 @@
               ${sheetBadge}
               ${driveBadge}
             </td>
-            <td>
+            <td data-label="Turnout Threshold">
               ${threshBadge}
               <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">Goal: ${r.target_turnout || 100}</div>
             </td>
-            <td>
+            <td data-label="Budget Spent">
               <span style="font-weight: 600; color: #0f172a;">PHP ${(r.budget_spent || 0).toLocaleString()}</span>
             </td>
-            <td>${sigHtml}</td>
-            <td>
+            <td data-label="Submission Status">${sigHtml}</td>
+            <td data-label="Actions">
               <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
                 <button class="btn btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #1e3a8a; border-color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.3rem;" onclick="openProposalDossier(${r.event_id || r.id})" title="View and Download Official Proposal Soft Copy">
                   <i class="ph-bold ph-file-text"></i> View Proposal
