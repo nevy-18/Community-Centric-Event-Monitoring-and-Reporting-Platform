@@ -219,7 +219,7 @@ def submit_report():
                 
                 # Reject National Admin submission
                 if submitter['role'] == 'national_admin':
-                    return api_error('Submission restricted: Only Chapter-based administrators can submit post-event reports. National Admins evaluate and audit submissions.', 403)
+                    return api_error('Submission restricted: Only Chapter-based administrators can submit post-event reports. National Admins evaluate and endorse submissions.', 403)
                 
                 if submitter['role'] != 'chapter_admin':
                     return api_error('Unauthorized: Only active Chapter Admins can submit post-event reports.', 403)

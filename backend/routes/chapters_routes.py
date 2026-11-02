@@ -56,12 +56,61 @@ def list_chapters():
                 SELECT id, chapter_code, chapter_name, generation_name, region, province, city_municipality, status,
                        regional_director_id, regional_director_name
                 FROM chapters
-                WHERE status = 'active'
+                WHERE status = 'active' OR status IS NULL OR status = ''
                 ORDER BY chapter_name ASC
             """)
             chapters = cur.fetchall()
 
     return api_response(serialize_rows(chapters))
+
+@chapters_bp.route('', methods=['POST'])
+def create_chapter():
+    """Register a new partner chapter. Automatically available in all dropdowns."""
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    chapter_name = data.get('chapter_name', '').strip()
+    chapter_code = data.get('chapter_code', '').strip().upper()
+    region = data.get('region', '').strip()
+    province = data.get('province', '').strip()
+    city_municipality = data.get('city_municipality', '').strip()
+    generation_name = data.get('generation_name', 'Gen One').strip()
+
+    if not chapter_name:
+        return api_error('Chapter name is required.', 400)
+
+    if not chapter_code:
+        # Generate code from chapter name, e.g. "Rizal Chapter" -> "YTR-RIZ"
+        clean = chapter_name.replace('Chapter', '').replace('chapter', '').strip()
+        parts = clean.split()
+        prefix = ''.join(p[:3] for p in parts).upper()[:6] if parts else 'CHP'
+        chapter_code = f"YTR-{prefix}"
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            # Check unique chapter_name or chapter_code
+            cur.execute("""
+                SELECT id, chapter_name, chapter_code FROM chapters
+                WHERE LOWER(chapter_name) = %s OR chapter_code = %s
+                LIMIT 1
+            """, (chapter_name.lower(), chapter_code))
+            existing = cur.fetchone()
+            if existing:
+                return api_error(f"A chapter with name '{chapter_name}' or code '{chapter_code}' already exists.", 409)
+
+            cur.execute("""
+                INSERT INTO chapters (chapter_code, chapter_name, generation_name, region, province, city_municipality, status, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, 'active', NOW(), NOW())
+            """, (chapter_code, chapter_name, generation_name, region or None, province or None, city_municipality or None))
+            new_id = cur.lastrowid
+
+            cur.execute("""
+                SELECT id, chapter_code, chapter_name, generation_name, region, province, city_municipality, status,
+                       regional_director_id, regional_director_name
+                FROM chapters
+                WHERE id = %s
+            """, (new_id,))
+            new_ch = cur.fetchone()
+
+    return api_response(serialize_row(new_ch), f"Partner Chapter '{chapter_name}' added successfully.", 201)
 
 AUTHORIZED_CEO_POSITIONS = [
     'Chief Executive Operation',

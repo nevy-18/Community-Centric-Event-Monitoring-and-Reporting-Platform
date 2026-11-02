@@ -651,20 +651,29 @@
         const filterSelect = document.getElementById('chapterFilterSelect');
         const formSelect = document.getElementById('formPropChapter');
         
-        filterSelect.innerHTML = '<option value="all">All Chapters</option>';
-        formSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+        if (filterSelect) {
+          const cur = filterSelect.value;
+          filterSelect.innerHTML = '<option value="all">All Chapters</option>';
+          res.data.forEach(ch => {
+            const opt1 = document.createElement('option');
+            opt1.value = ch.id;
+            opt1.textContent = ch.chapter_name;
+            filterSelect.appendChild(opt1);
+          });
+          if (cur && Array.from(filterSelect.options).some(o => o.value == cur)) {
+            filterSelect.value = cur;
+          }
+        }
 
-        res.data.forEach(ch => {
-          const opt1 = document.createElement('option');
-          opt1.value = ch.id;
-          opt1.textContent = ch.chapter_name;
-          filterSelect.appendChild(opt1);
-
-          const opt2 = document.createElement('option');
-          opt2.value = ch.id;
-          opt2.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
-          formSelect.appendChild(opt2);
-        });
+        if (formSelect) {
+          formSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+          res.data.forEach(ch => {
+            const opt2 = document.createElement('option');
+            opt2.value = ch.id;
+            opt2.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
+            formSelect.appendChild(opt2);
+          });
+        }
       }
     }
 

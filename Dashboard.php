@@ -295,7 +295,7 @@
         // 4. Action button
         const actionBtn = item.is_report_submitted
           ? `<a href="Report.php" class="btn btn-sm btn-primary" style="text-decoration: none; padding: 0.35rem 0.75rem;">
-               <i class="ph ph-clipboard-text"></i> Audit Report
+               <i class="ph ph-clipboard-text"></i> View Report
              </a>`
           : `<a href="Report.php" class="btn btn-sm btn-outline" style="text-decoration: none; padding: 0.35rem 0.75rem; border-color: #cbd5e1; color: #1e3a8a;">
                <i class="ph ph-bell"></i> Remind / View

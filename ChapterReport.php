@@ -275,7 +275,7 @@
         <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.85rem;">
           <i class="ph-fill ph-shield-check" style="font-size: 1.5rem; color: #16a34a;"></i>
           <div style="font-size: 0.875rem; color: #166534;">
-            <strong>Chapter Administrator Exclusive:</strong> Post-event evaluation dossiers and attendee rosters are submitted exclusively by Chapter Admins. National Admins audit, verify e-signatures, and endorse printable records.
+            <strong>Chapter Administrator Exclusive:</strong> Post-event evaluation dossiers and attendee rosters are submitted exclusively by Chapter Admins. National Admins verify e-signatures and endorse printable records.
           </div>
         </div>
 

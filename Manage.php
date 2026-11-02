@@ -93,18 +93,23 @@
             <!-- Table Section -->
             <div class="table-section">
               
-              <!-- Tabs -->
-              <div class="tabs-container font-roboto">
-                <button class="tab-btn" onclick="switchAccountTab('all', this)"><i class="ph ph-users"></i> All Accounts</button>
-                <button class="tab-btn active" onclick="switchAccountTab('pending', this)"><i class="ph ph-clock"></i> Pending Requests</button>
-                <button class="tab-btn" onclick="switchAccountTab('password_resets', this)" id="tabPasswordResets">
-                  <i class="ph-bold ph-key"></i> Password Resets
-                  <span class="badge rose font-roboto" id="badgeResetCount" style="margin-left: 6px; font-size: 0.72rem; padding: 2px 7px; display: none;">0</span>
+              <!-- Tabs & Action Bar -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem;">
+                <div class="tabs-container font-roboto" style="margin-bottom: 0;">
+                  <button class="tab-btn" onclick="switchAccountTab('all', this)"><i class="ph ph-users"></i> All Accounts</button>
+                  <button class="tab-btn active" onclick="switchAccountTab('pending', this)"><i class="ph ph-clock"></i> Pending Requests</button>
+                  <button class="tab-btn" onclick="switchAccountTab('password_resets', this)" id="tabPasswordResets">
+                    <i class="ph-bold ph-key"></i> Password Resets
+                    <span class="badge rose font-roboto" id="badgeResetCount" style="margin-left: 6px; font-size: 0.72rem; padding: 2px 7px; display: none;">0</span>
+                  </button>
+                  <button class="tab-btn" onclick="switchAccountTab('national_admins', this)"><i class="ph ph-shield-check"></i> National Admins</button>
+                  <button class="tab-btn" onclick="switchAccountTab('chapter_admins', this)"><i class="ph ph-user-gear"></i> Chapter Admins</button>
+                  <button class="tab-btn" onclick="switchAccountTab('chapter_directors', this)"><i class="ph ph-buildings"></i> Chapter Regional Directors</button>
+                  <button class="tab-btn" onclick="switchAccountTab('disabled', this)"><i class="ph ph-prohibit"></i> Disabled</button>
+                </div>
+                <button type="button" class="btn btn-primary font-roboto" id="btnAddPartnerChapterBtn" onclick="openAddChapterModal()" style="display: none; align-items: center; gap: 0.4rem; padding: 0.5rem 0.95rem; font-size: 0.85rem; font-weight: 700; border-radius: 8px;">
+                  <i class="ph-bold ph-plus-circle"></i> Add Partner Chapter
                 </button>
-                <button class="tab-btn" onclick="switchAccountTab('national_admins', this)"><i class="ph ph-shield-check"></i> National Admins</button>
-                <button class="tab-btn" onclick="switchAccountTab('chapter_admins', this)"><i class="ph ph-user-gear"></i> Chapter Admins</button>
-                <button class="tab-btn" onclick="switchAccountTab('chapter_directors', this)"><i class="ph ph-buildings"></i> Chapter Regional Directors</button>
-                <button class="tab-btn" onclick="switchAccountTab('disabled', this)"><i class="ph ph-prohibit"></i> Disabled</button>
               </div>
 
               <!-- Data Table -->
@@ -228,7 +233,6 @@
             <label class="form-label font-roboto" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Partner Chapter</label>
             <select class="form-select font-roboto" id="assignChapterSelect" onchange="handleChapterSelectChange()" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
               <option value="">Select Partner Chapter...</option>
-              <option value="1">Laguna Chapter</option>
             </select>
           </div>
 
@@ -259,6 +263,54 @@
   </div>
 
       </main>
+    </div>
+  </div>
+
+  <!-- ADD NEW PARTNER CHAPTER MODAL -->
+  <div id="addChapterModal" class="modal-overlay hidden" style="display: none;" onclick="if (event.target === this) closeAddChapterModal()">
+    <div class="modal-md" style="max-width: 520px; width: 95%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+      <div class="modal-header-banner" style="background: #eff6ff; border-bottom: 1px solid #bfdbfe; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background: #dbeafe; color: #1e40af; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+            <i class="ph-fill ph-buildings"></i>
+          </div>
+          <div>
+            <h3 class="font-roboto" style="color: #1e3a8a; margin: 0; font-size: 1.05rem; font-weight: 800;">Add New Partner Chapter</h3>
+            <p class="font-roboto" style="color: #64748b; margin: 0; font-size: 0.78rem;">Register a partner chapter branch to appear across all dropdowns</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddChapterModal()" style="background: none; border: none; font-size: 1.4rem; color: #64748b; cursor: pointer; padding: 0.2rem;" title="Close"><i class="ph ph-x"></i></button>
+      </div>
+      <form id="addChapterForm" onsubmit="handleCreateChapter(event)" style="padding: 1.25rem;">
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label font-roboto" style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Chapter Name <span style="color: #ef4444;">*</span></label>
+          <input type="text" class="form-control font-roboto" id="newChapterName" required placeholder="e.g. Rizal Chapter" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label font-roboto" style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Chapter Code</label>
+          <input type="text" class="form-control font-roboto" id="newChapterCode" placeholder="e.g. YTR-RIZ (optional, auto-generated if blank)" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.85rem;">
+          <div class="form-group">
+            <label class="form-label font-roboto" style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Region</label>
+            <input type="text" class="form-control font-roboto" id="newChapterRegion" placeholder="e.g. Region IV-A" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+          </div>
+          <div class="form-group">
+            <label class="form-label font-roboto" style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Province</label>
+            <input type="text" class="form-control font-roboto" id="newChapterProvince" placeholder="e.g. Rizal" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label font-roboto" style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">City / Municipality</label>
+          <input type="text" class="form-control font-roboto" id="newChapterCity" placeholder="e.g. Antipolo City" style="width: 100%; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.65rem;">
+          <button type="button" class="btn btn-outline font-roboto" onclick="closeAddChapterModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary font-roboto" id="btnSubmitNewChapter" style="background: #2563eb; border-color: #1d4ed8; font-weight: 700;">
+            <i class="ph-bold ph-plus"></i> Save Partner Chapter
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -559,6 +611,7 @@
         chaptersList = res.data;
         const select = document.getElementById('assignChapterSelect');
         if (select && select.tagName === 'SELECT') {
+          const curVal = select.value;
           select.innerHTML = '<option value="">Select Partner Chapter...</option>';
           res.data.forEach(ch => {
             const opt = document.createElement('option');
@@ -566,6 +619,9 @@
             opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
             select.appendChild(opt);
           });
+          if (curVal && Array.from(select.options).some(o => String(o.value) === String(curVal))) {
+            select.value = curVal;
+          }
         }
       }
     }
@@ -824,10 +880,75 @@
       activeFilter = filter;
       document.querySelectorAll('.tabs-container .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      const addChapBtn = document.getElementById('btnAddPartnerChapterBtn');
+      if (addChapBtn) {
+        addChapBtn.style.display = (filter === 'chapter_directors') ? 'inline-flex' : 'none';
+      }
       if (filter === 'chapter_directors') {
         loadChapterDirectors();
       } else {
         loadAccounts(filter);
+      }
+    }
+
+    function openAddChapterModal() {
+      const m = document.getElementById('addChapterModal');
+      if (m) {
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+      }
+    }
+
+    function closeAddChapterModal() {
+      const m = document.getElementById('addChapterModal');
+      if (m) {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
+    }
+
+    async function handleCreateChapter(e) {
+      e.preventDefault();
+      const name = document.getElementById('newChapterName').value.trim();
+      const code = document.getElementById('newChapterCode').value.trim();
+      const region = document.getElementById('newChapterRegion').value.trim();
+      const province = document.getElementById('newChapterProvince').value.trim();
+      const city = document.getElementById('newChapterCity').value.trim();
+
+      if (!name) {
+        alert('Please enter a Chapter Name.');
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmitNewChapter');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+
+      try {
+        const res = await YTR_API.chapters.create({
+          chapter_name: name,
+          chapter_code: code,
+          region: region,
+          province: province,
+          city_municipality: city
+        });
+
+        if (res.status === 'success') {
+          alert('Success! ' + (res.message || 'Partner Chapter registered successfully.'));
+          closeAddChapterModal();
+          document.getElementById('addChapterForm').reset();
+          await loadChapterOptions();
+          if (activeFilter === 'chapter_directors') {
+            await loadChapterDirectors();
+          }
+        } else {
+          alert('Error: ' + (res.message || 'Failed to register partner chapter.'));
+        }
+      } catch (err) {
+        alert('Network Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph-bold ph-plus"></i> Save Partner Chapter';
       }
     }
 
@@ -1098,7 +1219,7 @@
         populatePositionOptions('chapter_admin', user.position);
         document.getElementById('reviewUserChapter').textContent = user.chapter_name || 'Laguna Chapter';
         if (chSelect) {
-          if (chSelect.options.length <= 1 && chaptersList.length > 0) {
+          if (chaptersList.length > 0) {
             chSelect.innerHTML = '<option value="">Select Partner Chapter...</option>';
             chaptersList.forEach(ch => {
               const opt = document.createElement('option');
@@ -1106,8 +1227,12 @@
               opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
               chSelect.appendChild(opt);
             });
+            chSelect.value = user.chapter_id ? String(user.chapter_id) : (chSelect.options[1] ? chSelect.options[1].value : '1');
+          } else {
+            loadChapterOptions().then(() => {
+              if (user.chapter_id) chSelect.value = String(user.chapter_id);
+            });
           }
-          chSelect.value = user.chapter_id ? String(user.chapter_id) : '1';
         }
       } else {
         lockRoleToNational('Account requested for National HQ');

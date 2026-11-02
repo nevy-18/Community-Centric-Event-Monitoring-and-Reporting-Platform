@@ -282,6 +282,10 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadChapterList();
       loadWorkspace(activeChapterId);
+      const sel = document.getElementById('chapter-switch-select');
+      if (sel) {
+        sel.addEventListener('focus', loadChapterList);
+      }
     });
 
     async function loadChapterList() {

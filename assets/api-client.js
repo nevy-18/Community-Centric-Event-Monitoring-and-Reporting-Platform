@@ -124,6 +124,12 @@ const YTR_API = {
     getById(id) {
       return YTR_API.request(`/chapters/${id}`);
     },
+    create(data) {
+      return YTR_API.request('/chapters', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
     getWorkspace(id) {
       return YTR_API.request(`/chapters/${id}/workspace`);
     },

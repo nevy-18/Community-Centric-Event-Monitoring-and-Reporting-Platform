@@ -114,20 +114,33 @@ const loginTab = document.getElementById('loginTab');
       try {
         const result = window.YTR_API ? await YTR_API.chapters.getAll() : await (await fetch('https://ytr-platform-y99r.onrender.com/api/chapters')).json();
         if (result.status === 'success' && Array.isArray(result.data)) {
-          chapterName.innerHTML = '';
-          result.data.forEach(ch => {
-            const opt = document.createElement('option');
-            opt.value = ch.id;
-            opt.textContent = ch.chapter_name;
-            if (Number(ch.id) === 1) opt.selected = true;
-            chapterName.appendChild(opt);
-          });
+          const currentVal = chapterName ? chapterName.value : '';
+          if (chapterName) {
+            chapterName.innerHTML = '<option value="">Select Partner Chapter...</option>';
+            result.data.forEach(ch => {
+              const opt = document.createElement('option');
+              opt.value = ch.id;
+              opt.textContent = ch.chapter_name + (ch.province ? ` (${ch.province})` : '');
+              chapterName.appendChild(opt);
+            });
+            if (currentVal && Array.from(chapterName.options).some(o => o.value == currentVal)) {
+              chapterName.value = currentVal;
+            } else if (result.data.length > 0) {
+              const lag = result.data.find(c => Number(c.id) === 1);
+              chapterName.value = lag ? '1' : String(result.data[0].id);
+            }
+          }
         }
       } catch (err) {
         console.warn('Could not load chapters dynamically:', err);
       }
     }
     loadChapters();
+    if (chapterName) {
+      chapterName.addEventListener('focus', () => {
+        if (chapterName.options.length <= 2) loadChapters();
+      });
+    }
 
     // Live Login Handler using Python Backend
     document.getElementById('loginForm').addEventListener('submit', async event => {

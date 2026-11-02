@@ -404,7 +404,7 @@
                             <p class="tl-card-subtitle">Update stage status, upload proofs, and advance progress</p>
                         </div>
 
-                        <!-- Stage 4: Documentation & Conducted Audit Review Card -->
+                        <!-- Stage 4: Documentation Review Card -->
                         <div id="ctl-doc-audit-card" class="tl-audit-card" style="display: none;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                                 <h5 class="font-roboto">
@@ -1189,7 +1189,7 @@
         async function submitApproveDocumentation() {
             if (!activeRequest) return;
             const btn = document.getElementById('btn-approve-audit');
-            const note = prompt('Enter audit approval notes or remarks:', 'Event documentation and attendance verified. Event concluded successfully.');
+            const note = prompt('Enter approval notes or remarks:', 'Event documentation and attendance verified. Event concluded successfully.');
             if (note === null) return;
 
             btn.disabled = true;
