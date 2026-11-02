@@ -34,6 +34,14 @@
                 <i class="ph-bold ph-caret-down" style="font-size: 0.85rem; color: #991b1b;"></i>
               </button>
               <div id="manageExecMenu" style="display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); min-width: 230px; z-index: 1000; padding: 0.4rem 0;">
+                <div style="padding: 0.4rem 1rem 0.2rem; font-size: 0.68rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem;">
+                  <i class="ph-bold ph-buildings"></i> Chapter Management
+                </div>
+                <a href="#" onclick="event.preventDefault(); closeManageExecMenu(); openAddChapterModal();" style="display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 1rem; color: #1e40af; text-decoration: none; font-size: 0.825rem; font-weight: 600; transition: background 0.15s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='transparent'">
+                  <i class="ph-bold ph-plus-circle" style="color: #2563eb; font-size: 1.1rem;"></i>
+                  <span>Add Partner Chapter</span>
+                </a>
+                <div style="height: 1px; background: #f1f5f9; margin: 0.25rem 0;"></div>
                 <div style="padding: 0.4rem 1rem 0.2rem; font-size: 0.68rem; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem;">
                   <i class="ph-bold ph-shield-check"></i> System Maintenance
                 </div>
@@ -93,9 +101,9 @@
             <!-- Table Section -->
             <div class="table-section">
               
-              <!-- Tabs & Action Bar -->
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem;">
-                <div class="tabs-container font-roboto" style="margin-bottom: 0;">
+              <!-- Tabs & Action Bar: Unified full-width baseline with seamless button placement -->
+              <div class="tab-controls-wrapper" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 0 1.25rem 0 0; background: #ffffff; margin-bottom: 0;">
+                <div class="tabs-container font-roboto" style="display: flex; gap: 0.5rem; padding: 0 1.25rem; border-bottom: none; margin-bottom: 0; overflow-x: auto; flex: 1;">
                   <button class="tab-btn" onclick="switchAccountTab('all', this)"><i class="ph ph-users"></i> All Accounts</button>
                   <button class="tab-btn active" onclick="switchAccountTab('pending', this)"><i class="ph ph-clock"></i> Pending Requests</button>
                   <button class="tab-btn" onclick="switchAccountTab('password_resets', this)" id="tabPasswordResets">
@@ -107,9 +115,11 @@
                   <button class="tab-btn" onclick="switchAccountTab('chapter_directors', this)"><i class="ph ph-buildings"></i> Chapter Regional Directors</button>
                   <button class="tab-btn" onclick="switchAccountTab('disabled', this)"><i class="ph ph-prohibit"></i> Disabled</button>
                 </div>
-                <button type="button" class="btn btn-primary font-roboto" id="btnAddPartnerChapterBtn" onclick="openAddChapterModal()" style="display: none; align-items: center; gap: 0.4rem; padding: 0.5rem 0.95rem; font-size: 0.85rem; font-weight: 700; border-radius: 8px;">
-                  <i class="ph-bold ph-plus-circle"></i> Add Partner Chapter
-                </button>
+                <div style="padding: 0.4rem 0.5rem 0.4rem 0; display: flex; align-items: center; flex-shrink: 0;">
+                  <button type="button" class="btn btn-primary font-roboto" id="btnAddPartnerChapterBtn" onclick="openAddChapterModal()" style="display: none; align-items: center; gap: 0.45rem; padding: 0.42rem 0.95rem; font-size: 0.825rem; font-weight: 700; border-radius: 6px; background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; white-space: nowrap; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(37,99,235,0.15);">
+                    <i class="ph-bold ph-plus-circle" style="font-size: 1rem;"></i> Add Partner Chapter
+                  </button>
+                </div>
               </div>
 
               <!-- Data Table -->
@@ -580,7 +590,7 @@
     </div>
   </div>
 
-  <script src="assets/api-client.js"></script>
+  <script src="assets/api-client.js?v=<?= time() ?>"></script>
   <script>
     let activeFilter = 'pending';
     let selectedUserId = null;
@@ -896,6 +906,8 @@
       if (m) {
         m.classList.remove('hidden');
         m.style.display = 'flex';
+        const nameInput = document.getElementById('newChapterName');
+        if (nameInput) setTimeout(() => nameInput.focus(), 50);
       }
     }
 
@@ -933,7 +945,7 @@
           city_municipality: city
         });
 
-        if (res.status === 'success') {
+        if (res.ok || res.status === 'success' || res.status === 201 || res.status === 200) {
           alert('Success! ' + (res.message || 'Partner Chapter registered successfully.'));
           closeAddChapterModal();
           document.getElementById('addChapterForm').reset();
