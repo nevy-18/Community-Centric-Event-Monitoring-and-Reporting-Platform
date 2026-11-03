@@ -1232,9 +1232,6 @@
                 <button class="btn btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #1e3a8a; border-color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.3rem;" onclick="openProposalDossier(${r.event_id || r.id})" title="View and Download Official Proposal Soft Copy">
                   <i class="ph-bold ph-file-text"></i> View Proposal
                 </button>
-                <button class="btn btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.3rem;" onclick="viewPrintDossier(${r.id})" title="Print Post-Event Evaluation Dossier">
-                  <i class="ph ph-printer"></i> Print Report
-                </button>
               </div>
             </td>
           </tr>
