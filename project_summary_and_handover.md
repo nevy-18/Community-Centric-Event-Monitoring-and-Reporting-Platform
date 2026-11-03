@@ -103,6 +103,15 @@ flowchart TD
 - Removed the standalone **"Print Report"** button from the actions column in `ChapterReport.php` (`My Chapter Submitted Reports` table).
 - The action column now cleanly displays the **"View Proposal"** button, which already embeds the official document dossier view and its built-in `"Print / Save as PDF"` functionality.
 
+### 10. Dynamic Submitter Identity & Digital Signature Endorsement (Latest)
+- **Account-Aware Submitter Binding:**
+  - In `backend/routes/proposals_routes.py` and `api/proposals.php`, joined `event_reports` and submitter account tables so proposals reflect both the proposal requester and the actual report submitter / signer (`signed_by_name`, `report_submitter_name`, and `report_e_signature`).
+  - New proposals created in `ChapterProposal.php` explicitly bind `created_by` to `currentUser.id`.
+- **Dossier Modal Digital Signature & Identity Resolution:**
+  - Across `ChapterReport.php`, `ChapterProposal.php`, and `Proposal.php`, the `"PREPARED & SUBMITTED BY"` section dynamically loads the account name of whoever actually filed and endorsed the event report (`r.signed_by_name || r.submitted_by_name || p.effective_submitter_name || currentUser.full_name`).
+  - Added `#dossierSubmitterSigContainer` in modal templates: if a digital signature image or data URL was recorded upon submission, the actual signature graphic renders directly above the endorsement line in the printable dossier.
+  - Submitter stamp clearly identifies `'Official Post-Event Report Filing'` when viewing filed events.
+
 ---
 
 ## 4. Key File Layout & Directory Structure
@@ -111,13 +120,14 @@ flowchart TD
 Community-Centric-Event-Monitoring-and-Reporting-Platform - Copy/
 ├── api/                           # Fallback PHP API endpoints
 │   ├── auth.php                   # Authentication endpoint (email/username login)
+│   ├── proposals.php              # Proposals with report signer join
 │   ├── db.php                     # PDO connection
 │   └── response.php               # JSON formatting helpers
 ├── assets/                        # Frontend UI assets
 │   ├── api-client.js              # Centralized JavaScript client for Flask backend
 │   ├── script.js                  # Login/signup/auth DOM controller with error catch
 │   ├── style.css                  # Unified styling with alert boxes & responsive cards
-│   └── uploads/                   # Upload storage (proposals, posters, signatures)
+│   └── uploads/                   # Upload storage (proposals, attendance, posters, signatures)
 ├── backend/                       # Python Flask API backend
 │   ├── app.py                     # Main Flask application initialization
 │   ├── db.py                      # PyMySQL database connection manager
@@ -126,9 +136,9 @@ Community-Centric-Event-Monitoring-and-Reporting-Platform - Copy/
 │       ├── auth_routes.py         # Login, register, forgot-password, me
 │       ├── account_routes.py      # Account approvals, overrides, deletion
 │       ├── chapter_routes.py      # Partner chapters, RD assignment
-│       ├── proposal_routes.py     # Event proposal submission, approval, PDFs
-│       ├── report_routes.py       # Accomplishment report lifecycle
-│       ├── poster_routes.py       # Creative poster request queue & review
+│       ├── proposals_routes.py    # Event proposal submission, approval, PDFs & report joins
+│       ├── reports_routes.py      # Accomplishment report lifecycle
+│       ├── poster_requests_routes.py # Creative poster request queue & review
 │       └── system_routes.py       # Data archive, non-destructive flush & restore
 ├── apache-render.conf             # VirtualHost configuration with /api/ reverse proxy
 ├── Dockerfile                     # Combined PHP 8.2 + Python 3 container definition
@@ -137,5 +147,7 @@ Community-Centric-Event-Monitoring-and-Reporting-Platform - Copy/
 ├── Dashboard.php                  # National Administration overview
 ├── ChapterDashboard.php           # Chapter Administration workspace
 ├── ChapterReport.php              # Chapter branch event reporting & evaluation
+├── ChapterProposal.php            # Chapter event proposal creation & dossier
+├── Proposal.php                   # National event proposal review & dossier
 └── start.sh                       # Container startup script (Flask + Apache)
 ```
