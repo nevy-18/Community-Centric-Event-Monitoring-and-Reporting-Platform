@@ -18,6 +18,22 @@
       document.cookie = "ytr_role=; path=/; max-age=0;";
       document.cookie = "ytr_chapter_id=; path=/; max-age=0;";
       document.cookie = "ytr_user_id=; path=/; max-age=0;";
+
+      // If user arrives with credentials in URL, scrub them immediately for privacy and preserve for inputs
+      (function() {
+        try {
+          const url = new URL(window.location.href);
+          const email = url.searchParams.get('email');
+          const pass = url.searchParams.get('password');
+          if (email || pass) {
+            url.searchParams.delete('email');
+            url.searchParams.delete('password');
+            const cleanUrl = url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '') + url.hash;
+            window.history.replaceState({}, document.title, cleanUrl);
+            window.__ytr_prefill = { email: email || '', password: pass || '' };
+          }
+        } catch(e) {}
+      })();
     </script>
 </head>
 
@@ -96,7 +112,7 @@
 
         <section class="form-card" id="loginPanel">
 
-          <form id="loginForm" novalidate>
+          <form id="loginForm" method="POST" action="javascript:void(0);" novalidate>
 
             <h3 class="form-heading">Log in to your account</h3>
 
@@ -140,7 +156,7 @@
 
         <section class="form-card hidden" id="signupPanel">
 
-          <form id="signupForm" novalidate>
+          <form id="signupForm" method="POST" action="javascript:void(0);" novalidate>
 
             <h3 class="form-heading">Request an account</h3>
 
@@ -254,7 +270,7 @@
         <button type="button" class="auth-modal-close" id="btnCloseForgotModal" aria-label="Close modal">&times;</button>
       </div>
 
-      <form id="forgotPasswordForm" class="auth-modal-form" novalidate>
+      <form id="forgotPasswordForm" method="POST" action="javascript:void(0);" class="auth-modal-form" novalidate>
         <div class="field full">
           <label for="forgotEmail">Registered Email Address</label>
           <input type="email" id="forgotEmail" name="email" placeholder="name@ytr.org" autocomplete="email" required />

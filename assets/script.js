@@ -2,20 +2,25 @@
 
 
 const loginTab = document.getElementById('loginTab');
-
     const signupTab = document.getElementById('signupTab');
-
     const loginPanel = document.getElementById('loginPanel');
-
     const signupPanel = document.getElementById('signupPanel');
-
     const welcomeTitle = document.getElementById('welcomeTitle');
-
     const welcomeSubtitle = document.getElementById('welcomeSubtitle');
-
     const toast = document.getElementById('toast');
-
+    const requestedRole = document.getElementById('requestedRole');
+    const chapterField = document.getElementById('chapterField');
+    const chapterName = document.getElementById('chapterName');
+    const nationalRoles = ['Executive Director', 'Regional Director (National)', 'National Youth Officer', 'national_admin'];
     let toastTimer;
+
+    // Pre-fill credentials if stripped from URL query parameters
+    if (typeof window !== 'undefined' && window.__ytr_prefill) {
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      if (emailInput && window.__ytr_prefill.email) emailInput.value = window.__ytr_prefill.email;
+      if (passInput && window.__ytr_prefill.password) passInput.value = window.__ytr_prefill.password;
+    }
 
 
 
@@ -43,9 +48,9 @@ const loginTab = document.getElementById('loginTab');
 
     }
 
-    loginTab.addEventListener('click', () => showView('login'));
+    if (loginTab) loginTab.addEventListener('click', () => showView('login'));
 
-    signupTab.addEventListener('click', () => showView('signup'));
+    if (signupTab) signupTab.addEventListener('click', () => showView('signup'));
 
 
 
@@ -143,7 +148,9 @@ const loginTab = document.getElementById('loginTab');
     }
 
     // Live Login Handler using Python Backend
-    document.getElementById('loginForm').addEventListener('submit', async event => {
+    const loginFormEl = document.getElementById('loginForm');
+    if (loginFormEl) {
+      loginFormEl.addEventListener('submit', async event => {
       event.preventDefault(); 
       clearErrors();
 
@@ -203,21 +210,23 @@ const loginTab = document.getElementById('loginTab');
         submitBtn.style.opacity = '1';
       }
     });
+    }
 
-    const requestedRole = document.getElementById('requestedRole');
-    const chapterField = document.getElementById('chapterField');
-    const chapterName = document.getElementById('chapterName');
-    const nationalRoles = ['Executive Director', 'Regional Director (National)', 'National Youth Officer', 'national_admin'];
-
-    requestedRole.addEventListener('change', () => {
-      const isNational = nationalRoles.includes(requestedRole.value);
-      chapterField.classList.toggle('hidden', isNational);
-      chapterName.required = !isNational;
-      if (isNational) chapterName.value = '';
-    });
+    if (requestedRole) {
+      requestedRole.addEventListener('change', () => {
+        const isNational = nationalRoles.includes(requestedRole.value);
+        if (chapterField) chapterField.classList.toggle('hidden', isNational);
+        if (chapterName) {
+          chapterName.required = !isNational;
+          if (isNational) chapterName.value = '';
+        }
+      });
+    }
 
     // Live Registration (Account Request) Handler
-    document.getElementById('signupForm').addEventListener('submit', async event => {
+    const signupFormEl = document.getElementById('signupForm');
+    if (signupFormEl) {
+      signupFormEl.addEventListener('submit', async event => {
       event.preventDefault(); 
       clearErrors();
 
@@ -282,6 +291,7 @@ const loginTab = document.getElementById('loginTab');
         submitBtn.style.opacity = '1';
       }
     });
+    }
 
 
 
@@ -313,15 +323,15 @@ const loginTab = document.getElementById('loginTab');
       forgotModal.classList.add('hidden');
     }
 
-    document.getElementById('forgotPassword').addEventListener('click', openForgotModal);
+    const fpBtn = document.getElementById('forgotPassword'); if (fpBtn) fpBtn.addEventListener('click', openForgotModal);
     if (btnCloseForgotModal) btnCloseForgotModal.addEventListener('click', closeForgotModal);
     if (btnCancelForgotModal) btnCancelForgotModal.addEventListener('click', closeForgotModal);
 
-    forgotModal.addEventListener('click', (e) => {
+    if (forgotModal) forgotModal.addEventListener('click', (e) => {
       if (e.target === forgotModal) closeForgotModal();
     });
 
-    forgotForm.addEventListener('submit', async (e) => {
+    if (forgotForm) forgotForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       forgotError.textContent = '';
       forgotError.classList.remove('visible');
