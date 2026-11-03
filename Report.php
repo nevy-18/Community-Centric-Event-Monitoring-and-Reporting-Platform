@@ -617,7 +617,7 @@
                 <!-- National Admin Uploaded Signature Placed Here -->
               </div>
               <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
-              <p id="printChiefExecName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hamilton Jones Dela</p>
+              <p id="printChiefExecName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hanskee Joyce Jose</p>
               <p id="printChiefExecTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
               <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Youth on the Rock National Movement</p>
             </div>
@@ -691,7 +691,7 @@
             <span style="font-size: 0.75rem; color: #94a3b8; font-style: italic;">No signature loaded</span>
           </div>
           <div style="text-align: center; font-size: 0.8rem; font-weight: 800; color: #0f172a; margin-top: 2px;" id="sigPreviewName">
-            Hamilton Jones Dela
+            Hanskee Joyce Jose
           </div>
           <div style="text-align: center; font-size: 0.72rem; color: #2563eb; font-weight: 700;">
             Chief Executive Operation
@@ -929,7 +929,7 @@
     }
 
     let currentSignatories = {
-      chief_executive_name: 'Hamilton Jones Dela',
+      chief_executive_name: 'Hanskee Joyce Jose',
       chief_executive_title: 'Chief Executive Operation',
       chief_executive_signature: null
     };
@@ -943,7 +943,7 @@
       try {
         const res = await YTR_API.reports.getSignatories();
         if (res.status === 'success' && res.data) {
-          currentSignatories.chief_executive_name = res.data.chief_executive_name || 'Hamilton Jones Dela';
+          currentSignatories.chief_executive_name = res.data.chief_executive_name || 'Hanskee Joyce Jose';
           currentSignatories.chief_executive_title = res.data.chief_executive_title || 'Chief Executive Operation';
           if (res.data.chief_executive_signature) {
             currentSignatories.chief_executive_signature = res.data.chief_executive_signature;
@@ -1200,7 +1200,7 @@
       }
 
       // 2. Chief Executive Operation Signatory Block
-      document.getElementById('printChiefExecName').textContent = currentSignatories.chief_executive_name || 'Hamilton Jones Dela';
+      document.getElementById('printChiefExecName').textContent = currentSignatories.chief_executive_name || 'Hanskee Joyce Jose';
       document.getElementById('printChiefExecTitle').textContent = currentSignatories.chief_executive_title || 'Chief Executive Operation';
       
       const natSigBox = document.getElementById('printNationalSigBox');

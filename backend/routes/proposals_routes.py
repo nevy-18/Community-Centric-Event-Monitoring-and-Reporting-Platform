@@ -78,6 +78,20 @@ def compute_proposal_badges(p):
     budget_amt = float(p.get('budget_amount') or 0)
     budget_limit = float(p.get('budget_threshold') or 25000)
     p['budget_threshold_exceeded'] = budget_amt > budget_limit
+
+    # 4. Resolve effective submitter identity (if report was filed, reflect report signer/submitter)
+    p['effective_submitter_name'] = (
+        p.get('signed_by_name') or
+        p.get('report_submitter_name') or
+        p.get('requester_name') or
+        'Chapter Coordinator'
+    )
+    p['effective_submitter_position'] = (
+        p.get('report_submitter_position') or
+        p.get('requester_position') or
+        'Chapter Administrator'
+    )
+    p['effective_submitter_signature'] = p.get('report_e_signature')
     return p
 
 @proposals_bp.route('/metrics', methods=['GET'])
@@ -162,12 +176,18 @@ def get_proposal(proposal_id):
             cur.execute("""
                 SELECT e.*, c.chapter_name, c.chapter_code, c.region,
                        u.full_name AS requester_name, u.email AS requester_email, u.position AS requester_position,
-                       r.full_name AS reviewer_name, r.position AS reviewer_position
+                       r.full_name AS reviewer_name, r.position AS reviewer_position,
+                       rep.id AS report_id, rep.signed_by_name, rep.submitted_by AS report_submitted_by,
+                       rep.e_signature AS report_e_signature, rep.submitted_at AS report_submitted_at,
+                       rep_u.full_name AS report_submitter_name, rep_u.position AS report_submitter_position
                 FROM events e
                 LEFT JOIN chapters c ON c.id = e.chapter_id
                 LEFT JOIN users u ON u.id = e.created_by
                 LEFT JOIN users r ON r.id = e.reviewed_by
+                LEFT JOIN event_reports rep ON rep.event_id = e.id
+                LEFT JOIN users rep_u ON rep_u.id = rep.submitted_by
                 WHERE e.id = %s
+                ORDER BY rep.id DESC
                 LIMIT 1
             """, (proposal_id,))
             proposal = cur.fetchone()
@@ -233,7 +253,14 @@ def create_proposal():
         if due_date:
             due_date = str(due_date).split('T')[0].split(' ')[0]
 
-        created_by = session.get('user_id')
+        created_by = data.get('created_by') or request.headers.get('X-User-Id') or session.get('user_id')
+        if not created_by and request.headers.get('X-User-Email'):
+            with get_db() as conn_u:
+                with conn_u.cursor() as cur_u:
+                    cur_u.execute("SELECT id FROM users WHERE LOWER(email) = %s LIMIT 1", (request.headers.get('X-User-Email').lower(),))
+                    u_row = cur_u.fetchone()
+                    if u_row:
+                        created_by = u_row['id']
 
         if not title or not start_date or not venue or not description:
             return api_error('Title, start date, venue, and description are required.', 400)

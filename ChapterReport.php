@@ -745,7 +745,7 @@
             <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
               Prepared &amp; Submitted by:
             </div>
-            <div style="height: 38px; display: flex; align-items: flex-end; margin-bottom: 4px;">
+            <div style="height: 38px; display: flex; align-items: flex-end; margin-bottom: 4px;" id="dossierSubmitterSigContainer">
               <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700;"><i class="ph ph-check-circle"></i> Digital Chapter Endorsement</span>
             </div>
             <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
@@ -765,7 +765,7 @@
               </span>
             </div>
             <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
-            <p id="dossierReviewerName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hamilton Jones Dela</p>
+            <p id="dossierReviewerName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hanskee Joyce Jose</p>
             <p id="dossierReviewerTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
             <p id="dossierReviewNotes" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Cleared for Chapter Execution</p>
           </div>
@@ -802,7 +802,7 @@
     let hasDrawnOnCanvas = false;
     let canvas, ctx;
     let nationalExecSignature = null;
-    let nationalExecName = 'Hamilton Jones Dela';
+    let nationalExecName = 'Hanskee Joyce Jose';
 
     function switchChapterSigMode(mode) {
       activeChapSigMode = mode;
@@ -924,7 +924,7 @@
       try {
         const res = await YTR_API.reports.getSignatories();
         if (res.status === 'success' && res.data) {
-          nationalExecName = res.data.chief_executive_name || 'Hamilton Jones Dela';
+          nationalExecName = res.data.chief_executive_name || 'Hanskee Joyce Jose';
           if (res.data.chief_executive_signature) {
             nationalExecSignature = res.data.chief_executive_signature;
           }
@@ -1354,7 +1354,7 @@
         if (r.attendee_roster) roster = JSON.parse(r.attendee_roster);
       } catch (e) {}
 
-      const execName = nationalExecName || 'Hamilton Jones Dela';
+      const execName = nationalExecName || 'Hanskee Joyce Jose';
       const execSignatureHtml = nationalExecSignature
         ? `<img src="${nationalExecSignature}" alt="Chief Executive Signature" style="max-height: 46px; max-width: 160px; object-fit: contain;">`
         : `<span style="font-size: 0.72rem; color: #64748b; font-style: italic;"><i class="ph ph-check-circle"></i> National Executive Approved</span>`;
@@ -1559,7 +1559,7 @@
             chapter_code: match.chapter_code,
             requester_name: match.signed_by_name || 'Chapter Administrator',
             requester_position: 'Chapter Administrator',
-            reviewer_name: nationalExecName || 'Hamilton Jones Dela',
+            reviewer_name: nationalExecName || 'Hanskee Joyce Jose',
             reviewer_position: 'Chief Executive Operation',
             review_note: 'Cleared for Chapter Execution',
             status: match.event_status || 'approved'
@@ -1643,9 +1643,42 @@
 
       attInfo.innerHTML = attHtml;
 
-      document.getElementById('dossierSubmitterName').textContent = p.requester_name || (currentUser && currentUser.full_name ? currentUser.full_name : 'Chapter Coordinator');
-      document.getElementById('dossierSubmitterTitle').textContent = p.requester_position || 'Chapter Administrator';
-      document.getElementById('dossierSubmitterStamp').textContent = 'Verified Chapter Submission';
+      // Match report signer or report submitter if this event has a submitted report
+      const reportMatch = (typeof chapterReports !== 'undefined' && Array.isArray(chapterReports))
+        ? chapterReports.find(r => r.event_id == p.id || r.id == p.id)
+        : null;
+
+      const submitterName = (reportMatch && reportMatch.signed_by_name)
+        || p.signed_by_name
+        || (reportMatch && reportMatch.submitted_by_name)
+        || p.report_submitter_name
+        || p.effective_submitter_name
+        || p.requester_name
+        || (currentUser && currentUser.full_name ? currentUser.full_name : 'Chapter Coordinator');
+
+      const submitterTitle = (reportMatch && reportMatch.signed_by_position)
+        || p.report_submitter_position
+        || p.effective_submitter_position
+        || p.requester_position
+        || (currentUser && currentUser.position ? currentUser.position : 'Chapter Coordinator');
+
+      const submitterSig = (reportMatch && reportMatch.e_signature)
+        || p.report_e_signature
+        || p.effective_submitter_signature
+        || (currentUser && currentUser.signature_image ? currentUser.signature_image : null);
+
+      document.getElementById('dossierSubmitterName').textContent = submitterName;
+      document.getElementById('dossierSubmitterTitle').textContent = submitterTitle;
+      document.getElementById('dossierSubmitterStamp').textContent = (reportMatch || p.report_id) ? 'Official Post-Event Report Filing' : 'Verified Chapter Submission';
+
+      const submitterSigContainer = document.getElementById('dossierSubmitterSigContainer');
+      if (submitterSigContainer) {
+        if (submitterSig && submitterSig.length > 5) {
+          submitterSigContainer.innerHTML = `<img src="${submitterSig}" alt="Digital Chapter Signature" style="max-height: 38px; max-width: 140px; object-fit: contain;">`;
+        } else {
+          submitterSigContainer.innerHTML = `<span style="font-size: 0.72rem; color: #16a34a; font-weight: 700;"><i class="ph ph-check-circle"></i> Digital Chapter Endorsement</span>`;
+        }
+      }
 
       const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
       const isPending = p.status === 'pending_approval';
@@ -1657,7 +1690,7 @@
             ? `<img src="${nationalExecSignature}" alt="Chief Executive Signature" style="max-height: 38px; max-width: 140px; object-fit: contain;">`
             : `<span id="dossierStatusBadge" class="badge approved font-roboto" style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-size: 0.75rem; padding: 3px 8px; font-weight: 800;">OFFICIALLY APPROVED</span>`;
         }
-        document.getElementById('dossierReviewerName').textContent = p.reviewer_name || (nationalExecName || 'Hamilton Jones Dela');
+        document.getElementById('dossierReviewerName').textContent = p.reviewer_name || (nationalExecName || 'Hanskee Joyce Jose');
         document.getElementById('dossierReviewerTitle').textContent = p.reviewer_position || 'Chief Executive Operation';
         document.getElementById('dossierReviewNotes').textContent = p.review_note ? `Note: "${p.review_note}"` : 'Cleared for Chapter Execution';
       } else if (isPending) {

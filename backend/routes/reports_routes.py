@@ -101,7 +101,7 @@ def get_report_signatories():
             """)
             exec_user = cur.fetchone()
 
-    exec_name = exec_user['full_name'] if exec_user else 'Hamilton Jones Dela'
+    exec_name = exec_user['full_name'] if exec_user else 'Hanskee Joyce Jose'
     exec_pos = 'Chief Executive Operation'
     exec_sig = exec_user.get('signature_image') if exec_user else None
 

@@ -89,13 +89,19 @@ switch ($action) {
 
         $stmt = $db->prepare("
             SELECT e.*, c.chapter_name, c.chapter_code,
-                   u.full_name AS requester_name,
-                   r.full_name AS reviewer_name
+                   u.full_name AS requester_name, u.position AS requester_position,
+                   r.full_name AS reviewer_name, r.position AS reviewer_position,
+                   rep.id AS report_id, rep.signed_by_name, rep.submitted_by AS report_submitted_by,
+                   rep.e_signature AS report_e_signature,
+                   rep_u.full_name AS report_submitter_name, rep_u.position AS report_submitter_position
             FROM events e
             LEFT JOIN chapters c ON c.id = e.chapter_id
             LEFT JOIN users u ON u.id = e.created_by
             LEFT JOIN users r ON r.id = e.reviewed_by
+            LEFT JOIN event_reports rep ON rep.event_id = e.id
+            LEFT JOIN users rep_u ON rep_u.id = rep.submitted_by
             WHERE e.id = :id
+            ORDER BY rep.id DESC
             LIMIT 1
         ");
         $stmt->execute(['id' => $id]);
