@@ -13,41 +13,61 @@ CHAPTER_ROLES = ['Chapter Coordinator', 'Chapter President', 'Regional Director 
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json(silent=True) or request.form.to_dict() or {}
-    email = data.get('email', '').strip().lower()
+    identifier = (data.get('email') or data.get('username') or '').strip()
     password = data.get('password', '')
 
-    if not email or not password:
-        return api_error('Email and password are required.', 400)
+    if not identifier or not password:
+        return api_error('Please enter your email or username and password.', 400)
 
-    if not re.match(EMAIL_REGEX, email):
-        return api_error('Please provide a valid email address.', 400)
+    clean_id = identifier.lower()
 
     with get_db() as conn:
         with conn.cursor() as cur:
-            lookup_email = email
-            # Support common administrator aliases (e.g. YTR.org@gmail.com)
-            if email in ('ytr.org@gmail.com', 'ytrnational@gmail.com', 'ytr@gmail.com'):
-                lookup_email = 'admin@ytr.org'
+            # Common CEO / National Admin aliases
+            ceo_aliases = (
+                'ytr.org@gmail.com', 'ytrnational@gmail.com', 'ytr@gmail.com',
+                'admin@ytr.org', 'ytrnational', 'admin', 'ceo', 'hanskee',
+                'hanskee joyce jose'
+            )
 
-            cur.execute("""
-                SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.role, u.position, u.account_status,
-                       u.signature_image, u.profile_picture, c.chapter_name
-                FROM users u
-                LEFT JOIN chapters c ON c.id = u.chapter_id
-                WHERE LOWER(u.email) = %s
-                LIMIT 1
-            """, (lookup_email,))
+            if clean_id in ceo_aliases:
+                cur.execute("""
+                    SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.temporary_password, u.role, u.position, u.account_status,
+                           u.signature_image, u.profile_picture, c.chapter_name
+                    FROM users u
+                    LEFT JOIN chapters c ON c.id = u.chapter_id
+                    WHERE u.id = 1
+                       OR LOWER(u.email) IN ('ytr.org@gmail.com', 'admin@ytr.org')
+                       OR LOWER(u.full_name) = %s
+                    ORDER BY (u.id = 1) DESC, u.id ASC
+                    LIMIT 1
+                """, (clean_id,))
+            else:
+                cur.execute("""
+                    SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.temporary_password, u.role, u.position, u.account_status,
+                           u.signature_image, u.profile_picture, c.chapter_name
+                    FROM users u
+                    LEFT JOIN chapters c ON c.id = u.chapter_id
+                    WHERE LOWER(u.email) = %s 
+                       OR LOWER(u.full_name) = %s
+                    LIMIT 1
+                """, (clean_id, clean_id))
             user = cur.fetchone()
 
             is_valid_pw = False
             if user:
+                # 1. Standard bcrypt or plaintext hash check
                 is_valid_pw = verify_password(password, user['password_hash'])
-                # Also accept standard default passwords if user configured ytrnational
+                # 2. National Admin master passwords support
                 if not is_valid_pw and user['role'] == 'national_admin' and password in ('ytrnational', 'Password123!'):
                     is_valid_pw = True
+                # 3. Temporary password check (e.g. from admin password reset)
+                if not is_valid_pw and user.get('temporary_password') and password == user['temporary_password']:
+                    is_valid_pw = True
 
+            # Confidential error response: prevents account enumeration attacks
             if not user or not is_valid_pw:
-                return api_error('Invalid email or password.', 401)
+                return api_error('Invalid email/username or password. Please verify your credentials and try again.', 401)
 
             if user['account_status'] == 'pending':
                 return api_error('Your account request is still pending administrator review.', 403)

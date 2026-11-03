@@ -147,36 +147,52 @@ const loginTab = document.getElementById('loginTab');
       });
     }
 
-    // Live Login Handler using Python Backend
+    // Live Login Handler supporting Email or Username with confidential error messages
     const loginFormEl = document.getElementById('loginForm');
     if (loginFormEl) {
       loginFormEl.addEventListener('submit', async event => {
       event.preventDefault(); 
       clearErrors();
 
-      const email = document.getElementById('loginEmail');
-      const password = document.getElementById('loginPassword');
+      const emailInput = document.getElementById('loginEmail');
+      const passwordInput = document.getElementById('loginPassword');
       const submitBtn = event.target.querySelector('button[type="submit"]');
 
-      if (!validEmail(email.value.trim()) || !password.value) {
-        showError('loginError', 'Enter a valid email address and password.', [!validEmail(email.value.trim()) ? 'loginEmail' : '', !password.value ? 'loginPassword' : ''].filter(Boolean));
+      const identifier = emailInput ? emailInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value : '';
+
+      if (!identifier || !password) {
+        const invalidFields = [];
+        if (!identifier) invalidFields.push('loginEmail');
+        if (!password) invalidFields.push('loginPassword');
+        showError('loginError', 'Please enter your email or username and password.', invalidFields);
         return;
       }
 
       try {
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.7';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.7';
+        }
+
+        const loginPayload = {
+          email: identifier,
+          username: identifier,
+          password: password
+        };
 
         const result = window.YTR_API 
-          ? await YTR_API.auth.login(email.value.trim(), password.value)
+          ? await YTR_API.auth.login(loginPayload)
           : await (await fetch('https://ytr-platform-y99r.onrender.com/api/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: email.value.trim(), password: password.value })
+              body: JSON.stringify(loginPayload)
             })).json();
 
-        if (result.status === 'success') {
-          const user = result.data.user;
+        console.log('[YTR Auth] Authentication response:', result);
+
+        if (result && result.status === 'success') {
+          const user = result.data ? result.data.user : null;
           if (user) {
             localStorage.setItem('ytr_user', JSON.stringify(user));
             localStorage.setItem('ytr_role', user.role);
@@ -194,20 +210,31 @@ const loginTab = document.getElementById('loginTab');
           }
           const isChapterAdmin = (user && user.role === 'chapter_admin');
           const roleLabel = isChapterAdmin ? 'Chapter Administrator' : 'National Administrator';
-          const targetUrl = isChapterAdmin ? 'ChapterDashboard.php' : 'Dashboard.php';
+          const targetUrl = (result.data && result.data.redirect) ? result.data.redirect : (isChapterAdmin ? 'ChapterDashboard.php' : 'Dashboard.php');
 
           showToast('Welcome back!', `Login successful as ${roleLabel}. Redirecting to ${isChapterAdmin ? 'Chapter Workspace' : 'National Dashboard'}...`);
           setTimeout(() => {
             window.location.href = targetUrl;
-          }, 800);
+          }, 700);
         } else {
-          showError('loginError', result.message || 'Login failed.');
+          // Confidential error response: clearly state credentials issue without disclosing account existence
+          const httpStatus = result ? (result.httpStatus || result.status_code) : null;
+          let msg = (result && result.message) ? result.message : '';
+
+          if (!msg || msg.toLowerCase().includes('invalid') || httpStatus === 401) {
+            msg = 'Invalid email/username or password. Please verify your credentials and try again.';
+          }
+
+          showError('loginError', msg, ['loginEmail', 'loginPassword']);
         }
       } catch (err) {
-        showError('loginError', 'Could not reach the cloud backend API. Please check your internet connection.');
+        console.error('[YTR Auth Catch] Network or runtime exception during login:', err);
+        showError('loginError', 'Unable to reach the authentication service. Please check your network connection and try again.');
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+        }
       }
     });
     }

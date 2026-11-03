@@ -63,7 +63,7 @@ const YTR_API = {
         const text = await response.text();
         data = { message: text || response.statusText };
       }
-      return { ok: response.ok, status: response.status, ...data };
+      return { ok: response.ok, httpStatus: response.status, status: data.status || (response.ok ? 'success' : 'error'), ...data };
     } catch (err) {
       console.error(`API Request to ${url} failed:`, err);
       return {
@@ -77,10 +77,20 @@ const YTR_API = {
 
   // Auth Endpoints
   auth: {
-    login(email, password) {
+    login(identifierOrPayload, password) {
+      let body;
+      if (typeof identifierOrPayload === 'object' && identifierOrPayload !== null) {
+        body = JSON.stringify(identifierOrPayload);
+      } else {
+        body = JSON.stringify({
+          email: identifierOrPayload,
+          username: identifierOrPayload,
+          password: password
+        });
+      }
       return YTR_API.request('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password })
+        body: body
       });
     },
     register(payload) {

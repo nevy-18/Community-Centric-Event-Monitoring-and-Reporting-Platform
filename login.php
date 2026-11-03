@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#122b4a" />
   <title>YTR | Sign in</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/style.css?v=20261103" />
     <script>
       // Clear previous session when returning to login page
       localStorage.removeItem('ytr_user');
@@ -116,13 +116,13 @@
 
             <h3 class="form-heading">Log in to your account</h3>
 
-            <p class="form-hint">Use the email address connected to your approved YTR account.</p>
+            <p class="form-hint">Enter the email address or username connected to your approved YTR account.</p>
 
             <div class="field full">
 
-              <label for="loginEmail">Email address</label>
+              <label for="loginEmail">Email address or Username</label>
 
-              <input id="loginEmail" name="email" type="email" autocomplete="username" placeholder="you@example.com" required />
+              <input id="loginEmail" name="email" type="text" autocomplete="username" placeholder="Enter your email or username" required />
 
             </div>
 
@@ -307,8 +307,8 @@
 
 
 
-    <script src="assets/api-client.js"></script>
-    <script src="assets/script.js" defer></script>
+    <script src="assets/api-client.js?v=20261103"></script>
+    <script src="assets/script.js?v=20261103" defer></script>
 </body>
 
 </html>

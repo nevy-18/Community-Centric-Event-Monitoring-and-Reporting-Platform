@@ -14,31 +14,41 @@ $db = getDB();
 
 switch ($action) {
     case 'login':
-        $email = trim($input['email'] ?? '');
-        $password = $input['password'] ?? '';
+        $identifier = trim($input['email'] ?? $input['username'] ?? '');
+        $password   = $input['password'] ?? '';
 
-        if (empty($email) || empty($password)) {
-            jsonError('Email and password are required.', 400);
+        if (empty($identifier) || empty($password)) {
+            jsonError('Please enter your email or username and password.', 400);
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            jsonError('Please provide a valid email address.', 400);
-        }
+        $cleanId = strtolower($identifier);
+        $ceoAliases = ['ytr.org@gmail.com', 'ytrnational@gmail.com', 'ytr@gmail.com', 'admin@ytr.org', 'ytrnational', 'admin', 'ceo', 'hanskee', 'hanskee joyce jose'];
 
-        $lookupEmail = strtolower($email);
-        if (in_array($lookupEmail, ['ytr.org@gmail.com', 'ytrnational@gmail.com', 'ytr@gmail.com'])) {
-            $lookupEmail = 'admin@ytr.org';
+        if (in_array($cleanId, $ceoAliases)) {
+            $stmt = $db->prepare("
+                SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.temporary_password, u.role, u.position, u.account_status,
+                       c.chapter_name
+                FROM users u
+                LEFT JOIN chapters c ON c.id = u.chapter_id
+                WHERE u.id = 1
+                   OR LOWER(u.email) IN ('ytr.org@gmail.com', 'admin@ytr.org')
+                   OR LOWER(u.full_name) = :fullName
+                ORDER BY (u.id = 1) DESC, u.id ASC
+                LIMIT 1
+            ");
+            $stmt->execute(['fullName' => $cleanId]);
+        } else {
+            $stmt = $db->prepare("
+                SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.temporary_password, u.role, u.position, u.account_status,
+                       c.chapter_name
+                FROM users u
+                LEFT JOIN chapters c ON c.id = u.chapter_id
+                WHERE LOWER(u.email) = :email
+                   OR LOWER(u.full_name) = :fullName
+                LIMIT 1
+            ");
+            $stmt->execute(['email' => $cleanId, 'fullName' => $cleanId]);
         }
-
-        $stmt = $db->prepare("
-            SELECT u.id, u.chapter_id, u.full_name, u.email, u.password_hash, u.role, u.account_status,
-                   c.chapter_name
-            FROM users u
-            LEFT JOIN chapters c ON c.id = u.chapter_id
-            WHERE LOWER(u.email) = :email
-            LIMIT 1
-        ");
-        $stmt->execute(['email' => $lookupEmail]);
         $user = $stmt->fetch();
 
         $storedHash = $user['password_hash'] ?? '';
@@ -47,9 +57,12 @@ switch ($action) {
         if (!$isValid && ($user['role'] ?? '') === 'national_admin' && in_array($password, ['ytrnational', 'Password123!'])) {
             $isValid = true;
         }
+        if (!$isValid && !empty($user['temporary_password']) && $password === $user['temporary_password']) {
+            $isValid = true;
+        }
 
         if (!$user || !$isValid) {
-            jsonError('Invalid email or password.', 401);
+            jsonError('Invalid email/username or password. Please verify your credentials and try again.', 401);
         }
 
         if ($user['account_status'] === 'pending') {
@@ -69,6 +82,7 @@ switch ($action) {
         $_SESSION['user_name']    = $user['full_name'];
         $_SESSION['user_email']   = $user['email'];
         $_SESSION['user_role']    = $user['role'];
+        $_SESSION['user_position']= $user['position'] ?? ($user['role'] === 'national_admin' ? 'Chief Executive Operation' : 'Chapter Coordinator');
         $_SESSION['chapter_id']   = $user['chapter_id'];
         $_SESSION['chapter_name'] = $user['chapter_name'];
 
@@ -76,16 +90,19 @@ switch ($action) {
         $updateStmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
         $updateStmt->execute(['id' => $user['id']]);
 
+        $redirectUrl = ($user['role'] === 'chapter_admin') ? 'ChapterDashboard.php' : 'Dashboard.php';
+
         jsonResponse([
             'user' => [
                 'id'           => $user['id'],
                 'full_name'    => $user['full_name'],
                 'email'        => $user['email'],
                 'role'         => $user['role'],
+                'position'     => $_SESSION['user_position'],
                 'chapter_id'   => $user['chapter_id'],
                 'chapter_name' => $user['chapter_name']
             ],
-            'redirect' => 'Dashboard.php'
+            'redirect' => $redirectUrl
         ], 'Login successful.');
         break;
 
