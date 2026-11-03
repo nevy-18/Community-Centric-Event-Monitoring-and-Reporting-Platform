@@ -85,24 +85,23 @@ flowchart TD
 - National Admins can override accounts to either National or Chapter scopes and delete accounts with confirmation guards.
 - Protected sensitive administrative utilities (data flush and restore) inside an exclusive header dropdown visible only to the CEO.
 
-### 8. Authentication Restriction Resolution & Confidential Error Catching (Latest)
+### 8. Authentication Restriction Resolution & Confidential Error Catching
 - **Eliminated Strict Format Restrictions on Login:**
   - Updated `login.php` input from `type="email"` to `type="text" autocomplete="username"` with label `Email address or Username` and placeholder `Enter your email or username`.
   - Removed client-side `validEmail()` block on login submission while retaining it for new account registration.
 - **Universal Multi-Identifier Support (Email or Username):**
   - In `backend/routes/auth_routes.py` and `api/auth.php`, removed email format regex gating on login.
-  - Queries now match by `LOWER(u.email) = %s OR LOWER(u.full_name) = %s`, supporting full names (`Hanskee Joyce Jose`, `Joan Dela Cruz`) as well as aliases (`admin`, `ceo`, `ytrnational`, `ytr.org@gmail.com`).
+  - Queries match by `LOWER(u.email) = %s OR LOWER(u.full_name) = %s`, supporting full names as well as aliases.
 - **Cloud Database Synchronization (Aiven MySQL):**
   - Updated primary root administrator account (User 1) to `YTR.org@gmail.com` with active status and password hash matching `ytrnational`.
-  - Added dedicated secondary alias record for `admin@ytr.org` with master password support, ensuring immediate authentication across both current live Render containers and future deployments.
-- **Confidential Error Messaging:**
-  - Standardized invalid credential responses across backend and frontend to:
-    `"Invalid email/username or password. Please verify your credentials and try again."`
-  - In line with enterprise OWASP guidelines, does not disclose whether the email/username is registered or whether the password was the sole mismatched field.
-  - Clear, distinct error messaging is preserved for legitimate account states: pending administrator review, declined requests, or suspended accounts.
-- **Comprehensive Error Catch & Visual Alert Styling:**
-  - Added network/server exception catching displaying clear, user-friendly connectivity messages.
-  - Redesigned `.form-error` alert box in `assets/style.css` into a prominent, modern alert container (`background: #fef2f2; border: 1px solid #fecaca; color: #991b1b`) with accessible ARIA invalid states and automatic field focus.
+  - Maintained active alias account for `admin@ytr.org` with master password support.
+- **Confidential Error Messaging & Alert Container:**
+  - Standardized invalid credential responses to `"Invalid email/username or password. Please verify your credentials and try again."`
+  - Styled `.form-error` alert box in `assets/style.css` into a prominent alert container with accessible focus.
+
+### 9. Action Redundancy Cleanup in Chapter Reports
+- Removed the standalone **"Print Report"** button from the actions column in `ChapterReport.php` (`My Chapter Submitted Reports` table).
+- The action column now cleanly displays the **"View Proposal"** button, which already embeds the official document dossier view and its built-in `"Print / Save as PDF"` functionality.
 
 ---
 
@@ -137,5 +136,6 @@ Community-Centric-Event-Monitoring-and-Reporting-Platform - Copy/
 ├── Manage.php                     # National Account & Partner Chapter management
 ├── Dashboard.php                  # National Administration overview
 ├── ChapterDashboard.php           # Chapter Administration workspace
+├── ChapterReport.php              # Chapter branch event reporting & evaluation
 └── start.sh                       # Container startup script (Flask + Apache)
 ```
