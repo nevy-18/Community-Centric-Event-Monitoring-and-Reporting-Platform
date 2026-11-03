@@ -40,7 +40,7 @@ def is_executive_authorized():
                 if u:
                     pos = str(u.get('position') or '').strip()
                     email = str(u.get('email') or '').strip().lower()
-                    if pos in AUTHORIZED_CEO_POSITIONS or email == 'admin@ytr.org':
+                    if pos in AUTHORIZED_CEO_POSITIONS or email in ('admin@ytr.org', 'ytr.org@gmail.com'):
                         return True
                     return False
                 return False

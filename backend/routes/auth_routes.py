@@ -148,12 +148,12 @@ def register():
 
     if db_role == 'chapter_admin':
         if not chapter_id:
-            chapter_id = 1  # Default to Laguna Chapter if none provided
+            return api_error('Please select your partner chapter.', 400)
         else:
             try:
                 chapter_id = int(chapter_id)
             except (ValueError, TypeError):
-                chapter_id = 1
+                return api_error('Invalid partner chapter selected.', 400)
 
     with get_db() as conn:
         with conn.cursor() as cur:

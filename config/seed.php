@@ -38,8 +38,8 @@ try {
     $users = [
         [
             'chapter_id' => null,
-            'full_name'  => 'Hamilton Jones Dela',
-            'email'      => 'admin@ytr.org',
+            'full_name'  => 'Hanskee Joyce Jose',
+            'email'      => 'YTR.org@gmail.com',
             'pass_hash'  => $defaultPassHash,
             'role'       => 'national_admin',
             'status'     => 'active'
