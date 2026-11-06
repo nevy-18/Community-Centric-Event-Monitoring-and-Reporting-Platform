@@ -45,7 +45,7 @@
       </div>
     </div>
     <a href="login.php" class="sign-out" onclick="if(typeof ytrGlobalSignOut==='function'){ytrGlobalSignOut(event);}else{localStorage.clear();document.cookie='ytr_role=; path=/; max-age=0;';document.cookie='ytr_user_id=; path=/; max-age=0;';}">
-      <div class="icon"><i class="ph ph-sign-out"></i></div>
+      <div class="icon" style="color: #ffffff;"><i class="ph ph-sign-out" style="color: #ffffff;"></i></div>
       Sign Out
     </a>
   </div>

@@ -142,6 +142,80 @@
     </div>
   </div>
 
+  <!-- Interactive Remind Chapter Modal -->
+  <div id="remindChapterModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 1050; align-items: center; justify-content: center; padding: 1rem;" onclick="if(event.target === this) closeRemindModal();">
+    <div class="modal-md" style="max-width: 580px; width: 100%; background: #ffffff; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.35); border: 1px solid #e2e8f0;">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); color: #ffffff; padding: 1.1rem 1.35rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background: rgba(255, 255, 255, 0.15); width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-bell-ringing"></i>
+          </div>
+          <div>
+            <h3 class="font-roboto" style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #ffffff;">Send Report Reminder</h3>
+            <p style="margin: 2px 0 0; font-size: 0.75rem; color: #bfdbfe;">Direct notification to chapter administrator</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRemindModal()" style="background: none; border: none; color: #ffffff; font-size: 1.35rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 6px; opacity: 0.85; transition: opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">&times;</button>
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 1.25rem 1.35rem; background: #ffffff; display: flex; flex-direction: column; gap: 1rem;">
+        <!-- Target Chapter & Event Info Card -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.4rem;">
+            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em;">Target Chapter</span>
+            <span id="remind-target-badge" class="badge" style="font-size: 0.68rem; padding: 2px 6px;"></span>
+          </div>
+          <div id="remind-target-chapter" style="font-size: 0.95rem; font-weight: 700; color: #0f172a;"></div>
+
+          <div style="margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+            <div>
+              <span style="color: #64748b;">Event:</span>
+              <strong id="remind-target-event" style="color: #1e3a8a; margin-left: 0.25rem;"></strong>
+            </div>
+            <div>
+              <span style="color: #64748b;">Deadline:</span>
+              <strong id="remind-target-deadline" style="color: #0f172a; margin-left: 0.25rem;"></strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject Field -->
+        <div>
+          <label for="remind-subject" style="display: block; font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">
+            Reminder Subject <span style="color: #ef4444;">*</span>
+          </label>
+          <input type="text" id="remind-subject" class="form-control" style="width: 100%; padding: 0.55rem 0.75rem; font-size: 0.875rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;" placeholder="Enter reminder subject...">
+        </div>
+
+        <!-- Message Textarea -->
+        <div>
+          <label for="remind-message" style="display: block; font-size: 0.8rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">
+            Reminder Message / Instructions <span style="color: #ef4444;">*</span>
+          </label>
+          <textarea id="remind-message" rows="5" class="form-control font-roboto" style="width: 100%; padding: 0.6rem 0.75rem; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; line-height: 1.45; resize: vertical;" placeholder="Type your reminder message..."></textarea>
+          <span style="font-size: 0.72rem; color: #64748b; margin-top: 0.25rem; display: block;">
+            <i class="ph ph-info"></i> This reminder is sent directly to the Chapter Admin and displayed in their topbar notification bell.
+          </span>
+        </div>
+
+        <!-- Feedback / Status message -->
+        <div id="remind-feedback" style="display: none; padding: 0.6rem 0.85rem; border-radius: 6px; font-size: 0.825rem;"></div>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.85rem 1.35rem; display: flex; justify-content: flex-end; align-items: center; gap: 0.65rem;">
+        <button type="button" class="btn btn-outline" onclick="closeRemindModal()" style="padding: 0.45rem 1rem; font-size: 0.85rem; background: #ffffff;">
+          Cancel
+        </button>
+        <button type="button" id="btn-send-reminder" class="btn btn-primary" onclick="submitReminder()" style="padding: 0.45rem 1.15rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.45rem; background: #2563eb; border-color: #1d4ed8;">
+          <i class="ph-bold ph-paper-plane-tilt"></i> Send Reminder
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     let conductedEventsData = [];
     let currentFilter = 'needs_action';
@@ -297,9 +371,11 @@
           ? `<a href="Report.php" class="btn btn-sm btn-primary" style="text-decoration: none; padding: 0.35rem 0.75rem;">
                <i class="ph ph-clipboard-text"></i> View Report
              </a>`
-          : `<a href="Report.php" class="btn btn-sm btn-outline" style="text-decoration: none; padding: 0.35rem 0.75rem; border-color: #cbd5e1; color: #1e3a8a;">
-               <i class="ph ph-bell"></i> Remind / View
-             </a>`;
+          : `<button type="button" class="btn btn-sm btn-outline font-roboto" 
+               onclick="openRemindModal(${item.chapter_id}, '${escapeJs(item.chapter_name)}', ${item.event_id}, '${escapeJs(item.event_title)}', ${item.days_left}, '${escapeJs(item.deadline_formatted || item.deadline)}')" 
+               style="padding: 0.35rem 0.75rem; border-color: #3b82f6; color: #1d4ed8; background: #eff6ff; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; transition: all 0.15s ease;">
+               <i class="ph-bold ph-bell"></i> Remind Chapter
+             </button>`;
 
         let progBadge = '';
         if (item.ytr_program) {
@@ -364,6 +440,120 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
+
+    let currentRemindChapterId = null;
+    let currentRemindEventId = null;
+
+    function escapeJs(str) {
+      if (!str) return '';
+      return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function openRemindModal(chapterId, chapterName, eventId, eventTitle, daysLeft, deadline) {
+      currentRemindChapterId = chapterId;
+      currentRemindEventId = eventId;
+
+      document.getElementById('remind-target-chapter').textContent = chapterName;
+      document.getElementById('remind-target-event').textContent = eventTitle;
+      document.getElementById('remind-target-deadline').textContent = deadline;
+
+      const badgeEl = document.getElementById('remind-target-badge');
+      if (daysLeft < 0) {
+        badgeEl.className = 'badge overdue';
+        badgeEl.textContent = `Overdue by ${Math.abs(daysLeft)}d`;
+      } else if (daysLeft <= 3) {
+        badgeEl.className = 'badge due-soon';
+        badgeEl.textContent = daysLeft === 0 ? 'Due Today' : `${daysLeft}d left`;
+      } else {
+        badgeEl.className = 'badge timer';
+        badgeEl.textContent = `${daysLeft}d left`;
+      }
+
+      document.getElementById('remind-subject').value = `Action Required: Submit Post-Event Report - ${eventTitle}`;
+      
+      const defaultMsg = `Dear ${chapterName} Coordinator and Admin Team,\n\nPlease be reminded to submit the official post-event accomplishment report and attendee roster for "${eventTitle}".\n\nAs per national policy, reports must be submitted within 2 weeks of event conclusion so budgets can be liquidated and official certificates endorsed. Please access the Chapter Portal to submit the report at your earliest convenience.\n\nThank you,\nNational Secretariat`;
+
+      document.getElementById('remind-message').value = defaultMsg;
+
+      const fb = document.getElementById('remind-feedback');
+      fb.style.display = 'none';
+      fb.textContent = '';
+      fb.className = '';
+
+      const btn = document.getElementById('btn-send-reminder');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> Send Reminder';
+
+      document.getElementById('remindChapterModal').style.display = 'flex';
+    }
+
+    function closeRemindModal() {
+      document.getElementById('remindChapterModal').style.display = 'none';
+    }
+
+    async function submitReminder() {
+      const subject = document.getElementById('remind-subject').value.trim();
+      const message = document.getElementById('remind-message').value.trim();
+      const fb = document.getElementById('remind-feedback');
+      const btn = document.getElementById('btn-send-reminder');
+
+      if (!subject) {
+        fb.style.display = 'block';
+        fb.style.background = '#fef2f2';
+        fb.style.color = '#991b1b';
+        fb.style.border = '1px solid #fecaca';
+        fb.textContent = 'Please enter a reminder subject.';
+        return;
+      }
+
+      if (!message) {
+        fb.style.display = 'block';
+        fb.style.background = '#fef2f2';
+        fb.style.color = '#991b1b';
+        fb.style.border = '1px solid #fecaca';
+        fb.textContent = 'Please enter your reminder message.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Sending Reminder...';
+      fb.style.display = 'none';
+
+      try {
+        const payload = {
+          event_id: currentRemindEventId,
+          subject: subject,
+          message: message
+        };
+
+        const res = await YTR_API.chapters.sendReminder(currentRemindChapterId, payload);
+        if (res && res.status === 'success') {
+          fb.style.display = 'block';
+          fb.style.background = '#f0fdf4';
+          fb.style.color = '#166534';
+          fb.style.border = '1px solid #bbf7d0';
+          fb.innerHTML = `<i class="ph-bold ph-check-circle"></i> ${res.message || 'Reminder sent successfully!'}`;
+
+          btn.innerHTML = '<i class="ph-bold ph-check"></i> Sent';
+
+          setTimeout(() => {
+            closeRemindModal();
+          }, 1600);
+        } else {
+          throw new Error((res && res.message) || 'Failed to send reminder.');
+        }
+      } catch (err) {
+        console.error('Error sending reminder:', err);
+        fb.style.display = 'block';
+        fb.style.background = '#fef2f2';
+        fb.style.color = '#991b1b';
+        fb.style.border = '1px solid #fecaca';
+        fb.textContent = err.message || 'An error occurred while sending the reminder.';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> Send Reminder';
+      }
+    }
+
   </script>
 </body>
 </html>

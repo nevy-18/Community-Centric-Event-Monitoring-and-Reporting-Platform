@@ -48,8 +48,10 @@ body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(
 .admin-badge .icon { width: 34px; height: 34px; background: #1e40af; color: #93c5fd; border-radius: 0.35rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .sign-out { display: flex; align-items: center; gap: 0.75rem; color: var(--white); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s; padding-left: 0.75rem; }
 .sign-out:hover { color: #fda4af; }
-.sign-out .icon { width: 32px; height: 32px; background: rgba(244,63,94,0.2); color: #f43f5e; border-radius: 0.35rem; display: flex; align-items: center; justify-content: center; font-size: 1.125rem; transition: background 0.2s, color 0.2s; }
-.sign-out:hover .icon { background: rgba(244,63,94,0.3); color: #fda4af; }
+.sign-out .icon { width: 32px; height: 32px; background: rgba(244,63,94,0.2); color: #ffffff; border-radius: 0.35rem; display: flex; align-items: center; justify-content: center; font-size: 1.125rem; transition: background 0.2s, color 0.2s; }
+.sign-out .icon i { color: #ffffff !important; }
+.sign-out:hover .icon { background: rgba(244,63,94,0.3); color: #ffffff; }
+.sign-out:hover .icon i { color: #ffffff !important; }
 
 /* --- TOPBAR --- */
 .topbar { min-height: 60px; height: 64px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; z-index: 40; flex-shrink: 0; gap: 0.75rem; }

@@ -111,6 +111,23 @@ flowchart TD
   - Across `ChapterReport.php`, `ChapterProposal.php`, and `Proposal.php`, the `"PREPARED & SUBMITTED BY"` section dynamically loads the account name of whoever actually filed and endorsed the event report (`r.signed_by_name || r.submitted_by_name || p.effective_submitter_name || currentUser.full_name`).
   - Added `#dossierSubmitterSigContainer` in modal templates: if a digital signature image or data URL was recorded upon submission, the actual signature graphic renders directly above the endorsement line in the printable dossier.
   - Submitter stamp clearly identifies `'Official Post-Event Report Filing'` when viewing filed events.
+- **White Signout Icons across Dashboards and Portals:**
+  - Standardized `.sign-out .icon` and nested icon elements (`.sign-out .icon i`) to pure white (`#ffffff !important`) across `assets/National.css` and `assets/Chapter.css`.
+  - Added inline style overrides `<div class="icon" style="color: #ffffff;"><i class="ph ph-sign-out" style="color: #ffffff;"></i></div>` to `includes/sidebar.php` and `includes/sidebar_chapter.php` to guarantee bulletproof white rendering across cached browsers.
+- **Interactive Post-Event Report Reminder Modal in National Dashboard (`Dashboard.php`):**
+  - Upgraded the static "Remind / View" button in the Conducted Events table to an interactive modal trigger `<button onclick="openRemindModal(...)"><i class="ph-bold ph-bell"></i> Remind Chapter</button>`.
+  - Added `#remindChapterModal` dialog featuring target chapter & event overview, deadline status badges, customizable reminder subject, and an editable message textarea.
+  - Implemented client API method `YTR_API.chapters.sendReminder(chapterId, payload)` in `assets/api-client.js`.
+  - Added backend route `POST /api/chapters/<chapter_id>/remind` in `backend/routes/chapters_routes.py`:
+    - Dispatches targeted notifications to all active Chapter Admins and Coordinators for the target chapter.
+    - Inserts records into the `notifications` table (`related_type='event_report'`, `target_url='ChapterReport.php'`).
+    - Records an audit log entry in `audit_logs` capturing sender identity and target event details.
+- **Role-Tailored Notification System (`backend/routes/notifications_routes.py`):**
+  - Enhanced `GET /api/notifications/summary` to query and surface direct user notifications from the `notifications` table for the authenticated user (`X-User-Id` / `X-User-Email`).
+  - Chapter Admins receive reminders directly in their interactive topbar notification bell, opening the post-event reporting interface.
+  - Added `PUT /api/notifications/<id>/read` and `PUT /api/notifications/read-all` endpoints.
+- **Removal of Redundant "Chapter Submission View" Button (`Report.php`):**
+  - Cleaned up the header actions in `Report.php` by removing the redundant `<a href="ChapterReport.php">Go to Chapter Submission View</a>` link, preserving the "Upload Executive Signature" button.
 
 ---
 

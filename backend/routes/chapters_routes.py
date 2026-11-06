@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 from datetime import datetime, date
 from backend.db import get_db, serialize_rows, serialize_row
 from backend.auth_helpers import api_response, api_error
@@ -301,3 +301,113 @@ def get_unreported_events(chapter_id):
             events = cur.fetchall()
 
     return api_response(serialize_rows(events))
+
+
+@chapters_bp.route('/<int:chapter_id>/remind', methods=['POST'])
+def send_chapter_reminder(chapter_id):
+    """
+    Send an official post-event report reminder directly to Chapter Admin(s).
+    Inserts a targeted notification into the `notifications` table and records an audit log.
+    """
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    message = (data.get('message') or '').strip()
+    subject = (data.get('subject') or '').strip()
+    event_id = data.get('event_id')
+
+    if not message:
+        return api_error("Reminder message cannot be empty.", 400)
+
+    try:
+        event_id = int(event_id) if event_id else None
+    except (ValueError, TypeError):
+        event_id = None
+
+    sender_id = request.headers.get('X-User-Id') or session.get('user_id')
+    sender_email = request.headers.get('X-User-Email') or session.get('user_email')
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            # 1. Verify chapter exists
+            cur.execute("SELECT id, chapter_name, chapter_code FROM chapters WHERE id = %s", (chapter_id,))
+            chapter = cur.fetchone()
+            if not chapter:
+                return api_error("Chapter not found.", 404)
+
+            # 2. Resolve sender_id
+            valid_sender_id = None
+            if sender_id:
+                try:
+                    valid_sender_id = int(sender_id)
+                except (ValueError, TypeError):
+                    valid_sender_id = None
+
+            if not valid_sender_id and sender_email:
+                cur.execute("SELECT id FROM users WHERE LOWER(email) = %s LIMIT 1", (str(sender_email).lower(),))
+                u = cur.fetchone()
+                if u:
+                    valid_sender_id = u['id']
+
+            # 3. If event_id provided, fetch event title
+            event_title = None
+            if event_id:
+                cur.execute("SELECT id, title FROM events WHERE id = %s", (event_id,))
+                ev = cur.fetchone()
+                if ev:
+                    event_title = ev['title']
+
+            if not subject:
+                if event_title:
+                    subject = f"Action Required: Submit Post-Event Report - {event_title}"
+                else:
+                    subject = f"Action Required: Post-Event Documentation ({chapter['chapter_name']})"
+
+            # 4. Find all chapter admins / coordinators for this chapter
+            cur.execute("""
+                SELECT id, full_name, email, role, chapter_id
+                FROM users
+                WHERE chapter_id = %s
+                  AND role IN ('chapter_admin', 'coordinator')
+                  AND account_status = 'active'
+            """, (chapter_id,))
+            recipients = cur.fetchall()
+
+            if not recipients:
+                cur.execute("""
+                    SELECT id, full_name, email, role, chapter_id
+                    FROM users
+                    WHERE chapter_id = %s
+                      AND account_status = 'active'
+                """, (chapter_id,))
+                recipients = cur.fetchall()
+
+            # 5. Insert notification for each recipient
+            notif_ids = []
+            for r in recipients:
+                cur.execute("""
+                    INSERT INTO notifications (user_id, created_by, title, message, related_type, related_id, target_url, is_read, created_at)
+                    VALUES (%s, %s, %s, %s, 'event_report', %s, 'ChapterReport.php', 0, NOW())
+                """, (r['id'], valid_sender_id, subject, message, event_id))
+                notif_ids.append(cur.lastrowid)
+
+            # 6. Insert audit log
+            try:
+                log_details = f"Report reminder sent to {len(recipients)} admin(s) for chapter '{chapter['chapter_name']}'"
+                if event_title:
+                    log_details += f" regarding event '{event_title}'"
+                cur.execute("""
+                    INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details, created_at)
+                    VALUES (%s, 'send_report_reminder', 'chapter', %s, %s, NOW())
+                """, (valid_sender_id, chapter_id, log_details))
+            except Exception as log_err:
+                print(f"[WARN] Failed to insert audit log for reminder: {log_err}")
+
+    recipient_info = [{'id': r['id'], 'name': r['full_name'], 'email': r['email']} for r in recipients]
+    return api_response({
+        'chapter_id': chapter_id,
+        'chapter_name': chapter['chapter_name'],
+        'event_id': event_id,
+        'subject': subject,
+        'recipients_count': len(recipients),
+        'recipients': recipient_info,
+        'notification_ids': notif_ids
+    }, f"Reminder successfully delivered to {len(recipients)} chapter administrator(s).")

@@ -237,9 +237,6 @@
             <button type="button" class="btn btn-outline font-roboto" onclick="openSignatureManagerModal()" style="display: inline-flex; align-items: center; gap: 0.45rem; background: #ffffff;">
               <i class="ph ph-signature"></i> Upload Executive Signature
             </button>
-            <a href="ChapterReport.php" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; text-decoration: none;" title="Open Chapter Submission Portal">
-              <i class="ph ph-arrow-square-out"></i> Go to Chapter Submission View
-            </a>
           </div>
         </div>
 

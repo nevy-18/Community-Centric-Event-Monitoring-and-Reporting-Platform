@@ -133,6 +133,33 @@ class TestYTRBackendAPI(unittest.TestCase):
         self.assertEqual(data.get('status'), 'success')
         print("[PASS] Chapter unreported events passed: count =", len(data.get('data', [])))
 
+    def test_14b_send_chapter_reminder(self):
+        payload = {
+            'event_id': 1,
+            'subject': 'Report Submission Reminder',
+            'message': 'Please submit the official post-event documentation.'
+        }
+        response = self.client.post('/api/chapters/1/remind', json=payload, headers={
+            'X-User-Id': '1'
+        })
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertEqual(data.get('status'), 'success')
+        self.assertIn('recipients_count', data.get('data', {}))
+        print(f"[PASS] Chapter send reminder passed: recipients = {data['data']['recipients_count']}")
+
+        # Clean up test notification rows
+        notif_ids = data.get('data', {}).get('notification_ids', [])
+        if notif_ids:
+            mark_resp = self.client.put(f'/api/notifications/{notif_ids[0]}/read')
+            self.assertEqual(mark_resp.status_code, 200)
+            from backend.db import get_db
+            with get_db() as conn:
+                with conn.cursor() as cur:
+                    for nid in notif_ids:
+                        cur.execute("DELETE FROM notifications WHERE id = %s", (nid,))
+                    cur.execute("DELETE FROM audit_logs WHERE action = 'send_report_reminder' AND entity_id = 1")
+
     def test_15_national_admin_blocked_from_submitting_report(self):
         payload = {
             'event_id': 1,

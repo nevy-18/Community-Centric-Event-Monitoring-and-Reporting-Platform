@@ -151,6 +151,12 @@ const YTR_API = {
         method: 'POST',
         body: JSON.stringify({ regional_director_name, regional_director_id })
       });
+    },
+    sendReminder(chapterId, payload) {
+      return YTR_API.request(`/chapters/${chapterId}/remind`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
     }
   },
 
@@ -374,6 +380,12 @@ const YTR_API = {
   notifications: {
     getSummary() {
       return YTR_API.request('/notifications/summary');
+    },
+    markRead(id) {
+      return YTR_API.request(`/notifications/${id}/read`, { method: 'PUT' });
+    },
+    markAllRead() {
+      return YTR_API.request('/notifications/read-all', { method: 'PUT' });
     }
   },
 
