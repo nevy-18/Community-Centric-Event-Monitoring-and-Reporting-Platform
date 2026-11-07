@@ -100,6 +100,53 @@ html, body {
   line-height: 1.2 !important;
 }
 
+/* GLOBAL SEARCH BAR STYLING - FULL TEXT VISIBILITY & RESPONSIVE EXPANSION */
+.search-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 0.85rem !important;
+  min-width: 260px !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s !important;
+}
+.search-bar:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  background: #ffffff !important;
+}
+.search-bar i {
+  color: #64748b !important;
+  font-size: 1.15rem !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.search-bar input {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  color: #0f172a !important;
+  width: 100% !important;
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: inherit !important;
+  box-shadow: none !important;
+}
+.search-bar input::placeholder {
+  color: #94a3b8 !important;
+  font-size: 0.875rem !important;
+  opacity: 1 !important;
+}
+
 /* TABLET & MOBILE VIEW (<= 900px):
    ELIMINATE CRAMPED TOPBAR: HIDE USERNAME & ROLE BADGE ON SMALL SCREENS.
    Only Show Hamburger, Logo, Bell, and Circular Avatar */

@@ -305,9 +305,9 @@
                     <option value="Batangas Chapter">Batangas Chapter</option>
                   </select>
                 </div>
-                <div class="search-bar">
+                <div class="search-bar" style="min-width: 320px; flex: 1; max-width: 480px;">
                   <i class="ph ph-magnifying-glass"></i>
-                  <input type="text" id="proposalSearchInput" class="font-roboto" placeholder="Search by event or chapter..." onkeyup="searchProposals()">
+                  <input type="text" id="proposalSearchInput" class="font-roboto" placeholder="Search by event or chapter..." onkeyup="searchProposals()" style="width: 100%; flex: 1; min-width: 0;">
                 </div>
               </div>
 

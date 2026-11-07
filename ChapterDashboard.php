@@ -110,7 +110,7 @@
                   </div>
                   <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
                     <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" id="chapter-events-search" class="font-roboto" placeholder="Search event or topic..." oninput="renderMonitoringTable()">
+                    <input type="text" id="chapter-events-search" class="font-roboto" placeholder="Search event or topic..." oninput="renderMonitoringTable()" style="width: 100%; flex: 1; min-width: 0;">
                   </div>
                 </div>
 

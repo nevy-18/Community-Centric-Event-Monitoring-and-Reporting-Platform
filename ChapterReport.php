@@ -340,7 +340,7 @@
             </div>
             <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
               <i class="ph ph-magnifying-glass"></i>
-              <input type="text" id="report-search" placeholder="Search event title..." oninput="filterReportsTable()">
+              <input type="text" id="report-search" placeholder="Search event title..." oninput="filterReportsTable()" style="width: 100%; flex: 1; min-width: 0;">
             </div>
           </div>
 

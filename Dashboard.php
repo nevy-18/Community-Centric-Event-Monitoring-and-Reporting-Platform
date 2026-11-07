@@ -95,7 +95,7 @@
             </div>
             <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
               <i class="ph ph-magnifying-glass"></i>
-              <input type="text" id="chapter-search" class="font-roboto" placeholder="Search Chapter, Event, or Region..." oninput="filterChapterTable()">
+              <input type="text" id="chapter-search" class="font-roboto" placeholder="Search Chapter, Event, or Region..." oninput="filterChapterTable()" style="width: 100%; flex: 1; min-width: 0;">
             </div>
           </div>
 

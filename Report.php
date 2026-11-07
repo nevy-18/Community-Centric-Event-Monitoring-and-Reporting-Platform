@@ -290,9 +290,9 @@
                 <div style="display: flex; align-items: center; gap: 1rem;">
                   <h2 class="font-roboto">Chapter Event Turnout Records</h2>
                 </div>
-                <div class="search-bar">
+                <div class="search-bar" style="min-width: 320px; flex: 1; max-width: 480px;">
                   <i class="ph ph-magnifying-glass"></i>
-                  <input type="text" id="reportSearch" class="font-roboto" placeholder="Search event or chapter..." onkeyup="searchReports()">
+                  <input type="text" id="reportSearch" class="font-roboto" placeholder="Search event or chapter..." onkeyup="searchReports()" style="width: 100%; flex: 1; min-width: 0;">
                 </div>
               </div>
 

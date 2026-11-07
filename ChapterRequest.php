@@ -96,10 +96,10 @@
                             <i class="ph ph-clock"></i> In Queue (<span id="count-queue">0</span>)
                         </button>
                     </div>
-                    <div class="filters">
-                        <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
+                    <div class="filters" style="flex: 1; max-width: 480px; min-width: 280px;">
+                        <div class="search-bar" style="margin: 0; width: 100%;">
                             <i class="ph ph-magnifying-glass"></i>
-                            <input type="text" id="poster-search" placeholder="Search event title..." oninput="handleSearch()">
+                            <input type="text" id="poster-search" placeholder="Search event title..." oninput="handleSearch()" style="width: 100%; flex: 1; min-width: 0;">
                         </div>
                     </div>
                 </div>

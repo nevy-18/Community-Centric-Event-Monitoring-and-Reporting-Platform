@@ -234,10 +234,10 @@
                         <button class="tab-btn" id="tab-approved" onclick="filterByStatus('approved', this)"><i class="ph ph-check-circle"></i> Approved</button>
                         <button class="tab-btn" id="tab-revision" onclick="filterByStatus('draft', this)"><i class="ph ph-warning-circle"></i> Needs Revision</button>
                     </div>
-                    <div class="filters">
-                        <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
+                    <div class="filters" style="flex: 1; max-width: 480px; min-width: 280px;">
+                        <div class="search-bar" style="margin: 0; width: 100%;">
                             <i class="ph ph-magnifying-glass"></i>
-                            <input type="text" id="proposal-search" placeholder="Search event title..." oninput="handleSearch()">
+                            <input type="text" id="proposal-search" placeholder="Search event title..." oninput="handleSearch()" style="width: 100%; flex: 1; min-width: 0;">
                         </div>
                     </div>
                 </div>
