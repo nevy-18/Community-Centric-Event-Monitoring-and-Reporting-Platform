@@ -389,7 +389,7 @@ html, body {
 
       <div class="dropdown-divider"></div>
       <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-arrows-clockwise"></i> Switch Account</a>
-      <a href="login.php" class="dropdown-item text-rose" onclick="ytrGlobalSignOut(event)"><i class="ph ph-sign-out"></i> Sign Out</a>
+      <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-sign-out"></i> Sign Out</a>
     </div>
   </div>
 </header>
@@ -764,7 +764,7 @@ html, body {
             <a href="ChapterRequest.php" class="dropdown-item"><i class="ph ph-image"></i> My Poster Requests</a>
             <div class="dropdown-divider"></div>
             <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-arrows-clockwise"></i> Switch Account</a>
-            <a href="login.php" class="dropdown-item text-rose" onclick="ytrGlobalSignOut(event)"><i class="ph ph-sign-out"></i> Sign Out</a>
+            <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-sign-out"></i> Sign Out</a>
           `;
         }
       }

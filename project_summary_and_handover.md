@@ -111,9 +111,11 @@ flowchart TD
   - Across `ChapterReport.php`, `ChapterProposal.php`, and `Proposal.php`, the `"PREPARED & SUBMITTED BY"` section dynamically loads the account name of whoever actually filed and endorsed the event report (`r.signed_by_name || r.submitted_by_name || p.effective_submitter_name || currentUser.full_name`).
   - Added `#dossierSubmitterSigContainer` in modal templates: if a digital signature image or data URL was recorded upon submission, the actual signature graphic renders directly above the endorsement line in the printable dossier.
   - Submitter stamp clearly identifies `'Official Post-Event Report Filing'` when viewing filed events.
-- **White Signout Icons across Dashboards and Portals:**
-  - Standardized `.sign-out .icon` and nested icon elements (`.sign-out .icon i`) to pure white (`#ffffff !important`) across `assets/National.css` and `assets/Chapter.css`.
-  - Added inline style overrides `<div class="icon" style="color: #ffffff;"><i class="ph ph-sign-out" style="color: #ffffff;"></i></div>` to `includes/sidebar.php` and `includes/sidebar_chapter.php` to guarantee bulletproof white rendering across cached browsers.
+- **Modern Neutral Signout Styling across Dashboards and Portals:**
+  - Replaced the previous red/rose warning background (`rgba(244,63,94,0.2)`) on the square `.sign-out .icon` with a clean, subtle translucent background (`rgba(255, 255, 255, 0.1)`), delicate border (`1px solid rgba(255, 255, 255, 0.12)`), and smooth 8px rounded corners across `assets/National.css` and `assets/Chapter.css`.
+  - Replaced the aggressive pink hover (`#fda4af`) with smooth, standard SaaS hover highlights (`rgba(255, 255, 255, 0.08)` row background, `rgba(255, 255, 255, 0.18)` icon background, and crisp `#ffffff` text).
+  - Added inline style overrides to `includes/sidebar.php` and `includes/sidebar_chapter.php` for bulletproof cross-browser rendering: `<div class="icon" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.12); color: #ffffff;"><i class="ph ph-sign-out" style="color: #ffffff;"></i></div>`.
+  - Removed `text-rose` from topbar user profile dropdown Sign Out items in `includes/topbar.php` for a unified, professional user experience matching modern enterprise systems.
 - **Interactive Post-Event Report Reminder Modal in National Dashboard (`Dashboard.php`):**
   - Upgraded the static "Remind / View" button in the Conducted Events table to an interactive modal trigger `<button onclick="openRemindModal(...)"><i class="ph-bold ph-bell"></i> Remind Chapter</button>`.
   - Added `#remindChapterModal` dialog featuring target chapter & event overview, deadline status badges, customizable reminder subject, and an editable message textarea.

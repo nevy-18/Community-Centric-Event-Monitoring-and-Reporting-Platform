@@ -49,7 +49,7 @@ if (isset($_COOKIE['ytr_chapter_name']) && !empty($_COOKIE['ytr_chapter_name']))
     </div>
 
     <a href="login.php" class="sign-out" onclick="if(typeof ytrGlobalSignOut==='function'){ytrGlobalSignOut(event);}else{localStorage.clear();document.cookie='ytr_role=; path=/; max-age=0;';document.cookie='ytr_user_id=; path=/; max-age=0;';}">
-      <div class="icon" style="color: #ffffff;"><i class="ph ph-sign-out" style="color: #ffffff;"></i></div>
+      <div class="icon" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.12); color: #ffffff;"><i class="ph ph-sign-out" style="color: #ffffff;"></i></div>
       Sign Out
     </a>
   </div>
