@@ -11,6 +11,47 @@
   
   <!-- Centralized CSS -->
   <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
+  <style>
+    /* Chapter Dashboard Responsive Table & Grid Enhancements */
+    .table-responsive {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+    }
+    .table-responsive table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    .table-responsive th,
+    .table-responsive td {
+      white-space: nowrap !important;
+      vertical-align: middle;
+      padding: 0.85rem 1.15rem;
+    }
+    .dash-text-truncate {
+      display: inline-block;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      vertical-align: middle;
+    }
+    /* Collapse 2-column grid on tablet / mobile so the monitoring table has full width */
+    @media (max-width: 1100px) {
+      .chapter-dash-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+      }
+    }
+    @media (max-width: 768px) {
+      .table-responsive table:not(.printable-table) td:not([colspan]) {
+        white-space: normal !important;
+      }
+      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
+        max-width: 55vw !important;
+      }
+    }
+  </style>
   <script src="assets/api-client.js"></script>
 </head>
 <body>
@@ -97,7 +138,7 @@
         </div>
 
         <!-- 2-Column Responsive Dashboard Layout (Left: Monitoring Hub, Right: Announcements & Actions) -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2rem;">
+        <div class="chapter-dash-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2rem;">
           
           <!-- LEFT COLUMN: Main Monitoring Table & Tabs -->
           <div>
@@ -139,17 +180,16 @@
                 <table>
                   <thead class="font-roboto">
                     <tr>
-                      <th>Event Title & Type</th>
-                      <th>Schedule & Venue</th>
-                      <th>Proposal Status</th>
-                      <th>Due Date & Deadline</th>
-                      <th>Turnout Goal vs Actual</th>
-                      <th>Action</th>
+                      <th>Event Title</th>
+                      <th>Schedule</th>
+                      <th>Status</th>
+                      <th>Turnout</th>
+                      <th style="text-align: right;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="chapter-events-body">
                     <tr>
-                      <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                      <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
                         <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Loading chapter events...
                       </td>
                     </tr>
@@ -162,12 +202,12 @@
                 <table>
                   <thead class="font-roboto">
                     <tr>
-                      <th>Event Title & Theme</th>
-                      <th>Event Date & Deadline</th>
-                      <th>Current Milestone Stage</th>
+                      <th>Event Title</th>
+                      <th>Schedule & Deadline</th>
+                      <th>Milestone Stage</th>
                       <th>Status</th>
-                      <th>Official Poster</th>
-                      <th>Action</th>
+                      <th>Poster</th>
+                      <th style="text-align: right;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="chapter-posters-body">
@@ -205,6 +245,111 @@
         </div>
 
       </main>
+    </div>
+  </div>
+
+  <!-- Chapter Event Details Pop-up Modal -->
+  <div id="chapterEventDetailsModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 1050; align-items: center; justify-content: center; padding: 1rem;" onclick="if(event.target === this) closeChapterEventDetailsModal();">
+    <div class="modal-md" style="max-width: 620px; width: 100%; background: #ffffff; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.35); border: 1px solid #e2e8f0; max-height: 90vh;">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #ffffff; padding: 1.15rem 1.4rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background: rgba(255, 255, 255, 0.15); width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-info"></i>
+          </div>
+          <div>
+            <h3 class="font-roboto" style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #ffffff;">Event Specifications</h3>
+            <p style="margin: 2px 0 0; font-size: 0.75rem; color: #bfdbfe;">Detailed event parameters, attendance turnout, and reporting status</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeChapterEventDetailsModal()" style="background: none; border: none; color: #ffffff; font-size: 1.35rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 6px; opacity: 0.85; transition: opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">&times;</button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div style="padding: 1.25rem 1.4rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.15rem;">
+        <!-- Hero -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem 1.15rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;">
+            <div>
+              <span id="ch-modal-program-badge" class="badge" style="margin-bottom: 0.35rem; display: inline-block;"></span>
+              <h4 id="ch-modal-title" style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #0f172a;"></h4>
+            </div>
+            <div id="ch-modal-status-badge"></div>
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <!-- Left: Specifications -->
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem;">
+            <h5 style="margin: 0 0 0.65rem; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+              <i class="ph-bold ph-calendar"></i> Schedule & Logistics
+            </h5>
+            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.45rem;">
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Event Type:</span>
+                <strong id="ch-modal-type" style="color: #0f172a;"></strong>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Official Venue:</span>
+                <span id="ch-modal-venue" style="color: #1e293b;"></span>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Date & Time:</span>
+                <span id="ch-modal-schedule" style="color: #1e293b; font-weight: 500;"></span>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Target Audience:</span>
+                <span id="ch-modal-target-audience" style="color: #1e293b;"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Turnout Progress -->
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem;">
+            <h5 style="margin: 0 0 0.65rem; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+              <i class="ph-bold ph-users-three"></i> Attendance Turnout
+            </h5>
+            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #64748b; font-size: 0.8rem;">Goal vs Actual:</span>
+                <strong id="ch-modal-turnout-text" style="color: #0f172a;"></strong>
+              </div>
+              <div class="threshold-progress-wrap" style="height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 4px;">
+                <div id="ch-modal-progress-bar" style="height: 100%; transition: width 0.3s ease;"></div>
+              </div>
+              <div id="ch-modal-breakdown" style="font-size: 0.75rem; color: #64748b; padding-top: 0.35rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compliance & Reporting Card -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem;">
+          <h5 style="margin: 0 0 0.65rem; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+            <i class="ph-bold ph-file-text"></i> Post-Event Report Status
+          </h5>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; font-size: 0.85rem;">
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Report Status:</span>
+              <span id="ch-modal-report-status"></span>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Due Date:</span>
+              <strong id="ch-modal-due-date" style="color: #0f172a;"></strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">E-Signature / Endorsement:</span>
+              <span id="ch-modal-signature" style="color: #1e293b; font-weight: 500;"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.85rem 1.4rem; display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem;">
+        <button type="button" class="btn btn-outline font-roboto" onclick="closeChapterEventDetailsModal()" style="padding: 0.5rem 1rem;">Close</button>
+        <div id="ch-modal-action-container"></div>
+      </div>
     </div>
   </div>
 
@@ -398,10 +543,12 @@
       }
     }
 
+    let currentFilteredChapterEvents = [];
+
     function renderMonitoringTable() {
       const tbody = document.getElementById('chapter-events-body');
       if (!chapterWorkspaceData || !chapterWorkspaceData.events) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No events found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No events found.</td></tr>';
         return;
       }
 
@@ -419,13 +566,15 @@
 
       // Filter by search query
       if (q) {
-        events = events.filter(e => (e.title && e.title.toLowerCase().includes(q)) || (e.venue && e.venue.toLowerCase().includes(q)));
+        events = events.filter(e => (e.title && e.title.toLowerCase().includes(q)) || (e.venue && e.venue.toLowerCase().includes(q)) || (e.ytr_program && e.ytr_program.toLowerCase().includes(q)));
       }
+
+      currentFilteredChapterEvents = events;
 
       if (events.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;">
+            <td colspan="5" style="text-align: center; padding: 2.5rem; color: #64748b;">
               <i class="ph ph-calendar-x" style="font-size: 2rem; color: #94a3b8;"></i>
               <p style="margin-top: 0.5rem; font-weight: 500;">No events match the selected filter.</p>
             </td>
@@ -434,73 +583,160 @@
         return;
       }
 
-      tbody.innerHTML = events.map(e => {
+      tbody.innerHTML = events.map((e, index) => {
         // Proposal badge
         let propBadge = '';
         if (e.status === 'approved') {
-          propBadge = `<span class="badge approved"><i class="ph ph-check"></i> Approved</span>`;
+          propBadge = `<span class="badge approved" style="white-space: nowrap;"><i class="ph ph-check"></i> Approved</span>`;
         } else if (e.status === 'pending_approval') {
-          propBadge = `<span class="badge pending"><i class="ph ph-clock"></i> Pending Review</span>`;
+          propBadge = `<span class="badge pending" style="white-space: nowrap;"><i class="ph ph-clock"></i> Pending Review</span>`;
         } else if (e.status === 'draft') {
-          propBadge = `<span class="badge draft">Draft</span>`;
+          propBadge = `<span class="badge draft" style="white-space: nowrap;">Draft</span>`;
         } else {
-          propBadge = `<span class="badge">${e.status}</span>`;
+          propBadge = `<span class="badge" style="white-space: nowrap;">${escapeHtml(e.status)}</span>`;
         }
 
-        // Due date & Deadline badge
-        let dueBadgeHtml = '';
-        if (e.due_badge) {
-          dueBadgeHtml = `<span class="${e.due_badge.cls}" style="font-size: 0.75rem;">${e.due_badge.label}</span>`;
-        } else if (e.due_date) {
-          dueBadgeHtml = `<span class="badge" style="font-size: 0.75rem;">Due ${e.due_date.substring(0, 10)}</span>`;
-        } else {
-          dueBadgeHtml = `<span class="badge" style="background: #f1f5f9; color: #64748b; font-size: 0.75rem;">Flexible</span>`;
-        }
-
-        // Action button
+        // Primary Action button
         let actionBtn = '';
         if (e.report_id) {
-          actionBtn = `<a href="ChapterReport.php" class="btn btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none;"><i class="ph ph-file-text"></i> View Report</a>`;
+          actionBtn = `<a href="ChapterReport.php" class="btn btn-sm btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ph ph-file-text"></i> View Report</a>`;
         } else if (e.status === 'approved') {
-          actionBtn = `<a href="ChapterReport.php?event_id=${e.id}" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none;"><i class="ph ph-file-arrow-up"></i> Submit Report</a>`;
+          actionBtn = `<a href="ChapterReport.php?event_id=${e.id}" class="btn btn-sm btn-primary font-roboto" style="background: #16a34a; border-color: #15803d; color: #ffffff; padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ph ph-file-arrow-up"></i> Submit Report</a>`;
         } else {
-          actionBtn = `<a href="ChapterProposal.php" class="btn btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none;">View Proposal</a>`;
+          actionBtn = `<a href="ChapterProposal.php" class="btn btn-sm btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">View Proposal</a>`;
         }
 
-        // Turnout calculation & progress bar
+        // Turnout calculation
         const target = e.target_turnout || 100;
         const actual = e.total_participants || 0;
         const pct = target > 0 ? Math.min(100, Math.round((actual / target) * 100)) : 0;
         const isMet = pct >= 100;
 
+        const dateStr = e.start_datetime ? e.start_datetime.substring(0, 10) : 'Date TBD';
+
         return `
           <tr>
-            <td>
-              <div style="font-weight: 700; color: #0f172a;">${escapeHtml(e.title)}</div>
-              <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 2px;">
-                <small style="color: #64748b; text-transform: uppercase; font-size: 0.72rem;">${escapeHtml(e.event_type || 'Gathering')}</small>
-                ${e.ytr_program ? `<span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.68rem; padding: 1px 5px; font-weight: 700; border: 1px solid #bfdbfe;"><i class="ph-bold ph-compass"></i> ${escapeHtml(e.ytr_program)}</span>` : ''}
+            <td data-label="Event Title">
+              <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(e.title)}">
+                ${escapeHtml(e.title)}
+              </span>
+            </td>
+            <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500;">
+              ${escapeHtml(dateStr)}
+            </td>
+            <td data-label="Status">
+              ${propBadge}
+            </td>
+            <td data-label="Turnout" style="white-space: nowrap; font-size: 0.85rem; font-weight: 600;">
+              <span>${actual} / ${target}</span>
+              <small style="color: ${isMet ? '#16a34a' : '#d97706'}; margin-left: 0.3rem;">(${pct}%)</small>
+            </td>
+            <td data-label="Action" style="text-align: right; white-space: nowrap;">
+              <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
+                <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openChapterEventDetailsModal(${index})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+                  <i class="ph ph-info"></i> Details
+                </button>
+                ${actionBtn}
               </div>
             </td>
-            <td>
-              <div style="font-size: 0.85rem; color: #1e293b; font-weight: 500;">${escapeHtml(e.start_datetime ? e.start_datetime.substring(0, 10) : 'Date TBD')}</div>
-              <small style="color: #64748b;">${escapeHtml(e.venue || 'Venue TBD')}</small>
-            </td>
-            <td>${propBadge}</td>
-            <td>${dueBadgeHtml}</td>
-            <td style="min-width: 140px;">
-              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600;">
-                <span>${actual} / ${target}</span>
-                <span style="color: ${isMet ? '#16a34a' : '#d97706'};">${pct}%</span>
-              </div>
-              <div class="threshold-progress-wrap">
-                <div class="threshold-progress-fill ${isMet ? 'met' : 'warn'}" style="width: ${pct}%;"></div>
-              </div>
-            </td>
-            <td>${actionBtn}</td>
           </tr>
         `;
       }).join('');
+    }
+
+    function openChapterEventDetailsModal(index) {
+      const e = (currentFilteredChapterEvents && currentFilteredChapterEvents[index]) || (chapterWorkspaceData && chapterWorkspaceData.events && chapterWorkspaceData.events[index]);
+      if (!e) return;
+
+      document.getElementById('ch-modal-title').textContent = e.title || 'Untitled Event';
+
+      const progEl = document.getElementById('ch-modal-program-badge');
+      if (e.ytr_program) {
+        progEl.style.display = 'inline-flex';
+        progEl.className = 'badge';
+        progEl.style.background = '#eff6ff';
+        progEl.style.color = '#1d4ed8';
+        progEl.style.border = '1px solid #bfdbfe';
+        progEl.innerHTML = `<i class="ph-bold ph-compass"></i> ${escapeHtml(e.ytr_program)}`;
+      } else {
+        progEl.style.display = 'none';
+      }
+
+      // Status badge
+      let propBadge = '';
+      if (e.status === 'approved') {
+        propBadge = `<span class="badge approved"><i class="ph ph-check"></i> Approved</span>`;
+      } else if (e.status === 'pending_approval') {
+        propBadge = `<span class="badge pending"><i class="ph ph-clock"></i> Pending Review</span>`;
+      } else if (e.status === 'draft') {
+        propBadge = `<span class="badge draft">Draft</span>`;
+      } else {
+        propBadge = `<span class="badge">${escapeHtml(e.status)}</span>`;
+      }
+      document.getElementById('ch-modal-status-badge').innerHTML = propBadge;
+
+      // Logistics
+      document.getElementById('ch-modal-type').textContent = e.event_type || 'Gathering / Activity';
+      document.getElementById('ch-modal-venue').textContent = e.venue || 'Venue TBD';
+      
+      const startStr = e.start_datetime ? e.start_datetime.replace('T', ' ') : 'TBD';
+      const endStr = e.end_datetime ? e.end_datetime.replace('T', ' ') : '';
+      document.getElementById('ch-modal-schedule').textContent = endStr ? `${startStr} to ${endStr}` : startStr;
+      document.getElementById('ch-modal-target-audience').textContent = e.target_audience || 'Open for All';
+
+      // Turnout
+      const target = e.target_turnout || 100;
+      const actual = e.total_participants || 0;
+      const pct = target > 0 ? Math.min(100, Math.round((actual / target) * 100)) : 0;
+      const isMet = pct >= 100;
+
+      document.getElementById('ch-modal-turnout-text').textContent = `${actual} / ${target} Attendees (${pct}%)`;
+      const bar = document.getElementById('ch-modal-progress-bar');
+      bar.style.width = `${pct}%`;
+      bar.style.background = isMet ? '#16a34a' : '#d97706';
+
+      let breakdownText = '';
+      if (e.report_id) {
+        breakdownText = `First-Timers: <strong>${e.first_timers || 0}</strong> &bull; Existing: <strong>${e.existing_members || 0}</strong> &bull; Leaders: <strong>${e.youth_leaders_count || 0}</strong>`;
+      } else {
+        breakdownText = `Post-event attendee roster pending filing.`;
+      }
+      document.getElementById('ch-modal-breakdown').innerHTML = breakdownText;
+
+      // Report status & due date
+      const repEl = document.getElementById('ch-modal-report-status');
+      if (e.report_id) {
+        repEl.innerHTML = `<span class="badge approved"><i class="ph-fill ph-check-circle"></i> Filed</span>`;
+      } else {
+        repEl.innerHTML = `<span class="badge overdue"><i class="ph-fill ph-x-circle"></i> Pending Filing</span>`;
+      }
+
+      document.getElementById('ch-modal-due-date').textContent = e.due_date ? e.due_date.substring(0, 10) : 'Flexible';
+
+      const sigEl = document.getElementById('ch-modal-signature');
+      if (e.signed_by_name) {
+        sigEl.textContent = `Signed by ${e.signed_by_name}`;
+      } else if (e.report_id) {
+        sigEl.textContent = 'Digital Endorsement on File';
+      } else {
+        sigEl.textContent = 'Awaiting Post-Event Report';
+      }
+
+      // Footer action
+      const actEl = document.getElementById('ch-modal-action-container');
+      if (e.report_id) {
+        actEl.innerHTML = `<a href="ChapterReport.php" class="btn btn-primary font-roboto" style="text-decoration: none; padding: 0.5rem 1.15rem; display: inline-flex; align-items: center; gap: 0.4rem;"><i class="ph ph-file-text"></i> View Report</a>`;
+      } else if (e.status === 'approved') {
+        actEl.innerHTML = `<a href="ChapterReport.php?event_id=${e.id}" class="btn btn-primary font-roboto" style="background: #16a34a; border-color: #15803d; color: #ffffff; text-decoration: none; padding: 0.5rem 1.15rem; display: inline-flex; align-items: center; gap: 0.4rem;"><i class="ph ph-file-arrow-up"></i> Submit Report</a>`;
+      } else {
+        actEl.innerHTML = `<a href="ChapterProposal.php" class="btn btn-outline font-roboto" style="text-decoration: none; padding: 0.5rem 1.15rem;">View Proposal</a>`;
+      }
+
+      document.getElementById('chapterEventDetailsModal').style.display = 'flex';
+    }
+
+    function closeChapterEventDetailsModal() {
+      document.getElementById('chapterEventDetailsModal').style.display = 'none';
     }
 
     function renderPostersTable() {
@@ -539,40 +775,40 @@
         };
         const currentStageText = stepLabels[stepNum] || `Stage ${stepNum}`;
 
-        let statusBadge = `<span class="badge in-progress">${p.status}</span>`;
-        if (p.status === 'completed') statusBadge = `<span class="badge approved"><i class="ph ph-check"></i> Completed</span>`;
-        if (p.status === 'submitted') statusBadge = `<span class="badge pending">Awaiting Review</span>`;
+        let statusBadge = `<span class="badge in-progress" style="white-space: nowrap;">${escapeHtml(p.status)}</span>`;
+        if (p.status === 'completed') statusBadge = `<span class="badge approved" style="white-space: nowrap;"><i class="ph ph-check"></i> Completed</span>`;
+        if (p.status === 'submitted') statusBadge = `<span class="badge pending" style="white-space: nowrap;">Awaiting Review</span>`;
 
-        let posterDownload = `<span style="color: #94a3b8; font-size: 0.8rem;">In Production</span>`;
+        let posterDownload = `<span style="color: #94a3b8; font-size: 0.8rem; white-space: nowrap;">In Production</span>`;
         if (p.final_poster_path) {
-          posterDownload = `<a href="${p.final_poster_path}" target="_blank" download class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; color: #16a34a; border-color: #bbf7d0; text-decoration: none;"><i class="ph ph-download-simple"></i> Download</a>`;
+          posterDownload = `<a href="${p.final_poster_path}" target="_blank" download class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; color: #16a34a; border-color: #bbf7d0; text-decoration: none; white-space: nowrap;"><i class="ph ph-download-simple"></i> Download</a>`;
         }
 
         return `
           <tr>
-            <td>
-              <div style="font-weight: 700; color: #0f172a;">${escapeHtml(p.event_title)}</div>
-              <small style="color: #64748b;">${escapeHtml(p.theme_or_concept || 'Concept specified')}</small>
+            <td data-label="Event Title">
+              <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(p.event_title)}">
+                ${escapeHtml(p.event_title)}
+              </span>
             </td>
-            <td>
-              <div style="font-size: 0.85rem; color: #1e293b;">${escapeHtml(p.event_date ? p.event_date.substring(0, 10) : 'TBD')}</div>
-              <small style="color: #64748b;">Deadline: ${escapeHtml(p.requested_deadline ? p.requested_deadline.substring(0, 10) : 'TBD')}</small>
+            <td data-label="Schedule & Deadline" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b;">
+              <span>${escapeHtml(p.event_date ? p.event_date.substring(0, 10) : 'TBD')}</span>
+              <small style="color: #64748b; margin-left: 0.35rem;">(Due: ${escapeHtml(p.requested_deadline ? p.requested_deadline.substring(0, 10) : 'TBD')})</small>
             </td>
-            <td>
-              <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.75rem; font-weight: 700;">
+            <td data-label="Milestone Stage">
+              <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.75rem; font-weight: 700; white-space: nowrap;">
                 ${currentStageText}
               </span>
             </td>
-            <td>${statusBadge}</td>
-            <td>${posterDownload}</td>
-            <td>
-              <a href="ChapterRequest.php" class="btn btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none;">Track &rarr;</a>
+            <td data-label="Status">${statusBadge}</td>
+            <td data-label="Poster">${posterDownload}</td>
+            <td data-label="Action" style="text-align: right; white-space: nowrap;">
+              <a href="ChapterRequest.php" class="btn btn-sm btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">Track &rarr;</a>
             </td>
           </tr>
         `;
       }).join('');
     }
-
     function renderAnnouncementsWidget(announcements) {
       const container = document.getElementById('dashboard-announcements-list');
       if (!announcements || announcements.length === 0) {

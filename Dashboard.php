@@ -11,6 +11,40 @@
   
   <!-- Centralized CSS -->
   <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
+  <style>
+    /* Table Simplification & Responsive Single-Line Fixes */
+    .table-responsive {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+    }
+    .table-responsive table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    .table-responsive th,
+    .table-responsive td {
+      white-space: nowrap !important;
+      vertical-align: middle;
+      padding: 0.85rem 1.15rem;
+    }
+    .dash-text-truncate {
+      display: inline-block;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      vertical-align: middle;
+    }
+    @media (max-width: 768px) {
+      .table-responsive table:not(.printable-table) td:not([colspan]) {
+        white-space: normal !important;
+      }
+      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
+        max-width: 55vw !important;
+      }
+    }
+  </style>
   <script src="assets/api-client.js"></script>
 </head>
 <body>
@@ -119,17 +153,16 @@
             <table>
               <thead class="font-roboto">
                 <tr>
-                  <th>Chapter Name</th>
-                  <th>Event Conducted</th>
-                  <th>Report Submitted?</th>
+                  <th>Chapter</th>
+                  <th>Conducted Event</th>
                   <th>Status</th>
-                  <th>Deadline & Days Left</th>
+                  <th>Deadline</th>
                   <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="chapter-table-body">
                 <tr>
-                  <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                  <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
                     <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Loading chapter events and report deadlines...
                   </td>
                 </tr>
@@ -139,6 +172,111 @@
         </div>
 
       </main>
+    </div>
+  </div>
+
+  <!-- Event & Reporting Details Pop-up Modal -->
+  <div id="eventDetailsModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 1050; align-items: center; justify-content: center; padding: 1rem;" onclick="if(event.target === this) closeEventDetailsModal();">
+    <div class="modal-md" style="max-width: 620px; width: 100%; background: #ffffff; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.35); border: 1px solid #e2e8f0; max-height: 90vh;">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #ffffff; padding: 1.15rem 1.4rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background: rgba(255, 255, 255, 0.15); width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+            <i class="ph-bold ph-info"></i>
+          </div>
+          <div>
+            <h3 class="font-roboto" style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #ffffff;">Conducted Event Details</h3>
+            <p style="margin: 2px 0 0; font-size: 0.75rem; color: #bfdbfe;">Comprehensive chapter event & reporting specifications</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeEventDetailsModal()" style="background: none; border: none; color: #ffffff; font-size: 1.35rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 6px; opacity: 0.85; transition: opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">&times;</button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div style="padding: 1.25rem 1.4rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.15rem;">
+        <!-- Event Hero Banner -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem 1.15rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;">
+            <div>
+              <span id="modal-event-program-badge" class="badge" style="margin-bottom: 0.35rem; display: inline-block;"></span>
+              <h4 id="modal-event-title" style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #0f172a;"></h4>
+            </div>
+            <div id="modal-event-status-badge"></div>
+          </div>
+        </div>
+
+        <!-- Details Sections Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <!-- Left: Chapter Information -->
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem;">
+            <h5 style="margin: 0 0 0.65rem; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+              <i class="ph-bold ph-buildings"></i> Chapter Information
+            </h5>
+            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.45rem;">
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Host Chapter:</span>
+                <strong id="modal-chapter-name" style="color: #0f172a;"></strong>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Chapter Code:</span>
+                <span id="modal-chapter-code" class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.75rem;"></span>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Region:</span>
+                <span id="modal-chapter-region" style="color: #1e293b; font-weight: 500;"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Schedule & Venue -->
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem;">
+            <h5 style="margin: 0 0 0.65rem; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+              <i class="ph-bold ph-calendar-check"></i> Schedule & Logistics
+            </h5>
+            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.45rem;">
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Conducted Date:</span>
+                <strong id="modal-conducted-date" style="color: #0f172a;"></strong>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Venue / Location:</span>
+                <span id="modal-venue" style="color: #1e293b;"></span>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; display: block;">Program Pillar:</span>
+                <span id="modal-program-name" style="color: #1e293b; font-weight: 500;"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compliance & Reporting Card -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem;">
+          <h5 style="margin: 0 0 0.65rem; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 700; display: flex; align-items: center; gap: 0.35rem;">
+            <i class="ph-bold ph-clipboard-text"></i> Post-Event Reporting Compliance
+          </h5>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; font-size: 0.85rem;">
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Filing Deadline:</span>
+              <strong id="modal-deadline" style="color: #0f172a;"></strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Deadline Urgency:</span>
+              <span id="modal-days-left"></span>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Report Submission:</span>
+              <span id="modal-submission-status"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 0.85rem 1.4rem; display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem;">
+        <button type="button" class="btn btn-outline font-roboto" onclick="closeEventDetailsModal()" style="padding: 0.5rem 1rem;">Close</button>
+        <div id="modal-action-btn-container"></div>
+      </div>
     </div>
   </div>
 
@@ -276,6 +414,8 @@
       renderChapterTable();
     }
 
+    let currentFilteredDashboardEvents = [];
+
     function renderChapterTable() {
       const tbody = document.getElementById('chapter-table-body');
       const search = (document.getElementById('chapter-search').value || '').toLowerCase().trim();
@@ -286,7 +426,7 @@
         if (currentFilter === 'overdue' && (item.is_report_submitted || item.days_left >= 0)) return false;
         if (currentFilter === 'due_soon' && (item.is_report_submitted || item.days_left < 0 || item.days_left > 3)) return false;
 
-        // Search filtering
+        // Search filtering (allows searching by chapter, event, region, or code seamlessly)
         if (search) {
           const matchChapter = (item.chapter_name || '').toLowerCase().includes(search);
           const matchCode = (item.chapter_code || '').toLowerCase().includes(search);
@@ -314,6 +454,8 @@
         return a.days_left - b.days_left;
       });
 
+      currentFilteredDashboardEvents = filtered;
+
       if (filtered.length === 0) {
         let emptyMsg = 'No events matching the selected filter criteria.';
         if (currentFilter === 'needs_action') {
@@ -324,7 +466,7 @@
 
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+            <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
               <i class="ph-fill ph-check-circle" style="font-size: 2.5rem; color: #16a34a;"></i>
               <p style="margin-top: 0.5rem; font-weight: 600; color: #1e293b;">${emptyMsg}</p>
               ${currentFilter !== 'all' ? '<button class="btn btn-sm btn-outline" style="margin: 0.75rem auto 0;" onclick="document.getElementById(\'tab-all\').click()">View All Conducted Events</button>' : ''}
@@ -334,101 +476,164 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map(item => {
-        // 1. Report Submitted or Not Badge
-        const submittedBadge = item.is_report_submitted
-          ? `<span class="badge approved"><i class="ph-fill ph-check-circle"></i> Submitted</span>`
-          : `<span class="badge overdue"><i class="ph-fill ph-x-circle"></i> Not Submitted</span>`;
-
-        // 2. Status Badge
+      tbody.innerHTML = filtered.map((item, index) => {
+        // Status Badge
         let statusBadgeHtml = '';
         if (item.status_key === 'overdue') {
-          statusBadgeHtml = `<span class="badge overdue"><i class="ph-bold ph-warning-circle"></i> Overdue</span>`;
+          statusBadgeHtml = `<span class="badge overdue" style="white-space: nowrap;"><i class="ph-bold ph-warning-circle"></i> Overdue</span>`;
         } else if (item.status_key === 'due_soon') {
-          statusBadgeHtml = `<span class="badge due-soon"><i class="ph-bold ph-hourglass-high"></i> Due Soon</span>`;
+          statusBadgeHtml = `<span class="badge due-soon" style="white-space: nowrap;"><i class="ph-bold ph-hourglass-high"></i> Due Soon</span>`;
         } else if (item.status_key === 'under_review') {
-          statusBadgeHtml = `<span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;"><i class="ph-fill ph-clock"></i> Awaiting Review</span>`;
+          statusBadgeHtml = `<span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; white-space: nowrap;"><i class="ph-fill ph-clock"></i> Under Review</span>`;
         } else if (item.status_key === 'approved') {
-          statusBadgeHtml = `<span class="badge approved"><i class="ph-fill ph-check"></i> Validated</span>`;
+          statusBadgeHtml = `<span class="badge approved" style="white-space: nowrap;"><i class="ph-fill ph-check"></i> Validated</span>`;
         } else {
-          statusBadgeHtml = `<span class="badge timer"><i class="ph ph-timer"></i> Pending Submission</span>`;
+          statusBadgeHtml = `<span class="badge timer" style="white-space: nowrap;"><i class="ph ph-timer"></i> Pending Submission</span>`;
         }
 
-        // 3. Days Left & Deadline display
-        let daysLeftBadge = '';
+        // Deadline display
+        let deadlineHtml = '';
         if (item.is_validated) {
-          daysLeftBadge = `<span class="badge approved"><i class="ph ph-check"></i> Completed</span>`;
+          deadlineHtml = `<span class="badge approved" style="white-space: nowrap;"><i class="ph ph-check"></i> Completed</span>`;
+        } else if (item.is_report_submitted) {
+          deadlineHtml = `<span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; white-space: nowrap;"><i class="ph-bold ph-check"></i> Submitted</span>`;
         } else if (item.days_left < 0) {
-          daysLeftBadge = `<span class="badge overdue"><i class="ph-bold ph-warning"></i> Overdue by ${Math.abs(item.days_left)}d</span>`;
+          deadlineHtml = `<span style="color: #dc2626; font-weight: 700; white-space: nowrap;"><i class="ph-bold ph-warning"></i> Overdue (${Math.abs(item.days_left)}d)</span>`;
         } else if (item.days_left <= 3) {
-          daysLeftBadge = `<span class="badge due-soon"><i class="ph-bold ph-hourglass"></i> ${item.days_left === 0 ? 'Due Today' : item.days_left + 'd left'}</span>`;
+          deadlineHtml = `<span style="color: #d97706; font-weight: 700; white-space: nowrap;"><i class="ph-bold ph-hourglass"></i> ${item.days_left === 0 ? 'Due Today' : item.days_left + 'd left'}</span>`;
         } else {
-          daysLeftBadge = `<span class="badge timer"><i class="ph-bold ph-timer"></i> ${item.days_left}d left</span>`;
+          deadlineHtml = `<span style="color: #475569; font-weight: 600; white-space: nowrap;">${item.deadline_formatted || item.deadline}</span> <small style="color: #64748b; white-space: nowrap;">(${item.days_left}d left)</small>`;
         }
 
-        // 4. Action button
+        // Primary Action button
         const actionBtn = item.is_report_submitted
-          ? `<a href="Report.php" class="btn btn-sm btn-primary" style="text-decoration: none; padding: 0.35rem 0.75rem;">
+          ? `<a href="Report.php" class="btn btn-sm btn-primary font-roboto" style="text-decoration: none; padding: 0.35rem 0.65rem; font-size: 0.8rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">
                <i class="ph ph-clipboard-text"></i> View Report
              </a>`
-          : `<button type="button" class="btn btn-sm btn-outline font-roboto" 
+          : `<button type="button" class="btn btn-sm btn-primary font-roboto" 
                onclick="openRemindModal(${item.chapter_id}, '${escapeJs(item.chapter_name)}', ${item.event_id}, '${escapeJs(item.event_title)}', ${item.days_left}, '${escapeJs(item.deadline_formatted || item.deadline)}')" 
-               style="padding: 0.35rem 0.75rem; border-color: #3b82f6; color: #1d4ed8; background: #eff6ff; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; transition: all 0.15s ease;">
-               <i class="ph-bold ph-bell"></i> Remind Chapter
+               style="padding: 0.35rem 0.65rem; font-size: 0.8rem; background: #2563eb; color: #ffffff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; white-space: nowrap;">
+               <i class="ph-bold ph-bell"></i> Remind
              </button>`;
-
-        let progBadge = '';
-        if (item.ytr_program) {
-          let pBg = '#eff6ff', pCol = '#1d4ed8', pBorder = '#bfdbfe';
-          if (item.ytr_program.startsWith('Rise up')) {
-            pBg = '#fffbeb'; pCol = '#b45309'; pBorder = '#fde68a';
-          } else if (item.ytr_program.startsWith('Build up')) {
-            pBg = '#f0fdf4'; pCol = '#15803d'; pBorder = '#bbf7d0';
-          } else if (item.ytr_program.startsWith('Gear up')) {
-            pBg = '#faf5ff'; pCol = '#7e22ce'; pBorder = '#e9d5ff';
-          }
-          progBadge = `<span class="badge" style="background: ${pBg}; color: ${pCol}; border: 1px solid ${pBorder}; font-size: 0.68rem; padding: 1px 6px; font-weight: 700;">
-            <i class="ph-bold ph-compass"></i> ${escapeHtml(item.ytr_program)}
-          </span>`;
-        }
 
         return `
           <tr>
-            <td data-label="Chapter Name">
-              <div style="font-weight: 700; color: #0f172a; font-size: 0.925rem;">${escapeHtml(item.chapter_name)}</div>
-              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
-                <span>${escapeHtml(item.region || 'Region')}</span>
-                <span class="badge" style="margin-left: 0.35rem; font-size: 0.68rem; padding: 2px 6px;">${escapeHtml(item.chapter_code || '')}</span>
-              </div>
+            <td data-label="Chapter">
+              <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(item.chapter_name)}">
+                ${escapeHtml(item.chapter_name)}
+              </span>
             </td>
-            <td data-label="Event Conducted">
-              <div style="font-weight: 700; color: #1e3a8a; font-size: 0.9rem;">${escapeHtml(item.event_title)}</div>
-              ${progBadge ? `<div style="margin-top: 3px; margin-bottom: 2px;">${progBadge}</div>` : ''}
-              <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
-                <i class="ph ph-calendar-blank"></i> Conducted: <strong>${item.event_date_formatted || item.event_date}</strong>
-                ${item.venue ? ` &bull; <span>${escapeHtml(item.venue)}</span>` : ''}
-              </div>
-            </td>
-            <td data-label="Report Submitted?">
-              ${submittedBadge}
+            <td data-label="Conducted Event">
+              <span class="font-roboto dash-text-truncate" style="font-weight: 600; color: #1e3a8a; font-size: 0.9rem; display: inline-block; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(item.event_title)}">
+                ${escapeHtml(item.event_title)}
+              </span>
             </td>
             <td data-label="Status">
               ${statusBadgeHtml}
             </td>
-            <td data-label="Deadline & Days Left">
-              <div>
-                ${daysLeftBadge}
-                <div style="font-size: 0.75rem; color: #475569; margin-top: 0.25rem;">
-                  Deadline: <strong>${item.deadline_formatted || item.deadline}</strong>
-                </div>
-              </div>
+            <td data-label="Deadline">
+              ${deadlineHtml}
             </td>
-            <td data-label="Action" style="text-align: right;">
-              ${actionBtn}
+            <td data-label="Action" style="text-align: right; white-space: nowrap;">
+              <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
+                <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openEventDetailsModal(${index})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+                  <i class="ph ph-info"></i> Details
+                </button>
+                ${actionBtn}
+              </div>
             </td>
           </tr>
         `;
       }).join('');
+    }
+
+    function openEventDetailsModal(index) {
+      const item = (currentFilteredDashboardEvents && currentFilteredDashboardEvents[index]) || conductedEventsData[index];
+      if (!item) return;
+
+      // Event hero
+      document.getElementById('modal-event-title').textContent = item.event_title || 'Untitled Event';
+      
+      const progEl = document.getElementById('modal-event-program-badge');
+      if (item.ytr_program) {
+        progEl.style.display = 'inline-flex';
+        progEl.className = 'badge';
+        progEl.style.background = '#eff6ff';
+        progEl.style.color = '#1d4ed8';
+        progEl.style.border = '1px solid #bfdbfe';
+        progEl.innerHTML = `<i class="ph-bold ph-compass"></i> ${escapeHtml(item.ytr_program)}`;
+      } else {
+        progEl.style.display = 'none';
+      }
+
+      // Status in modal
+      let stBadge = '';
+      if (item.status_key === 'overdue') {
+        stBadge = `<span class="badge overdue"><i class="ph-bold ph-warning-circle"></i> Overdue</span>`;
+      } else if (item.status_key === 'due_soon') {
+        stBadge = `<span class="badge due-soon"><i class="ph-bold ph-hourglass-high"></i> Due Soon</span>`;
+      } else if (item.status_key === 'under_review') {
+        stBadge = `<span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;"><i class="ph-fill ph-clock"></i> Under Review</span>`;
+      } else if (item.status_key === 'approved') {
+        stBadge = `<span class="badge approved"><i class="ph-fill ph-check"></i> Validated</span>`;
+      } else {
+        stBadge = `<span class="badge timer"><i class="ph ph-timer"></i> Pending Submission</span>`;
+      }
+      document.getElementById('modal-event-status-badge').innerHTML = stBadge;
+
+      // Chapter info
+      document.getElementById('modal-chapter-name').textContent = item.chapter_name || 'N/A';
+      document.getElementById('modal-chapter-code').textContent = item.chapter_code || 'N/A';
+      document.getElementById('modal-chapter-region').textContent = item.region || 'National / General';
+
+      // Schedule & Logistics
+      document.getElementById('modal-conducted-date').textContent = item.event_date_formatted || item.event_date || 'Date TBD';
+      document.getElementById('modal-venue').textContent = item.venue || 'Venue not specified';
+      document.getElementById('modal-program-name').textContent = item.ytr_program || 'General Program';
+
+      // Compliance & Reporting
+      document.getElementById('modal-deadline').textContent = item.deadline_formatted || item.deadline || 'N/A';
+      
+      let daysText = '';
+      if (item.is_validated) {
+        daysText = `<span class="badge approved"><i class="ph ph-check"></i> Completed</span>`;
+      } else if (item.days_left < 0) {
+        daysText = `<span class="badge overdue"><i class="ph-bold ph-warning"></i> Overdue by ${Math.abs(item.days_left)} days</span>`;
+      } else if (item.days_left <= 3) {
+        daysText = `<span class="badge due-soon"><i class="ph-bold ph-hourglass"></i> ${item.days_left === 0 ? 'Due Today' : item.days_left + ' days left'}</span>`;
+      } else {
+        daysText = `<span class="badge timer"><i class="ph ph-timer"></i> ${item.days_left} days left</span>`;
+      }
+      document.getElementById('modal-days-left').innerHTML = daysText;
+
+      const subStatusEl = document.getElementById('modal-submission-status');
+      if (item.is_report_submitted) {
+        subStatusEl.innerHTML = `<span class="badge approved"><i class="ph-fill ph-check-circle"></i> Submitted ${item.report_submitted_at ? '(' + item.report_submitted_at.substring(0, 10) + ')' : ''}</span>`;
+      } else {
+        subStatusEl.innerHTML = `<span class="badge overdue"><i class="ph-fill ph-x-circle"></i> Not Submitted</span>`;
+      }
+
+      // Footer Action Button
+      const actionContainer = document.getElementById('modal-action-btn-container');
+      if (item.is_report_submitted) {
+        actionContainer.innerHTML = `
+          <a href="Report.php" class="btn btn-primary font-roboto" style="text-decoration: none; padding: 0.5rem 1.15rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <i class="ph ph-clipboard-text"></i> View Report
+          </a>
+        `;
+      } else {
+        actionContainer.innerHTML = `
+          <button type="button" class="btn btn-primary font-roboto" onclick="closeEventDetailsModal(); openRemindModal(${item.chapter_id}, '${escapeJs(item.chapter_name)}', ${item.event_id}, '${escapeJs(item.event_title)}', ${item.days_left}, '${escapeJs(item.deadline_formatted || item.deadline)}');" style="padding: 0.5rem 1.15rem; display: inline-flex; align-items: center; gap: 0.4rem; background: #2563eb; color: #ffffff; border: none; font-weight: 600; cursor: pointer;">
+            <i class="ph-bold ph-bell"></i> Send Reminder
+          </button>
+        `;
+      }
+
+      document.getElementById('eventDetailsModal').style.display = 'flex';
+    }
+
+    function closeEventDetailsModal() {
+      document.getElementById('eventDetailsModal').style.display = 'none';
     }
 
     function escapeHtml(str) {
@@ -441,6 +646,10 @@
         .replace(/'/g, '&#039;');
     }
 
+    function escapeJs(str) {
+      if (!str) return '';
+      return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
     let currentRemindChapterId = null;
     let currentRemindEventId = null;
 

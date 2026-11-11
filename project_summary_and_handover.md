@@ -134,6 +134,17 @@ flowchart TD
   - Added `PUT /api/notifications/<id>/read` and `PUT /api/notifications/read-all` endpoints.
 - **Removal of Redundant "Chapter Submission View" Button (`Report.php`):**
   - Cleaned up the header actions in `Report.php` by removing the redundant `<a href="ChapterReport.php">Go to Chapter Submission View</a>` link, preserving the "Upload Executive Signature" button.
+- **Dashboard Table Simplification & Pop-up Details Modals (`Dashboard.php` & `ChapterDashboard.php`):**
+  - **Removed Visual Clutter & Redundant Tags:** Stripped out region code tags (e.g., `YTR-LAG`), region subtitles, program pillar badges, and venue clutter from default table rows across both National and Chapter dashboards.
+  - **Streamlined Column Architecture:** Condensed table columns to 5 clean, intuitive columns (National: *Chapter, Conducted Event, Status, Deadline, Action*; Chapter: *Event Title, Schedule, Status, Turnout, Action*).
+  - **Pop-up Event Details Modals:**
+    - `Dashboard.php` (`#eventDetailsModal`): Displays comprehensive host chapter specifications (code, region), event schedule & logistics (pillar, venue, date), post-event reporting compliance, and direct quick-action buttons (Send Reminder / View Report).
+    - `ChapterDashboard.php` (`#chapterEventDetailsModal`): Displays full program classifications, start/end datetimes, venue, demographic targeting, visual turnout progress bar with breakdown, and endorsement/signature status.
+  - **Responsive Single-Line Layout & Distortion Prevention:**
+    - Applied `white-space: nowrap !important;` across table headers and cells to prevent awkward multi-line text wrapping when screen shrinks.
+    - Integrated `.dash-text-truncate` with graceful ellipsis (`text-overflow: ellipsis`) and hover tooltips for long titles.
+    - Enforced responsive 1-column grid collapse (`.chapter-dash-grid` at `@media (max-width: 1100px)`) so monitoring tables never cramp against announcements.
+    - Configured smooth horizontal touch-scrolling (`overflow-x: auto !important; -webkit-overflow-scrolling: touch !important;`) on table containers.
 
 ---
 
