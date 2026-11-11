@@ -12,37 +12,19 @@
   <!-- Centralized CSS -->
   <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
   <style>
-    /* Chapter Dashboard Responsive Table & Grid Enhancements */
-    .chapter-dash-grid {
-      display: grid !important;
-      grid-template-columns: minmax(0, 1fr) 340px !important;
-      gap: 1.5rem !important;
-      align-items: start !important;
-      margin-bottom: 2rem !important;
-      width: 100% !important;
-    }
-    .chapter-dash-grid > div {
-      min-width: 0 !important;
-      max-width: 100% !important;
-    }
-    .chapter-dash-grid .table-section {
-      min-width: 0 !important;
-      width: 100% !important;
-      overflow: hidden !important;
-    }
-    .chapter-dash-grid .table-responsive {
+    /* Table Simplification & Responsive Single-Line Fixes */
+    .table-responsive {
       overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
-      min-width: 0 !important;
     }
-    .chapter-dash-grid .table-responsive table {
-      width: 100% !important;
-      min-width: 520px !important;
+    .table-responsive table {
+      width: 100%;
       border-collapse: collapse;
+      min-width: 680px;
     }
-    .chapter-dash-grid th,
-    .chapter-dash-grid td {
+    .table-responsive th,
+    .table-responsive td {
       white-space: nowrap !important;
       vertical-align: middle;
       padding: 0.85rem 1.15rem;
@@ -53,12 +35,6 @@
       overflow: hidden !important;
       text-overflow: ellipsis !important;
       vertical-align: middle;
-    }
-    /* Collapse 2-column grid on tablet / mobile so the monitoring table has full width */
-    @media (max-width: 1100px) {
-      .chapter-dash-grid {
-        grid-template-columns: 1fr !important;
-      }
     }
     @media (max-width: 768px) {
       .table-responsive table:not(.printable-table) td:not([colspan]) {
@@ -154,111 +130,84 @@
           </div>
         </div>
 
-        <!-- 2-Column Responsive Dashboard Layout (Left: Monitoring Hub, Right: Announcements & Actions) -->
-        <div class="chapter-dash-grid">
+        <!-- Centralized Activity & Pending Monitoring Table Section -->
+        <div class="table-section">
+          <div class="table-header" style="flex-direction: column; align-items: stretch; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+              <div>
+                <h2 class="font-roboto" style="color: var(--primary); font-size: 1.25rem; font-weight: bold; margin: 0;">Centralized Activity & Pending Monitoring</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.25rem 0 0;">Monitor proposals, poster pipelines, attendance thresholds, and post-event deadlines.</p>
+              </div>
+              <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="chapter-events-search" class="font-roboto" placeholder="Search event or topic..." oninput="renderMonitoringTable()" style="width: 100%; flex: 1; min-width: 0;">
+              </div>
+            </div>
+
+            <!-- Interactive Filter Tabs -->
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;" role="tablist">
+              <button type="button" class="dash-tab active" id="tab-btn-all" onclick="setDashboardTab('all')">
+                All Events <span class="badge" id="tab-cnt-all" style="background: #e2e8f0; color: #334155;">0</span>
+              </button>
+              <button type="button" class="dash-tab" id="tab-btn-proposals" onclick="setDashboardTab('proposals')">
+                Pending Proposals <span class="badge pending" id="tab-cnt-proposals">0</span>
+              </button>
+              <button type="button" class="dash-tab" id="tab-btn-posters" onclick="setDashboardTab('posters')">
+                Poster Requests <span class="badge" id="tab-cnt-posters" style="background: #f3e8ff; color: #7e22ce;">0</span>
+              </button>
+              <button type="button" class="dash-tab" id="tab-btn-due" onclick="setDashboardTab('due')">
+                Reports Due / Overdue <span class="badge overdue" id="tab-cnt-due">0</span>
+              </button>
+              <button type="button" class="dash-tab" id="tab-btn-submitted" onclick="setDashboardTab('submitted')">
+                Submitted Reports <span class="badge approved" id="tab-cnt-submitted">0</span>
+              </button>
+            </div>
+          </div>
           
-          <!-- LEFT COLUMN: Main Monitoring Table & Tabs -->
-          <div>
-            <div class="table-section" style="margin-bottom: 0;">
-              <div class="table-header" style="flex-direction: column; align-items: stretch; gap: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-                  <div>
-                    <h2 class="font-roboto" style="color: var(--primary); font-size: 1.25rem; font-weight: bold; margin: 0;">Centralized Activity & Pending Monitoring</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.25rem 0 0;">Monitor proposals, poster pipelines, attendance thresholds, and post-event deadlines.</p>
-                  </div>
-                  <div class="search-bar" style="margin: 0; width: 100%; max-width: 100%;">
-                    <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" id="chapter-events-search" class="font-roboto" placeholder="Search event or topic..." oninput="renderMonitoringTable()" style="width: 100%; flex: 1; min-width: 0;">
-                  </div>
-                </div>
-
-                <!-- Interactive Filter Tabs -->
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;" role="tablist">
-                  <button type="button" class="dash-tab active" id="tab-btn-all" onclick="setDashboardTab('all')">
-                    All Events <span class="badge" id="tab-cnt-all" style="background: #e2e8f0; color: #334155;">0</span>
-                  </button>
-                  <button type="button" class="dash-tab" id="tab-btn-proposals" onclick="setDashboardTab('proposals')">
-                    Pending Proposals <span class="badge pending" id="tab-cnt-proposals">0</span>
-                  </button>
-                  <button type="button" class="dash-tab" id="tab-btn-posters" onclick="setDashboardTab('posters')">
-                    Poster Requests <span class="badge" id="tab-cnt-posters" style="background: #f3e8ff; color: #7e22ce;">0</span>
-                  </button>
-                  <button type="button" class="dash-tab" id="tab-btn-due" onclick="setDashboardTab('due')">
-                    Reports Due / Overdue <span class="badge overdue" id="tab-cnt-due">0</span>
-                  </button>
-                  <button type="button" class="dash-tab" id="tab-btn-submitted" onclick="setDashboardTab('submitted')">
-                    Submitted Reports <span class="badge approved" id="tab-cnt-submitted">0</span>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Events / Tasks Table -->
-              <div class="table-responsive" id="table-container-events">
-                <table>
-                  <thead class="font-roboto">
-                    <tr>
-                      <th>Event Title</th>
-                      <th>Schedule</th>
-                      <th>Status</th>
-                      <th>Turnout</th>
-                      <th style="text-align: right;">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="chapter-events-body">
-                    <tr>
-                      <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
-                        <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Loading chapter events...
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Poster Requests Table (Displayed when Posters Tab is Active) -->
-              <div class="table-responsive" id="table-container-posters" style="display: none;">
-                <table>
-                  <thead class="font-roboto">
-                    <tr>
-                      <th>Event Title</th>
-                      <th>Schedule & Deadline</th>
-                      <th>Milestone Stage</th>
-                      <th>Status</th>
-                      <th>Poster</th>
-                      <th style="text-align: right;">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="chapter-posters-body">
-                    <tr>
-                      <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
-                        <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Loading poster requests...
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <!-- Events / Tasks Table -->
+          <div class="table-responsive" id="table-container-events">
+            <table>
+              <thead class="font-roboto">
+                <tr>
+                  <th>Event Title</th>
+                  <th>Schedule</th>
+                  <th>Status</th>
+                  <th>Turnout</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="chapter-events-body">
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                    <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Loading chapter events...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <!-- RIGHT COLUMN: Live Announcements Feed -->
-          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-            
-            <!-- Announcements & Broadcasts Widget -->
-            <div style="background: #ffffff; border-radius: 10px; border: 1px solid #e2e8f0; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 class="font-roboto" style="font-size: 1rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                  <i class="ph-fill ph-broadcast" style="color: #16a34a;"></i> Announcements
-                </h3>
-                <a href="Announcement.php" style="font-size: 0.75rem; color: #2563eb; font-weight: 600; text-decoration: none;">View All &rarr;</a>
-              </div>
-              <div id="dashboard-announcements-list" style="display: flex; flex-direction: column; gap: 0.85rem;">
-                <div style="text-align: center; color: #64748b; font-size: 0.8rem; padding: 1rem 0;">
-                  <i class="ph ph-spinner ph-spin"></i> Loading broadcasts...
-                </div>
-              </div>
-            </div>
-
+          <!-- Poster Requests Table (Displayed when Posters Tab is Active) -->
+          <div class="table-responsive" id="table-container-posters" style="display: none;">
+            <table>
+              <thead class="font-roboto">
+                <tr>
+                  <th>Event Title</th>
+                  <th>Schedule & Deadline</th>
+                  <th>Milestone Stage</th>
+                  <th>Status</th>
+                  <th>Poster</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="chapter-posters-body">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                    <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Loading poster requests...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-
         </div>
 
       </main>
@@ -828,6 +777,7 @@
     }
     function renderAnnouncementsWidget(announcements) {
       const container = document.getElementById('dashboard-announcements-list');
+      if (!container) return;
       if (!announcements || announcements.length === 0) {
         container.innerHTML = `
           <div style="text-align: center; color: #64748b; font-size: 0.8rem; padding: 1.5rem 0;">

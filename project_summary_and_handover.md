@@ -145,9 +145,10 @@ flowchart TD
     - Integrated `.dash-text-truncate` with graceful ellipsis (`text-overflow: ellipsis`) and hover tooltips for long titles.
     - Enforced responsive 1-column grid collapse (`.chapter-dash-grid` at `@media (max-width: 1100px)`) so monitoring tables never cramp against announcements.
     - Configured smooth horizontal touch-scrolling (`overflow-x: auto !important; -webkit-overflow-scrolling: touch !important;`) on table containers.
-  - **Fixed Chapter Dashboard Grid Pushing Announcements (`ChapterDashboard.php`):**
-    - Constrained `.chapter-dash-grid` using `grid-template-columns: minmax(0, 1fr) 340px !important;` and set `min-width: 0 !important;` on column containers.
-    - Prevented wide monitoring tables from expanding the grid track, permanently anchoring the Announcements feed at 340px on desktop without being pushed.
+  - **Removed Side Announcements from Chapter Overview (`ChapterDashboard.php`):**
+    - Removed the cramped 2-column sidebar grid layout completely from Chapter Overview (`ChapterDashboard.php`), expanding the Activity & Pending Monitoring table to 100% full width.
+    - Eliminated any risk of side widgets squishing or pushing table columns, matching the clean full-width layout of the National Dashboard.
+    - Announcements remain fully accessible via the dedicated "Announcements" sidebar page (`Announcement.php`) and topbar interactive notification bell.
 - **Event Proposal Simplification & Pop-up Dossier Modals (`Proposal.php` & `ChapterProposal.php`):**
   - **National Proposals Table (`Proposal.php`):**
     - Condensed rows to 6 clean single-line columns: *Event Proposal, Chapter, Schedule, Budget, Status, Action*.
