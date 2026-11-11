@@ -877,8 +877,10 @@ html, body {
 
       // Check Executive Authorization for Reset & Backup:
       // Restricted strictly to Chief Executive Officer / Operation or root admin
-      const ceoPositions = ['Chief Executive Operation', 'Chief Executive Officer', 'CEO', 'Chief Executive'];
-      const isCEO = ceoPositions.includes(u.position) || u.email === 'admin@ytr.org';
+      const pos = (u.position || '').trim().toLowerCase();
+      const email = (u.email || '').trim().toLowerCase();
+      const ceoTitles = ['chief executive officer', 'chief executive operation', 'chief executive', 'ceo', 'executive director'];
+      const isCEO = ceoTitles.includes(pos) || email === 'admin@ytr.org' || email === 'ytr.org@gmail.com' || String(u.id) === '1';
       const execSection = document.getElementById('executive-tools-dropdown-section');
       if (execSection) {
         execSection.style.display = isCEO ? 'block' : 'none';
@@ -1791,6 +1793,73 @@ html, body {
       alertBox.style.border = '1px solid #fecdd3';
     }
   }
+
+  
+  // ==========================================
+  // Global Session Idle Watchdog
+  // Continuously monitors user interaction across tabs and enforces expiration
+  // ==========================================
+  (function initGlobalSessionIdleWatchdog() {
+    let lastActivityTimestamp = Date.now();
+    try {
+      if (!localStorage.getItem('ytr_last_activity')) {
+        localStorage.setItem('ytr_last_activity', String(Date.now()));
+      }
+    } catch(e) {}
+
+    const onUserActivity = () => {
+      const now = Date.now();
+      if (now - lastActivityTimestamp > 4000) { // throttled to every 4s
+        lastActivityTimestamp = now;
+        try {
+          localStorage.setItem('ytr_last_activity', String(now));
+        } catch(e) {}
+      }
+    };
+
+    ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => {
+      window.addEventListener(evt, onUserActivity, { passive: true });
+    });
+
+    // Check inactivity every 5 seconds
+    setInterval(() => {
+      try {
+        const rawUser = localStorage.getItem('ytr_user');
+        if (!rawUser) return; // not logged in
+
+        const timeoutPref = localStorage.getItem('ytr_session_timeout');
+        // Default to 30 mins if not explicitly set
+        const timeoutMins = (timeoutPref === null || timeoutPref === undefined) ? 30 : parseInt(timeoutPref, 10);
+        
+        if (isNaN(timeoutMins) || timeoutMins <= 0) {
+          // 0 means Keep Signed In
+          return;
+        }
+
+        const timeoutMs = timeoutMins * 60 * 1000;
+        const lastActive = parseInt(localStorage.getItem('ytr_last_activity') || String(Date.now()), 10);
+        const idleDuration = Date.now() - lastActive;
+
+        if (idleDuration >= timeoutMs) {
+          window.ytrHandleIdleTimeout(timeoutMins);
+        }
+      } catch(err) {}
+    }, 5000);
+  })();
+
+  window.ytrHandleIdleTimeout = function(timeoutMins) {
+    try {
+      localStorage.removeItem('ytr_user');
+      localStorage.removeItem('ytr_role');
+      localStorage.removeItem('ytr_chapter_id');
+      sessionStorage.clear();
+      document.cookie = "ytr_role=; path=/; max-age=0;";
+      document.cookie = "ytr_chapter_id=; path=/; max-age=0;";
+      document.cookie = "ytr_user_id=; path=/; max-age=0;";
+    } catch(err) {}
+    alert('Session Expired: You have been signed out due to ' + (timeoutMins || 30) + ' minutes of inactivity for security.');
+    window.location.href = 'login.php?timeout=1&mins=' + encodeURIComponent(timeoutMins || 30);
+  };
 
   function ytrGlobalSignOut(e) {
     if (e && e.preventDefault) e.preventDefault();

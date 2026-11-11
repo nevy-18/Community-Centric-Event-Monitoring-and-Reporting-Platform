@@ -34,6 +34,9 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       const customLogo = localStorage.getItem('ytr_custom_logo');
       if (customLogo) {
         document.addEventListener('DOMContentLoaded', function() {
+      syncCEOBrandingPermissions();
+      const currentTimeoutPref = localStorage.getItem('ytr_session_timeout') || '30';
+      updateWatchdogBadge(parseInt(currentTimeoutPref, 10));
           document.querySelectorAll('.sidebar-logo, .icon img, #topbar-ytr-brand-logo, #LOGO, .ytr-system-logo').forEach(function(img) {
             if (img && img.tagName === 'IMG') img.src = customLogo;
           });
@@ -488,30 +491,27 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
                ============================================================ -->
           <div id="tab-pane-branding" class="settings-tab-pane" style="display: none;">
             
-            <?php if (!$is_ceo): ?>
-              <!-- Non-CEO Notice -->
-              <div class="ceo-lock-banner" style="margin-bottom: 1.5rem;">
-                <i class="ph-bold ph-lock-key" style="font-size: 1.5rem; flex-shrink: 0;"></i>
-                <div>
-                  <strong style="display: block; font-size: 0.875rem;">Chief Executive Officer Clearance Required</strong>
-                  <span>Modifying the official Youth on the Rock movement logo and core organizational identity is strictly restricted to the Chief Executive Officer. You may view the active identity below.</span>
-                </div>
+            <!-- Non-CEO Notice Banner (Shown dynamically if not Chief Executive) -->
+            <div id="ceoLockBanner" class="ceo-lock-banner" style="display: none; margin-bottom: 1.5rem;">
+              <i class="ph-bold ph-lock-key" style="font-size: 1.5rem; flex-shrink: 0;"></i>
+              <div>
+                <strong style="display: block; font-size: 0.875rem;">Chief Executive Officer Clearance Required</strong>
+                <span>Modifying the official Youth on the Rock movement logo and core organizational identity is strictly restricted to the Chief Executive Officer. You may view the active identity below.</span>
               </div>
-            <?php endif; ?>
+            </div>
 
             <div class="settings-card">
               <div class="settings-card-header">
                 <div>
                   <h3><i class="ph-bold ph-shield-check" style="color: #2563eb;"></i> Official Movement Logo Customizer</h3>
-                  <p style="color: #64748b; font-size: 0.8rem; margin: 2px 0 0;">
-                    <?= $is_ceo ? 'Upload and deploy a new official organization logo across all portals, dossiers, headers, and login screens.' : 'Current active organization logo deployed across all portals.' ?>
+                  <p id="logoCardSubtitle" style="color: #64748b; font-size: 0.8rem; margin: 2px 0 0;">
+                    Upload and deploy a new official organization logo across all portals, dossiers, headers, and login screens.
                   </p>
                 </div>
-                <?php if ($is_ceo): ?>
-                  <span class="ceo-exclusive-badge font-roboto"><i class="ph-bold ph-shield-check"></i> CEO Clearance</span>
-                <?php else: ?>
-                  <span class="badge" style="background: #f1f5f9; color: #475569;"><i class="ph-bold ph-lock-key"></i> Read Only</span>
-                <?php endif; ?>
+                <div>
+                  <span id="ceoClearanceBadge" class="ceo-exclusive-badge font-roboto" style="display: none;"><i class="ph-bold ph-shield-check"></i> CEO Clearance</span>
+                  <span id="nonCeoBadge" class="badge" style="display: none; background: #f1f5f9; color: #475569;"><i class="ph-bold ph-lock-key"></i> Read Only</span>
+                </div>
               </div>
 
               <!-- Active Logo Display & Preview -->
@@ -526,46 +526,42 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
                     Currently utilizing official YTR master emblem. Synchronized across the National Portal, Chapter Portals, printable PDF dossiers, and authentication interfaces.
                   </p>
                   
-                  <?php if ($is_ceo): ?>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                      <button type="button" class="btn btn-outline font-roboto btn-sm" onclick="document.getElementById('ceoLogoFileInput').click()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
-                        <i class="ph-bold ph-upload-simple"></i> Choose New Logo
-                      </button>
-                      <button type="button" class="btn btn-outline font-roboto btn-sm text-rose" onclick="resetToDefaultLogo()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; color: #dc2626; border-color: #fecdd3;">
-                        <i class="ph-bold ph-arrow-counter-clockwise"></i> Reset to Default
-                      </button>
-                    </div>
-                  <?php endif; ?>
-                </div>
-              </div>
-
-              <?php if ($is_ceo): ?>
-                <!-- Drag and Drop Dropzone -->
-                <input type="file" id="ceoLogoFileInput" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display: none;" onchange="handleLogoFileSelect(event)">
-                
-                <div class="logo-upload-dropzone" onclick="document.getElementById('ceoLogoFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='#2563eb';" ondragleave="this.style.borderColor='';" ondrop="handleLogoDrop(event)">
-                  <i class="ph-bold ph-cloud-arrow-up" style="font-size: 2.5rem; color: #2563eb; margin-bottom: 0.5rem;"></i>
-                  <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 0.25rem 0;">Click or drag new logo image to upload</h4>
-                  <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Supported formats: PNG, JPG, JPEG, SVG, WebP (Max size: 5MB). Transparent background recommended.</p>
-                </div>
-
-                <!-- Pending Save Action Bar -->
-                <div id="pendingLogoActionContainer" style="display: none; margin-top: 1.25rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
-                  <div style="display: flex; align-items: center; gap: 0.65rem;">
-                    <i class="ph-bold ph-check-circle" style="font-size: 1.5rem; color: #2563eb;"></i>
-                    <div>
-                      <strong style="font-size: 0.85rem; color: #1e40af; display: block;">New Logo Ready to Deploy</strong>
-                      <span style="font-size: 0.75rem; color: #3b82f6;">Preview displayed above. Click 'Save &amp; Deploy Logo' to publish system-wide.</span>
-                    </div>
-                  </div>
-                  <div style="display: flex; gap: 0.5rem;">
-                    <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="cancelPendingLogo()">Cancel</button>
-                    <button type="button" class="btn btn-primary btn-sm font-roboto" id="btnDeployLogo" onclick="deployNewLogo()" style="background: #2563eb; border: none; font-weight: 600;">
-                      <i class="ph-bold ph-floppy-disk"></i> Save &amp; Deploy Logo
+                  <div id="ceoLogoActionControls" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-outline font-roboto btn-sm" onclick="document.getElementById('ceoLogoFileInput').click()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                      <i class="ph-bold ph-upload-simple"></i> Choose New Logo
+                    </button>
+                    <button type="button" class="btn btn-outline font-roboto btn-sm text-rose" onclick="resetToDefaultLogo()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; color: #dc2626; border-color: #fecdd3;">
+                      <i class="ph-bold ph-arrow-counter-clockwise"></i> Reset to Default
                     </button>
                   </div>
                 </div>
-              <?php endif; ?>
+              </div>
+
+              <!-- Drag and Drop Dropzone -->
+              <input type="file" id="ceoLogoFileInput" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display: none;" onchange="handleLogoFileSelect(event)">
+              
+              <div id="ceoDropzone" class="logo-upload-dropzone" onclick="document.getElementById('ceoLogoFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='#2563eb';" ondragleave="this.style.borderColor='';" ondrop="handleLogoDrop(event)">
+                <i class="ph-bold ph-cloud-arrow-up" style="font-size: 2.5rem; color: #2563eb; margin-bottom: 0.5rem;"></i>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 0.25rem 0;">Click or drag new logo image to upload</h4>
+                <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Supported formats: PNG, JPG, JPEG, SVG, WebP (Max size: 5MB). Transparent background recommended.</p>
+              </div>
+
+              <!-- Pending Save Action Bar -->
+              <div id="pendingLogoActionContainer" style="display: none; margin-top: 1.25rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                  <i class="ph-bold ph-check-circle" style="font-size: 1.5rem; color: #2563eb;"></i>
+                  <div>
+                    <strong style="font-size: 0.85rem; color: #1e40af; display: block;">New Logo Ready to Deploy</strong>
+                    <span style="font-size: 0.75rem; color: #3b82f6;">Preview displayed above. Click 'Save &amp; Deploy Logo' to publish system-wide.</span>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="cancelPendingLogo()">Cancel</button>
+                  <button type="button" class="btn btn-primary btn-sm font-roboto" id="btnDeployLogo" onclick="deployNewLogo()" style="background: #2563eb; border: none; font-weight: 600;">
+                    <i class="ph-bold ph-floppy-disk"></i> Save &amp; Deploy Logo
+                  </button>
+                </div>
+              </div>
 
             </div>
 
@@ -581,29 +577,27 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
                 <div class="form-group">
                   <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Organization Full Name</label>
-                  <input type="text" id="orgNameInput" class="form-control font-roboto" value="Youth on the Rock National Movement" <?= $is_ceo ? '' : 'readonly' ?> style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                  <input type="text" id="orgNameInput" class="form-control font-roboto ceo-editable-input" value="Youth on the Rock National Movement" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
                 </div>
                 <div class="form-group">
                   <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Operational Tagline</label>
-                  <input type="text" id="orgTaglineInput" class="form-control font-roboto" value="Community-Centric Event Monitoring & Reporting Platform" <?= $is_ceo ? '' : 'readonly' ?> style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                  <input type="text" id="orgTaglineInput" class="form-control font-roboto ceo-editable-input" value="Community-Centric Event Monitoring & Reporting Platform" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
                 </div>
                 <div class="form-group">
                   <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Official Contact Email</label>
-                  <input type="email" id="orgEmailInput" class="form-control font-roboto" value="ytr.national@gmail.com" <?= $is_ceo ? '' : 'readonly' ?> style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                  <input type="email" id="orgEmailInput" class="form-control font-roboto ceo-editable-input" value="ytr.national@gmail.com" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
                 </div>
                 <div class="form-group">
                   <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Fiscal / Operational Year</label>
-                  <input type="text" id="orgFiscalYearInput" class="form-control font-roboto" value="2026 - 2027" <?= $is_ceo ? '' : 'readonly' ?> style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                  <input type="text" id="orgFiscalYearInput" class="form-control font-roboto ceo-editable-input" value="2026 - 2027" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
                 </div>
               </div>
 
-              <?php if ($is_ceo): ?>
-                <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
-                  <button type="button" class="btn btn-primary font-roboto" onclick="saveOrgIdentityDetails()" style="padding: 0.55rem 1.15rem; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;">
-                    <i class="ph-bold ph-floppy-disk"></i> Save Organization Details
-                  </button>
-                </div>
-              <?php endif; ?>
+              <div id="btnSaveOrgDetailsContainer" style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
+                <button type="button" class="btn btn-primary font-roboto" onclick="saveOrgIdentityDetails()" style="padding: 0.55rem 1.15rem; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;">
+                  <i class="ph-bold ph-floppy-disk"></i> Save Organization Details
+                </button>
+              </div>
             </div>
 
           </div>
@@ -713,16 +707,35 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
                 </div>
               </div>
 
-              <!-- Session Idle Timeout Dropdown -->
+              <!-- Session Idle Timeout Watchdog Controls -->
               <div style="padding: 0.85rem 0; border-bottom: 1px solid #f1f5f9;">
-                <label style="font-weight: 700; font-size: 0.875rem; color: #0f172a; margin-bottom: 0.35rem; display: block;">Session Idle Expiration</label>
-                <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Select the duration of inactivity before the platform safely prompts re-authentication.</p>
-                <select id="sessionTimeoutSelect" class="form-select font-roboto" onchange="setSessionTimeout(this.value)" style="max-width: 320px; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                  <option value="30">30 Minutes Inactivity</option>
-                  <option value="120" selected>2 Hours (Standard)</option>
-                  <option value="480">8 Hours (Full Shift)</option>
-                  <option value="0">Keep Signed In (Trusted Device)</option>
-                </select>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.35rem;">
+                  <div>
+                    <label style="font-weight: 700; font-size: 0.875rem; color: var(--text-main, #0f172a); margin-bottom: 0.2rem; display: block;">Session Idle Expiration</label>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Select the duration of inactivity before the platform safely prompts re-authentication.</p>
+                  </div>
+                  <span id="idleWatchdogStatusBadge" class="badge" style="background: #ecfdf5; color: #047857; font-weight: 700; border: 1px solid #a7f3d0; padding: 0.3rem 0.65rem; border-radius: 9999px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <i class="ph-bold ph-shield-check"></i> Watchdog Active: 30 mins
+                  </span>
+                </div>
+                
+                <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 0.5rem;">
+                  <select id="sessionTimeoutSelect" class="form-select font-roboto" onchange="setSessionTimeout(this.value)" style="max-width: 280px; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                    <option value="15">15 Minutes Inactivity</option>
+                    <option value="30" selected>30 Minutes Inactivity</option>
+                    <option value="60">1 Hour Inactivity</option>
+                    <option value="120">2 Hours (Standard)</option>
+                    <option value="480">8 Hours (Full Shift)</option>
+                    <option value="0">Keep Signed In (Trusted Device)</option>
+                  </select>
+
+                  <button type="button" class="btn btn-outline font-roboto btn-sm" onclick="startIdleTestSimulation()" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem; color: #2563eb; border-color: #bfdbfe; background: #eff6ff;">
+                    <i class="ph-bold ph-timer"></i> Test 5-Second Inactivity Auto-Signout
+                  </button>
+                </div>
+                <p id="idleCountdownInfo" style="font-size: 0.725rem; color: #64748b; margin-top: 0.45rem; margin-bottom: 0;">
+                  <i class="ph ph-info"></i> Inactivity timer continuously tracks mouse, keyboard, and touch interactions across all tabs.
+                </p>
               </div>
 
               <!-- Password Update Shortcut -->
@@ -1141,8 +1154,144 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       YTR_API.system.saveSettings({ reminder_lead_days: String(days) }).catch(() => {});
     }
 
+    // ==========================================
+    // CEO Clearance Detection & Dynamic DOM Sync
+    // ==========================================
+    function isChiefExecutiveUser() {
+      try {
+        const raw = localStorage.getItem('ytr_user');
+        if (!raw) return false;
+        const u = JSON.parse(raw);
+        if (!u) return false;
+        const pos = (u.position || '').trim().toLowerCase();
+        const email = (u.email || '').trim().toLowerCase();
+        const ceoTitles = [
+          'chief executive officer',
+          'chief executive operation',
+          'chief executive',
+          'ceo',
+          'executive director'
+        ];
+        return ceoTitles.includes(pos) || 
+               email === 'admin@ytr.org' || 
+               email === 'ytr.org@gmail.com' || 
+               email === 'ytr.national@gmail.com' ||
+               String(u.id) === '1' ||
+               (u.role === 'national_admin' && pos.includes('executive'));
+      } catch(e) { return false; }
+    }
+
+    function syncCEOBrandingPermissions() {
+      const isCEO = isChiefExecutiveUser();
+      const lockBanner = document.getElementById('ceoLockBanner');
+      const ceoBadge = document.getElementById('ceoClearanceBadge');
+      const nonCeoBadge = document.getElementById('nonCeoBadge');
+      const ceoLogoControls = document.getElementById('ceoLogoActionControls');
+      const ceoDropzone = document.getElementById('ceoDropzone');
+      const saveOrgBtn = document.getElementById('btnSaveOrgDetailsContainer');
+      const orgInputs = document.querySelectorAll('.ceo-editable-input');
+      const subtitle = document.getElementById('logoCardSubtitle');
+
+      if (isCEO) {
+        if (lockBanner) lockBanner.style.display = 'none';
+        if (ceoBadge) ceoBadge.style.display = 'inline-flex';
+        if (nonCeoBadge) nonCeoBadge.style.display = 'none';
+        if (ceoLogoControls) ceoLogoControls.style.display = 'flex';
+        if (ceoDropzone) ceoDropzone.style.display = 'block';
+        if (saveOrgBtn) saveOrgBtn.style.display = 'flex';
+        if (subtitle) subtitle.textContent = 'Upload and deploy a new official organization logo across all portals, dossiers, headers, and login screens.';
+        orgInputs.forEach(inp => {
+          inp.removeAttribute('readonly');
+          inp.style.cursor = 'text';
+          inp.style.backgroundColor = '';
+        });
+      } else {
+        if (lockBanner) lockBanner.style.display = 'flex';
+        if (ceoBadge) ceoBadge.style.display = 'none';
+        if (nonCeoBadge) nonCeoBadge.style.display = 'inline-flex';
+        if (ceoLogoControls) ceoLogoControls.style.display = 'none';
+        if (ceoDropzone) ceoDropzone.style.display = 'none';
+        if (saveOrgBtn) saveOrgBtn.style.display = 'none';
+        if (subtitle) subtitle.textContent = 'Current active organization logo deployed across all portals (Read Only).';
+        orgInputs.forEach(inp => {
+          inp.setAttribute('readonly', 'true');
+          inp.style.cursor = 'not-allowed';
+          inp.style.backgroundColor = '#f1f5f9';
+        });
+      }
+    }
+
+    // ==========================================
+    // Session Watchdog Handler & Simulation
+    // ==========================================
     function setSessionTimeout(mins) {
-      localStorage.setItem('ytr_session_timeout', mins);
+      const m = parseInt(mins, 10);
+      localStorage.setItem('ytr_session_timeout', String(m));
+      localStorage.setItem('ytr_last_activity', String(Date.now()));
+      updateWatchdogBadge(m);
+      if (m > 0) {
+        alert('Session idle timeout set to ' + m + ' minutes.\n\nThe platform watchdog is now active and will automatically sign you out after ' + m + ' minutes of total inactivity.');
+      } else {
+        alert('Session idle timeout disabled. Your account will remain signed in indefinitely on this device.');
+      }
+    }
+
+    function updateWatchdogBadge(m) {
+      const badge = document.getElementById('idleWatchdogStatusBadge');
+      if (!badge) return;
+      if (m > 0) {
+        badge.style.background = '#ecfdf5';
+        badge.style.color = '#047857';
+        badge.style.borderColor = '#a7f3d0';
+        badge.innerHTML = '<i class="ph-bold ph-shield-check"></i> Watchdog Active: ' + m + ' mins';
+      } else {
+        badge.style.background = '#f1f5f9';
+        badge.style.color = '#64748b';
+        badge.style.borderColor = '#cbd5e1';
+        badge.innerHTML = '<i class="ph-bold ph-prohibit"></i> Watchdog Disabled';
+      }
+    }
+
+    function startIdleTestSimulation() {
+      if (!confirm("Test Idle Expiration Simulation?\n\nThis will simulate your selected idle inactivity and trigger the automated sign-out process after a 5-second countdown.")) {
+        return;
+      }
+      let remainingSecs = 5;
+      const overlay = document.createElement('div');
+      overlay.id = 'idleSimOverlay';
+      overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(15, 23, 42, 0.82); z-index: 999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); font-family: Inter, sans-serif;';
+      overlay.innerHTML = `
+        <div style="background: #ffffff; border-radius: 12px; padding: 2rem; max-width: 440px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+          <div style="width: 56px; height: 56px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem;">
+            <i class="ph-bold ph-hourglass-high"></i>
+          </div>
+          <h3 style="margin: 0 0 0.5rem; font-size: 1.15rem; color: #0f172a; font-weight: 800;">Simulating Inactivity Expiration</h3>
+          <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 1.25rem;">
+            Inactivity watchdog triggered. Simulating session idle threshold. Auto-signing out in:
+          </p>
+          <div id="idleSimCountdown" style="font-size: 2.25rem; font-weight: 900; color: #dc2626; margin-bottom: 1.25rem;">5s</div>
+          <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="document.body.removeChild(document.getElementById('idleSimOverlay')); clearInterval(window.__idleSimInterval);" style="padding: 0.4rem 0.85rem;">Cancel Simulation</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      window.__idleSimInterval = setInterval(() => {
+        remainingSecs--;
+        const cnt = document.getElementById('idleSimCountdown');
+        if (cnt) cnt.textContent = remainingSecs + 's';
+        if (remainingSecs <= 0) {
+          clearInterval(window.__idleSimInterval);
+          const ov = document.getElementById('idleSimOverlay');
+          if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+          const currentTimeout = localStorage.getItem('ytr_session_timeout') || '30';
+          if (typeof window.ytrHandleIdleTimeout === 'function') {
+            window.ytrHandleIdleTimeout(parseInt(currentTimeout, 10));
+          } else {
+            alert('Session Expired: You have been signed out due to ' + currentTimeout + ' minutes of inactivity.');
+            window.location.href = 'login.php?timeout=1&mins=' + encodeURIComponent(currentTimeout);
+          }
+        }
+      }, 1000);
     }
 
     function requestBrowserPush() {

@@ -16,7 +16,8 @@ AUTHORIZED_CEO_POSITIONS = [
     'Chief Executive Operation',
     'Chief Executive Officer',
     'CEO',
-    'Chief Executive'
+    'Chief Executive',
+    'Executive Director'
 ]
 
 def is_executive_authorized():
@@ -32,15 +33,28 @@ def is_executive_authorized():
         with get_db() as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    SELECT email, role, position FROM users 
+                    SELECT id, email, role, position FROM users 
                     WHERE id = %s OR LOWER(email) = %s 
                     LIMIT 1
                 """, (user_id, str(user_email or '').lower()))
                 u = cur.fetchone()
                 if u:
-                    pos = str(u.get('position') or '').strip()
+                    pos = str(u.get('position') or '').strip().lower()
                     email = str(u.get('email') or '').strip().lower()
-                    if pos in AUTHORIZED_CEO_POSITIONS or email in ('admin@ytr.org', 'ytr.org@gmail.com'):
+                    uid = str(u.get('id') or '')
+                    ceo_titles = [
+                        'chief executive officer',
+                        'chief executive operation',
+                        'chief executive',
+                        'ceo',
+                        'executive director'
+                    ]
+                    if (
+                        pos in ceo_titles or 
+                        email in ('admin@ytr.org', 'ytr.org@gmail.com', 'ytr.national@gmail.com') or 
+                        uid == '1' or 
+                        (u.get('role') == 'national_admin' and 'executive' in pos)
+                    ):
                         return True
                     return False
                 return False
@@ -534,7 +548,7 @@ def flush_system_data():
                     # Re-seed Baseline Users with authorized Positions
                     default_hash = hash_password('Password123!')
                     users = [
-                        (1, None, 'Hamilton Jones Dela', 'admin@ytr.org', default_hash, 'national_admin', 'Executive Director', 'active'),
+                        (1, None, 'Hanskee Joyce Jose', 'YTR.org@gmail.com', default_hash, 'national_admin', 'Chief Executive Officer', 'active'),
                         (2, 1, 'Joan Dela Cruz', 'joan.dela@gmail.com', default_hash, 'chapter_admin', 'Chapter Coordinator', 'active'),
                         (3, 2, 'Mark Bautista', 'mark.bautista@gmail.com', default_hash, 'chapter_admin', 'Chapter President', 'pending'),
                         (7, 3, 'Elena Reyes', 'elena.reyes@gmail.com', default_hash, 'chapter_admin', 'Regional Director (Chapter)', 'pending'),

@@ -21,7 +21,22 @@
         }
         const customLogo = localStorage.getItem('ytr_custom_logo');
         if (customLogo) {
-          document.addEventListener('DOMContentLoaded', function() {
+                // Check for session timeout notice in URL
+      (function() {
+        try {
+          const url = new URL(window.location.href);
+          if (url.searchParams.get('timeout') === '1') {
+            const mins = url.searchParams.get('mins') || '30';
+            const alertBox = document.getElementById('sessionTimeoutAlert');
+            const alertText = document.getElementById('sessionTimeoutAlertText');
+            if (alertBox && alertText) {
+              alertText.textContent = `Your session expired after ${mins} minutes of inactivity. Please sign in again.`;
+              alertBox.style.display = 'flex';
+            }
+          }
+        } catch(e) {}
+      })();
+      document.addEventListener('DOMContentLoaded', function() {
             const l = document.getElementById('LOGO');
             if (l) l.src = customLogo;
           });
@@ -113,6 +128,12 @@
 
           <div><div class="brand-name">YOUTH ON THE ROCK</div><div class="brand-subtitle">Community platform</div></div>
 
+        </div>
+
+                <!-- Session Timeout Alert Banner -->
+        <div id="sessionTimeoutAlert" style="display: none; background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.825rem; color: #92400e; align-items: center; gap: 0.65rem;">
+          <i class="ph-bold ph-clock-countdown" style="font-size: 1.35rem; color: #d97706; flex-shrink: 0;"></i>
+          <span id="sessionTimeoutAlertText">Your session expired due to inactivity. Please sign in again.</span>
         </div>
 
         <header class="welcome">
