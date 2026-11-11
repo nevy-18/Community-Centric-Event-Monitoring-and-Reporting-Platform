@@ -226,10 +226,22 @@ const loginTab = document.getElementById('loginTab');
           }
 
           showError('loginError', msg, ['loginEmail', 'loginPassword']);
+
+          // Clear credential input boxes on wrong credentials and refocus
+          if (passwordInput) passwordInput.value = '';
+          if (emailInput) {
+            emailInput.value = '';
+            emailInput.focus();
+          }
         }
       } catch (err) {
         console.error('[YTR Auth Catch] Network or runtime exception during login:', err);
         showError('loginError', 'Unable to reach the authentication service. Please check your network connection and try again.');
+        if (passwordInput) passwordInput.value = '';
+        if (emailInput) {
+          emailInput.value = '';
+          emailInput.focus();
+        }
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
@@ -237,6 +249,20 @@ const loginTab = document.getElementById('loginTab');
         }
       }
     });
+
+      ['loginEmail', 'loginPassword'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', () => {
+            el.removeAttribute('aria-invalid');
+            const err = document.getElementById('loginError');
+            if (err && !document.querySelector('#loginEmail[aria-invalid="true"]') && !document.querySelector('#loginPassword[aria-invalid="true"]')) {
+              err.textContent = '';
+              err.classList.remove('visible');
+            }
+          });
+        }
+      });
     }
 
     if (requestedRole) {

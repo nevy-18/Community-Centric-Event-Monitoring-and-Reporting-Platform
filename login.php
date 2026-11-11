@@ -351,8 +351,8 @@
 
 
 
-    <script src="assets/api-client.js?v=20261103"></script>
-    <script src="assets/script.js?v=20261103" defer></script>
+    <script src="assets/api-client.js?v=<?= time() ?>"></script>
+    <script src="assets/script.js?v=<?= time() ?>" defer></script>
 </body>
 
 </html>
