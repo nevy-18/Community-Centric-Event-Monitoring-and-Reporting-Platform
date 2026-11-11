@@ -416,6 +416,35 @@ const YTR_API = {
       return YTR_API.request('/system/archives/' + encodeURIComponent(batchId) + '/restore', {
         method: 'POST'
       });
+    },
+    getSettings() {
+      return YTR_API.request('/system/settings');
+    },
+    saveSettings(settings) {
+      return YTR_API.request('/system/settings', {
+        method: 'POST',
+        body: JSON.stringify(settings)
+      });
+    },
+    uploadLogo(formDataOrBase64) {
+      if (typeof FormData !== 'undefined' && formDataOrBase64 instanceof FormData) {
+        return YTR_API.request('/system/logo', {
+          method: 'POST',
+          body: formDataOrBase64
+        });
+      }
+      return YTR_API.request('/system/logo', {
+        method: 'POST',
+        body: JSON.stringify({ logo_base64: formDataOrBase64 })
+      });
+    },
+    resetLogo() {
+      return YTR_API.request('/system/logo/reset', {
+        method: 'POST'
+      });
+    },
+    getHealth() {
+      return YTR_API.request('/system/health');
     }
   }
 };

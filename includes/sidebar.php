@@ -34,6 +34,9 @@
     <a href="Manage.php" class="nav-link <?php echo ($current_page == 'manage.php') ? 'active' : ''; ?>">
       <i class="ph ph-user-gear"></i> Manage Account
     </a>
+    <a href="Settings.php" class="nav-link <?php echo ($current_page == 'settings.php') ? 'active' : ''; ?>">
+      <i class="ph ph-gear"></i> Settings
+    </a>
   </nav>
 
   <div class="sidebar-footer">

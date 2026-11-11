@@ -9,6 +9,26 @@
   <meta name="theme-color" content="#122b4a" />
   <title>YTR | Sign in</title>
     <link rel="stylesheet" href="assets/style.css?v=20261103" />
+  <link rel="stylesheet" href="assets/dark-mode.css?v=20261111" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('ytr_theme') || (document.cookie.match(/(?:^|;\s*)ytr_theme=([^;]+)/) || [])[1] || 'light';
+        if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark-theme');
+          if (document.body) document.body.classList.add('dark-theme');
+        }
+        const customLogo = localStorage.getItem('ytr_custom_logo');
+        if (customLogo) {
+          document.addEventListener('DOMContentLoaded', function() {
+            const l = document.getElementById('LOGO');
+            if (l) l.src = customLogo;
+          });
+        }
+      } catch(e) {}
+    })();
+  </script>
     <script>
       // Clear previous session when returning to login page
       localStorage.removeItem('ytr_user');
@@ -39,7 +59,10 @@
 
 <body>
 
-  <main class="page-shell">
+    <main class="page-shell">
+    <button id="loginThemeToggle" class="login-theme-toggle" onclick="toggleYTRLoginTheme()" title="Toggle Dark/Light Mode" style="position: fixed; top: 1.25rem; right: 1.25rem; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.8); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569; box-shadow: 0 4px 12px rgba(0,0,0,0.12); transition: all 0.2s ease; z-index: 9999;">
+      <i id="loginThemeIcon" class="ph ph-moon" style="font-size: 1.25rem;"></i>
+    </button>
 
     <aside class="brand-panel" aria-label="Youth on the Rock introduction">
 

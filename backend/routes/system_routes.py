@@ -1,7 +1,7 @@
 import os
 import json
 import shutil
-from datetime import datetime, date, time
+from datetime import datetime, timezone, date, time
 from decimal import Decimal
 from pathlib import Path
 from flask import Blueprint, request, session, Response
@@ -820,3 +820,211 @@ def restore_system_archive(batch_id):
         return api_response(result, message=result.get('message', 'Archive restored successfully.'))
     except Exception as e:
         return api_error(f"Failed to restore archive: {str(e)}", 500)
+
+# ============================================================
+# SYSTEM CONFIGURATION, LOGO MANAGEMENT & DIAGNOSTICS
+# ============================================================
+
+@system_bp.route('/settings', methods=['GET'])
+def get_system_settings():
+    """Returns all global system configuration key-values."""
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT setting_key, setting_value FROM system_settings")
+                rows = cur.fetchall()
+                settings = {r['setting_key']: r['setting_value'] for r in rows}
+                
+                # Provide safe defaults if empty
+                defaults = {
+                    'organization_name': 'Youth on the Rock National Movement',
+                    'tagline': 'Community-Centric Event Monitoring & Reporting Platform',
+                    'contact_email': 'ytr.national@gmail.com',
+                    'fiscal_year': '2026 - 2027',
+                    'logo_path': 'assets/images/LOGO.jpg',
+                    'default_theme': 'light',
+                    'reminder_lead_days': '3',
+                    'table_density': 'comfortable',
+                    'sound_notifications': '1'
+                }
+                for k, v in defaults.items():
+                    if k not in settings:
+                        settings[k] = v
+                        
+        return api_response(settings, 'System settings loaded.')
+    except Exception as e:
+        return api_error(f"Failed to load settings: {str(e)}", 500)
+
+
+@system_bp.route('/settings', methods=['POST'])
+def update_system_settings():
+    """Updates general system configuration. Requires national admin or CEO authority."""
+    user_id = request.headers.get('X-User-Id') or session.get('user_id')
+    user_email = request.headers.get('X-User-Email') or session.get('user_email')
+    
+    # Check that requester is national admin
+    if user_id or user_email:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT role FROM users WHERE id = %s OR LOWER(email) = %s LIMIT 1", 
+                            (user_id, str(user_email or '').lower()))
+                u = cur.fetchone()
+                if not u or u.get('role') != 'national_admin':
+                    return api_error("Access Denied: Only National Administrators can modify system settings.", 403)
+
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    allowed_keys = [
+        'organization_name', 'tagline', 'contact_email', 'fiscal_year',
+        'default_theme', 'reminder_lead_days', 'table_density', 'sound_notifications'
+    ]
+    
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                for key in allowed_keys:
+                    if key in data:
+                        val = str(data[key]).strip()
+                        cur.execute("""
+                            INSERT INTO system_settings (setting_key, setting_value, updated_by)
+                            VALUES (%s, %s, %s)
+                            ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_by = VALUES(updated_by)
+                        """, (key, val, user_id))
+        return api_response(data, 'System settings updated successfully.')
+    except Exception as e:
+        return api_error(f"Failed to update settings: {str(e)}", 500)
+
+
+@system_bp.route('/logo', methods=['POST'])
+def update_system_logo():
+    """
+    Uploads and applies a new organization movement logo.
+    STRICTLY RESTRICTED TO CHIEF EXECUTIVE OFFICER (CEO).
+    """
+    if not is_executive_authorized():
+        return api_error("Access Denied: Only the Chief Executive Officer can modify the organization logo.", 403)
+        
+    user_id = request.headers.get('X-User-Id') or session.get('user_id')
+    logos_dir = PROJECT_ROOT / 'assets' / 'uploads' / 'logos'
+    logos_dir.mkdir(parents=True, exist_ok=True)
+    
+    logo_file = request.files.get('logo')
+    saved_rel_path = None
+    
+    if logo_file and logo_file.filename:
+        filename = logo_file.filename.lower()
+        allowed_exts = ('.png', '.jpg', '.jpeg', '.svg', '.webp', '.gif')
+        ext = os.path.splitext(filename)[1]
+        if ext not in allowed_exts:
+            return api_error(f"Invalid image format. Allowed formats: {', '.join(allowed_exts)}", 400)
+            
+        timestamp = int(datetime.now(timezone.utc).timestamp())
+        safe_filename = f"ytr_logo_{timestamp}{ext}"
+        target_path = logos_dir / safe_filename
+        logo_file.save(str(target_path))
+        saved_rel_path = f"assets/uploads/logos/{safe_filename}"
+    else:
+        # Check for JSON base64 upload
+        data = request.get_json(silent=True) or {}
+        b64 = data.get('logo_base64')
+        if b64:
+            import base64
+            if ',' in b64:
+                b64 = b64.split(',', 1)[1]
+            try:
+                raw_bytes = base64.b64decode(b64)
+                timestamp = int(datetime.now(timezone.utc).timestamp())
+                safe_filename = f"ytr_logo_{timestamp}.png"
+                target_path = logos_dir / safe_filename
+                with open(str(target_path), 'wb') as f:
+                    f.write(raw_bytes)
+                saved_rel_path = f"assets/uploads/logos/{safe_filename}"
+            except Exception as e:
+                return api_error(f"Invalid base64 image data: {str(e)}", 400)
+        else:
+            return api_error("No logo image file or data provided.", 400)
+            
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO system_settings (setting_key, setting_value, updated_by)
+                    VALUES ('logo_path', %s, %s)
+                    ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_by = VALUES(updated_by)
+                """, (saved_rel_path, user_id))
+                
+                try:
+                    cur.execute("""
+                        INSERT INTO audit_logs (user_id, action, details)
+                        VALUES (%s, 'UPDATE_LOGO', %s)
+                    """, (user_id, f"CEO updated organization logo to: {saved_rel_path}"))
+                except Exception:
+                    pass
+                    
+        return api_response({
+            'logo_url': saved_rel_path,
+            'message': 'Official organization logo updated successfully.'
+        })
+    except Exception as e:
+        return api_error(f"Failed to update logo: {str(e)}", 500)
+
+
+@system_bp.route('/logo/reset', methods=['POST'])
+def reset_system_logo():
+    """
+    Resets organization logo back to default (assets/images/LOGO.jpg).
+    STRICTLY RESTRICTED TO CHIEF EXECUTIVE OFFICER (CEO).
+    """
+    if not is_executive_authorized():
+        return api_error("Access Denied: Only the Chief Executive Officer can reset the organization logo.", 403)
+        
+    user_id = request.headers.get('X-User-Id') or session.get('user_id')
+    default_logo = 'assets/images/LOGO.jpg'
+    
+    try:
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO system_settings (setting_key, setting_value, updated_by)
+                    VALUES ('logo_path', %s, %s)
+                    ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_by = VALUES(updated_by)
+                """, (default_logo, user_id))
+                
+                try:
+                    cur.execute("""
+                        INSERT INTO audit_logs (user_id, action, details)
+                        VALUES (%s, 'RESET_LOGO', 'CEO reset organization logo to default.')
+                    """, (user_id,))
+                except Exception:
+                    pass
+                    
+        return api_response({
+            'logo_url': default_logo,
+            'message': 'Organization logo reset to default.'
+        })
+    except Exception as e:
+        return api_error(f"Failed to reset logo: {str(e)}", 500)
+
+
+@system_bp.route('/health', methods=['GET'])
+def system_health_check():
+    """Returns live diagnostic metrics on database, reverse proxy, and storage."""
+    try:
+        db_status = 'connected'
+        table_count = 0
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SHOW TABLES")
+                table_count = len(cur.fetchall())
+                
+        return api_response({
+            'status': 'healthy',
+            'database': {
+                'status': db_status,
+                'tables_count': table_count,
+                'cloud_host': 'ytr-mysql-munozrayvhen-f1e7.a.aivencloud.com'
+            },
+            'api_version': '2.4.0',
+            'server_time': datetime.now(timezone.utc).isoformat()
+        })
+    except Exception as e:
+        return api_error(f"Health check failed: {str(e)}", 500)

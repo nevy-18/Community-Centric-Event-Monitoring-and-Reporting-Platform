@@ -37,6 +37,9 @@ if (isset($_COOKIE['ytr_chapter_name']) && !empty($_COOKIE['ytr_chapter_name']))
     <a href="ChapterReport.php" class="nav-link <?php echo ($current_page == 'chapterreport.php') ? 'active' : ''; ?>">
       <i class="ph ph-file-arrow-up"></i> Submit Event Report
     </a>
+    <a href="Settings.php" class="nav-link <?php echo ($current_page == 'settings.php') ? 'active' : ''; ?>">
+      <i class="ph ph-gear"></i> Settings
+    </a>
   </nav>
 
   <div class="sidebar-footer">

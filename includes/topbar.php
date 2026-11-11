@@ -1,3 +1,27 @@
+<!-- Global Dark Mode CSS & Anti-FOUC Theme Initializer -->
+<link rel="stylesheet" href="assets/dark-mode.css?v=20261111">
+<script>
+  (function() {
+    try {
+      const savedTheme = localStorage.getItem('ytr_theme') || (document.cookie.match(/(?:^|;\s*)ytr_theme=([^;]+)/) || [])[1] || 'light';
+      if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark-theme');
+        if (document.body) document.body.classList.add('dark-theme');
+      } else {
+        document.documentElement.classList.remove('dark-theme');
+        if (document.body) document.body.classList.remove('dark-theme');
+      }
+      const customLogo = localStorage.getItem('ytr_custom_logo');
+      if (customLogo) {
+        document.addEventListener('DOMContentLoaded', function() {
+          document.querySelectorAll('.sidebar-logo, #topbar-ytr-brand-logo, #LOGO, .ytr-system-logo').forEach(function(img) {
+            if (img && img.tagName === 'IMG') img.src = customLogo;
+          });
+        });
+      }
+    } catch(e) {}
+  })();
+</script>
 <style>
 /* ============================================================
    GLOBAL ANTI-CRAMP & NO-SCROLL RESPONSIVE STYLES
@@ -368,6 +392,11 @@ html, body {
 
   <div class="topbar-right">
     <div class="topbar-icons">
+            <!-- Theme Toggle Button -->
+      <button id="topbar-theme-toggle" class="icon-btn" title="Toggle Light / Dark Mode" onclick="toggleYTRTheme(event)" style="cursor: pointer;">
+        <i id="topbar-theme-icon" class="ph ph-moon"></i>
+      </button>
+
       <!-- Interactive Notification Bell -->
       <div style="position: relative;">
         <button id="notification-bell-btn" class="icon-btn" title="View Due Dates & Notifications">
@@ -413,6 +442,7 @@ html, body {
         <p id="topbar-dropdown-user-email" style="font-size: 0.75rem; color: #64748b;">user@ytr.org</p>
       </div>
       <a href="#" class="dropdown-item" onclick="openProfileModal(event)"><i class="ph ph-user"></i> My Profile</a>
+      <a href="Settings.php" class="dropdown-item"><i class="ph ph-gear"></i> System Settings</a>
       <a href="Manage.php" class="dropdown-item"><i class="ph ph-user-circle"></i> Manage Accounts</a>
       <a href="Proposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> Chapter Proposals</a>
       <a href="Report.php" class="dropdown-item"><i class="ph ph-file-text"></i> Event Reports</a>
@@ -719,7 +749,66 @@ html, body {
 </div>
 
 <script>
+  
+  // ==========================================
+  // Global Theme & Branding Sync Utilities
+  // ==========================================
+  window.updateTopbarThemeIcon = function() {
+    const icon = document.getElementById('topbar-theme-icon');
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    if (icon) {
+      if (isDark) {
+        icon.className = 'ph ph-sun';
+        icon.setAttribute('title', 'Switch to Light Mode');
+      } else {
+        icon.className = 'ph ph-moon';
+        icon.setAttribute('title', 'Switch to Dark Mode');
+      }
+    }
+  };
+
+  window.toggleYTRTheme = function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const isCurrentlyDark = document.documentElement.classList.contains('dark-theme');
+    const nextTheme = isCurrentlyDark ? 'light' : 'dark';
+    window.setYTRTheme(nextTheme);
+  };
+
+  window.setYTRTheme = function(themeName) {
+    if (themeName === 'dark') {
+      document.documentElement.classList.add('dark-theme');
+      if (document.body) document.body.classList.add('dark-theme');
+      localStorage.setItem('ytr_theme', 'dark');
+      document.cookie = "ytr_theme=dark; path=/; max-age=" + (365*24*60*60);
+    } else if (themeName === 'light') {
+      document.documentElement.classList.remove('dark-theme');
+      if (document.body) document.body.classList.remove('dark-theme');
+      localStorage.setItem('ytr_theme', 'light');
+      document.cookie = "ytr_theme=light; path=/; max-age=" + (365*24*60*60);
+    } else { // system
+      localStorage.setItem('ytr_theme', 'system');
+      document.cookie = "ytr_theme=system; path=/; max-age=" + (365*24*60*60);
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        document.documentElement.classList.add('dark-theme');
+        if (document.body) document.body.classList.add('dark-theme');
+      } else {
+        document.documentElement.classList.remove('dark-theme');
+        if (document.body) document.body.classList.remove('dark-theme');
+      }
+    }
+    window.updateTopbarThemeIcon();
+  };
+
+  window.applySystemLogoToDOM = function(logoUrl) {
+    if (!logoUrl) return;
+    document.querySelectorAll('.sidebar-logo, #topbar-ytr-brand-logo, #LOGO, .ytr-system-logo').forEach(function(img) {
+      if (img && img.tagName === 'IMG') img.src = logoUrl;
+    });
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
+    window.updateTopbarThemeIcon();
     // Profile Dropdown
     const profileBtn = document.getElementById('profile-btn');
     const profileDropdown = document.getElementById('profile-dropdown');
@@ -809,6 +898,7 @@ html, body {
             <a href="ChapterProposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> My Event Proposals</a>
             <a href="ChapterReport.php" class="dropdown-item"><i class="ph ph-file-arrow-up"></i> Submit Event Report</a>
             <a href="ChapterRequest.php" class="dropdown-item"><i class="ph ph-image"></i> My Poster Requests</a>
+            <a href="Settings.php" class="dropdown-item"><i class="ph ph-gear"></i> System Settings</a>
             <div class="dropdown-divider"></div>
             <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-arrows-clockwise"></i> Switch Account</a>
             <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-sign-out"></i> Sign Out</a>

@@ -935,6 +935,68 @@ class TestYTRBackendAPI(unittest.TestCase):
 
         print("[PASS] Proposal Google Drive link submission, storage, and retrieval verified.")
 
+
+    def test_37_system_settings_retrieval(self):
+        """Test GET /api/system/settings returns expected defaults."""
+        res = self.client.get('/api/system/settings')
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertEqual(data.get('status'), 'success')
+        settings = data.get('data', {})
+        self.assertIn('organization_name', settings)
+        self.assertIn('logo_path', settings)
+        self.assertIn('default_theme', settings)
+        print("[PASS] System settings retrieval verified.")
+
+    def test_38_non_ceo_blocked_from_logo_change(self):
+        """Test non-CEO user is blocked from modifying logo (HTTP 403)."""
+        headers = {
+            'X-User-Id': '2',
+            'X-User-Email': 'joan.dela@gmail.com'
+        }
+        res = self.client.post('/api/system/logo', json={'logo_base64': 'dGVzdA=='}, headers=headers)
+        self.assertEqual(res.status_code, 403)
+        self.assertIn('Access Denied', res.get_json().get('message', ''))
+        print("[PASS] Non-CEO user correctly blocked from modifying logo (HTTP 403).")
+
+    def test_39_ceo_can_upload_and_reset_logo(self):
+        """Test CEO can update logo and reset to default."""
+        ceo_headers = {
+            'X-User-Id': '1',
+            'X-User-Email': 'admin@ytr.org'
+        }
+        # 1. Update logo with 1x1 transparent PNG base64
+        sample_png_b64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+        res = self.client.post('/api/system/logo', json={'logo_base64': sample_png_b64}, headers=ceo_headers)
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()['data']
+        self.assertIn('assets/uploads/logos/', data.get('logo_url', ''))
+
+        # Verify in settings
+        res_get = self.client.get('/api/system/settings')
+        self.assertEqual(res_get.status_code, 200)
+        self.assertIn('assets/uploads/logos/', res_get.get_json()['data']['logo_path'])
+
+        # 2. Reset logo to default
+        res_reset = self.client.post('/api/system/logo/reset', headers=ceo_headers)
+        self.assertEqual(res_reset.status_code, 200)
+        reset_data = res_reset.get_json()['data']
+        self.assertEqual(reset_data.get('logo_url'), 'assets/images/LOGO.jpg')
+
+        # Verify in settings
+        res_get2 = self.client.get('/api/system/settings')
+        self.assertEqual(res_get2.get_json()['data']['logo_path'], 'assets/images/LOGO.jpg')
+        print("[PASS] CEO logo upload and reset to default verified.")
+
+    def test_40_system_health(self):
+        """Test GET /api/system/health returns healthy status."""
+        res = self.client.get('/api/system/health')
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()['data']
+        self.assertEqual(data.get('status'), 'healthy')
+        self.assertIn('database', data)
+        print("[PASS] System health endpoint verified.")
+
 if __name__ == '__main__':
     unittest.main()
 
