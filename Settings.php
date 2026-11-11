@@ -972,6 +972,42 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
 
   <!-- Client-side Logic for Settings & Theme Sync -->
   <script>
+    // Defensive Polyfill for YTR_API.system methods (prevents cache mismatch errors)
+    if (typeof window.YTR_API !== 'undefined') {
+      window.YTR_API.system = window.YTR_API.system || {};
+      if (typeof window.YTR_API.system.getSettings !== 'function') {
+        window.YTR_API.system.getSettings = function() {
+          return window.YTR_API.request('/system/settings');
+        };
+      }
+      if (typeof window.YTR_API.system.saveSettings !== 'function') {
+        window.YTR_API.system.saveSettings = function(settings) {
+          return window.YTR_API.request('/system/settings', {
+            method: 'POST',
+            body: JSON.stringify(settings || {})
+          });
+        };
+      }
+      if (typeof window.YTR_API.system.uploadLogo !== 'function') {
+        window.YTR_API.system.uploadLogo = function(data) {
+          if (typeof FormData !== 'undefined' && data instanceof FormData) {
+            return window.YTR_API.request('/system/logo', { method: 'POST', body: data });
+          }
+          return window.YTR_API.request('/system/logo', { method: 'POST', body: JSON.stringify({ logo_base64: data }) });
+        };
+      }
+      if (typeof window.YTR_API.system.resetLogo !== 'function') {
+        window.YTR_API.system.resetLogo = function() {
+          return window.YTR_API.request('/system/logo/reset', { method: 'POST' });
+        };
+      }
+      if (typeof window.YTR_API.system.getHealth !== 'function') {
+        window.YTR_API.system.getHealth = function() {
+          return window.YTR_API.request('/system/health');
+        };
+      }
+    }
+
     let pendingLogoData = null;
 
     document.addEventListener('DOMContentLoaded', () => {
