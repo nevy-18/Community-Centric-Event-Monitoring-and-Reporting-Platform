@@ -568,40 +568,6 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
 
             </div>
 
-            <!-- Organization Identity Details -->
-            <div class="settings-card">
-              <div class="settings-card-header">
-                <div>
-                  <h3><i class="ph-bold ph-buildings" style="color: #059669;"></i> Movement Identity &amp; Platform Profile</h3>
-                  <p style="color: #64748b; font-size: 0.8rem; margin: 2px 0 0;">Official organization titles shown on printable dossiers and platform metadata.</p>
-                </div>
-              </div>
-
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
-                <div class="form-group">
-                  <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Organization Full Name</label>
-                  <input type="text" id="orgNameInput" class="form-control font-roboto ceo-editable-input" value="Youth on the Rock National Movement" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Operational Tagline</label>
-                  <input type="text" id="orgTaglineInput" class="form-control font-roboto ceo-editable-input" value="Community-Centric Event Monitoring & Reporting Platform" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Official Contact Email</label>
-                  <input type="email" id="orgEmailInput" class="form-control font-roboto ceo-editable-input" value="ytr.national@gmail.com" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem; display: block;">Fiscal / Operational Year</label>
-                  <input type="text" id="orgFiscalYearInput" class="form-control font-roboto ceo-editable-input" value="2026 - 2027" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                </div>
-              </div>
-
-              <div id="btnSaveOrgDetailsContainer" style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
-                <button type="button" class="btn btn-primary font-roboto" onclick="saveOrgIdentityDetails()" style="padding: 0.55rem 1.15rem; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem;">
-                  <i class="ph-bold ph-floppy-disk"></i> Save Organization Details
-                </button>
-              </div>
-            </div>
 
           </div>
 
@@ -1168,18 +1134,6 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
           if (s.logo_path) {
             applySystemLogoToDOM(s.logo_path);
           }
-          if (document.getElementById('orgNameInput') && s.organization_name) {
-            document.getElementById('orgNameInput').value = s.organization_name;
-          }
-          if (document.getElementById('orgTaglineInput') && s.tagline) {
-            document.getElementById('orgTaglineInput').value = s.tagline;
-          }
-          if (document.getElementById('orgEmailInput') && s.contact_email) {
-            document.getElementById('orgEmailInput').value = s.contact_email;
-          }
-          if (document.getElementById('orgFiscalYearInput') && s.fiscal_year) {
-            document.getElementById('orgFiscalYearInput').value = s.fiscal_year;
-          }
         }
       } catch (err) {
         console.warn('Could not load system settings from backend:', err);
@@ -1289,24 +1243,7 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       }
     }
 
-    async function saveOrgIdentityDetails() {
-      const payload = {
-        organization_name: (document.getElementById('orgNameInput')?.value || '').trim(),
-        tagline: (document.getElementById('orgTaglineInput')?.value || '').trim(),
-        contact_email: (document.getElementById('orgEmailInput')?.value || '').trim(),
-        fiscal_year: (document.getElementById('orgFiscalYearInput')?.value || '').trim()
-      };
-      try {
-        const res = await YTR_API.system.saveSettings(payload);
-        if (res.status === 'success') {
-          alert('Organization details updated successfully.');
-        } else {
-          alert('Update failed: ' + (res.message || 'Unknown error'));
-        }
-      } catch(err) {
-        alert('Network error: ' + err.message);
-      }
-    }
+
 
     // ==========================================
     // NOTIFICATIONS & SECURITY
@@ -1350,8 +1287,6 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       const nonCeoBadge = document.getElementById('nonCeoBadge');
       const ceoLogoControls = document.getElementById('ceoLogoActionControls');
       const ceoDropzone = document.getElementById('ceoDropzone');
-      const saveOrgBtn = document.getElementById('btnSaveOrgDetailsContainer');
-      const orgInputs = document.querySelectorAll('.ceo-editable-input');
       const subtitle = document.getElementById('logoCardSubtitle');
 
       const execTabBtn = document.getElementById('tab-btn-executive');
@@ -1365,26 +1300,14 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
         if (nonCeoBadge) nonCeoBadge.style.display = 'none';
         if (ceoLogoControls) ceoLogoControls.style.display = 'flex';
         if (ceoDropzone) ceoDropzone.style.display = 'block';
-        if (saveOrgBtn) saveOrgBtn.style.display = 'flex';
         if (subtitle) subtitle.textContent = 'Upload and deploy a new official organization logo across all portals, dossiers, headers, and login screens.';
-        orgInputs.forEach(inp => {
-          inp.removeAttribute('readonly');
-          inp.style.cursor = 'text';
-          inp.style.backgroundColor = '';
-        });
       } else {
         if (lockBanner) lockBanner.style.display = 'flex';
         if (ceoBadge) ceoBadge.style.display = 'none';
         if (nonCeoBadge) nonCeoBadge.style.display = 'inline-flex';
         if (ceoLogoControls) ceoLogoControls.style.display = 'none';
         if (ceoDropzone) ceoDropzone.style.display = 'none';
-        if (saveOrgBtn) saveOrgBtn.style.display = 'none';
         if (subtitle) subtitle.textContent = 'Current active organization logo deployed across all portals (Read Only).';
-        orgInputs.forEach(inp => {
-          inp.setAttribute('readonly', 'true');
-          inp.style.cursor = 'not-allowed';
-          inp.style.backgroundColor = '#f1f5f9';
-        });
       }
     }
 
