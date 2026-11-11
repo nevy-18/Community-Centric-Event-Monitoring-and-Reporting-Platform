@@ -220,8 +220,10 @@ html, body {
     padding: 0.55rem 0.85rem !important;
     font-size: 0.8rem !important;
     border-radius: 8px !important;
-    background: #f1f5f9 !important;
-    border: 1px solid #e2e8f0 !important;
+    background: var(--bg-body, #f1f5f9) !important;
+    border: 1px solid var(--border, #e2e8f0) !important;
+    color: var(--text-main, #334155) !important;
+    font-weight: 600 !important;
     white-space: nowrap !important;
     margin: 0 !important;
   }
@@ -282,8 +284,9 @@ html, body {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
+    background: var(--bg-card, #ffffff) !important;
+    border: 1px solid var(--border, #e2e8f0) !important;
+    color: var(--text-main, #0f172a) !important;
     border-radius: 14px !important;
     padding: 1rem 1.15rem !important;
     box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.08) !important;
@@ -305,9 +308,10 @@ html, body {
     align-items: center !important;
     justify-content: space-between !important;
     padding: 0.55rem 0 !important;
-    border-bottom: 1px solid #f1f5f9 !important;
+    border-bottom: 1px solid var(--border, #f1f5f9) !important;
     border-top: none !important;
     font-size: 0.835rem !important;
+    color: var(--text-main, #0f172a) !important;
     text-align: right !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -317,7 +321,7 @@ html, body {
     content: attr(data-label);
     font-size: 0.72rem !important;
     font-weight: 700 !important;
-    color: #64748b !important;
+    color: var(--text-muted, #64748b) !important;
     text-transform: uppercase !important;
     letter-spacing: 0.04em !important;
     text-align: left !important;
@@ -327,9 +331,15 @@ html, body {
   .table-responsive table:not(.printable-table) td:first-child:not([colspan]) {
     padding-top: 0 !important;
     padding-bottom: 0.75rem !important;
-    border-bottom: 1.5px solid #e2e8f0 !important;
+    border-bottom: 1.5px solid var(--border, #e2e8f0) !important;
     justify-content: flex-start !important;
     text-align: left !important;
+    color: var(--text-main, #0f172a) !important;
+  }
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan]) span,
+  .table-responsive table:not(.printable-table) td:first-child:not([colspan]) strong {
+    color: var(--text-main, #0f172a) !important;
+    font-weight: 700 !important;
   }
   .table-responsive table:not(.printable-table) td:first-child:not([colspan])::before {
     display: none !important;

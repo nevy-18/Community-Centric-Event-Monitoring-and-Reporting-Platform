@@ -12,6 +12,7 @@ body.dark-theme {
   --primary: #3b82f6 !important;
   --primary-dark: #1d4ed8 !important;
   --bg-body: #090d16 !important;
+  --bg-card: #131c2e !important;
   --white: #131c2e !important;
   --text-main: #f8fafc !important;
   --text-muted: #94a3b8 !important;
@@ -749,4 +750,292 @@ html.dark-theme .print-document-sheet span {
 html.dark-theme .print-document-sheet th {
   background: #1a2f63 !important;
   color: #ffffff !important;
+}
+
+/* ============================================================
+   12. MOBILE VIEW RESPONSIVE DARK MODE & HIGH-CONTRAST TYPOGRAPHY
+   Guarantee flawless, crystal-clear readability on all mobile screens.
+   ============================================================ */
+@media (max-width: 992px), (max-width: 900px), (max-width: 768px), (max-width: 640px), (max-width: 480px) {
+
+  /* Mobile Table Stacked Cards in Dark Mode */
+  html.dark-theme .table-responsive table:not(.printable-table) tr,
+  body.dark-theme .table-responsive table:not(.printable-table) tr {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.45) !important;
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .table-responsive table:not(.printable-table) tr:hover,
+  body.dark-theme .table-responsive table:not(.printable-table) tr:hover {
+    border-color: #475569 !important;
+    box-shadow: 0 6px 18px -3px rgba(0, 0, 0, 0.55) !important;
+  }
+
+  /* Mobile Data Rows Inside Cards */
+  html.dark-theme .table-responsive table:not(.printable-table) td:not([colspan]),
+  body.dark-theme .table-responsive table:not(.printable-table) td:not([colspan]) {
+    border-bottom: 1px solid #334155 !important;
+    color: #f1f5f9 !important;
+  }
+
+  /* Data-Label Pseudo Headers on Mobile */
+  html.dark-theme .table-responsive table:not(.printable-table) td[data-label]::before,
+  body.dark-theme .table-responsive table:not(.printable-table) td[data-label]::before {
+    color: #94a3b8 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Primary Card Header / Title Cell on Mobile */
+  html.dark-theme .table-responsive table:not(.printable-table) td:first-child:not([colspan]),
+  body.dark-theme .table-responsive table:not(.printable-table) td:first-child:not([colspan]) {
+    border-bottom: 1.5px solid #334155 !important;
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .table-responsive table:not(.printable-table) td:first-child:not([colspan]) span,
+  html.dark-theme .table-responsive table:not(.printable-table) td:first-child:not([colspan]) strong,
+  body.dark-theme .table-responsive table:not(.printable-table) td:first-child:not([colspan]) span,
+  body.dark-theme .table-responsive table:not(.printable-table) td:first-child:not([colspan]) strong {
+    color: #f8fafc !important;
+  }
+
+  /* Empty / Loading Colspan Rows on Mobile */
+  html.dark-theme .table-responsive table:not(.printable-table) td[colspan],
+  body.dark-theme .table-responsive table:not(.printable-table) td[colspan] {
+    color: #94a3b8 !important;
+    background: transparent !important;
+  }
+
+  /* Mobile Filter Tabs in Dark Mode */
+  html.dark-theme .tabs-container,
+  body.dark-theme .tabs-container {
+    border-bottom-color: #334155 !important;
+  }
+
+  html.dark-theme .tabs-container .tab-btn,
+  body.dark-theme .tabs-container .tab-btn,
+  html.dark-theme .tab-btn,
+  body.dark-theme .tab-btn {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #cbd5e1 !important;
+    font-weight: 600 !important;
+  }
+
+  html.dark-theme .tabs-container .tab-btn:hover,
+  body.dark-theme .tabs-container .tab-btn:hover,
+  html.dark-theme .tab-btn:hover,
+  body.dark-theme .tab-btn:hover {
+    background: #334155 !important;
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+  }
+
+  html.dark-theme .tabs-container .tab-btn.active,
+  body.dark-theme .tabs-container .tab-btn.active,
+  html.dark-theme .tab-btn.active,
+  body.dark-theme .tab-btn.active {
+    background: #2563eb !important;
+    border-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  html.dark-theme .tab-btn span,
+  body.dark-theme .tab-btn span,
+  html.dark-theme .tab-btn i,
+  body.dark-theme .tab-btn i {
+    color: inherit !important;
+  }
+
+  /* Mobile Search Bar & Select Dropdowns */
+  html.dark-theme .search-bar,
+  body.dark-theme .search-bar {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+  }
+
+  html.dark-theme .search-bar input,
+  body.dark-theme .search-bar input {
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .search-bar input::placeholder,
+  body.dark-theme .search-bar input::placeholder {
+    color: #64748b !important;
+  }
+
+  html.dark-theme select.form-select,
+  html.dark-theme .filters select,
+  body.dark-theme select.form-select,
+  body.dark-theme .filters select {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+  }
+
+  /* Mobile Metric Cards */
+  html.dark-theme .metric-card,
+  body.dark-theme .metric-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+  }
+
+  html.dark-theme .metric-value,
+  body.dark-theme .metric-value {
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .metric-title,
+  body.dark-theme .metric-title {
+    color: #e2e8f0 !important;
+  }
+
+  html.dark-theme .metric-sub,
+  body.dark-theme .metric-sub {
+    color: #94a3b8 !important;
+  }
+
+  /* Mobile Page Headers */
+  html.dark-theme .page-header h1,
+  body.dark-theme .page-header h1 {
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .page-header p,
+  body.dark-theme .page-header p {
+    color: #94a3b8 !important;
+  }
+
+  /* Mobile Action Buttons in Cards */
+  html.dark-theme .action-btn-uniform.btn-details,
+  body.dark-theme .action-btn-uniform.btn-details {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+  }
+
+  html.dark-theme .action-btn-uniform.btn-details:hover,
+  body.dark-theme .action-btn-uniform.btn-details:hover {
+    background: #1e293b !important;
+    border-color: #475569 !important;
+    color: #ffffff !important;
+  }
+
+  /* Mobile Modals */
+  html.dark-theme .modal-md,
+  html.dark-theme .modal-xl,
+  html.dark-theme .modal-lg,
+  html.dark-theme .modal-card,
+  html.dark-theme .modal-box,
+  html.dark-theme .modal-flush-dialog,
+  body.dark-theme .modal-md,
+  body.dark-theme .modal-xl,
+  body.dark-theme .modal-lg,
+  body.dark-theme .modal-card,
+  body.dark-theme .modal-box,
+  body.dark-theme .modal-flush-dialog {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+  }
+
+  html.dark-theme .modal-header-banner,
+  body.dark-theme .modal-header-banner {
+    background: #0f172a !important;
+    border-bottom: 1px solid #334155 !important;
+  }
+
+  html.dark-theme .modal-header-banner h3,
+  body.dark-theme .modal-header-banner h3 {
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .modal-header-banner p,
+  body.dark-theme .modal-header-banner p {
+    color: #94a3b8 !important;
+  }
+
+  html.dark-theme .modal-body-scroll,
+  body.dark-theme .modal-body-scroll {
+    background: #1e293b !important;
+    color: #f1f5f9 !important;
+  }
+
+  /* Mobile Login Screen Brand Typography */
+  html.dark-theme .mobile-brand .brand-name,
+  body.dark-theme .mobile-brand .brand-name {
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .mobile-brand .brand-subtitle,
+  body.dark-theme .mobile-brand .brand-subtitle {
+    color: #94a3b8 !important;
+  }
+
+  html.dark-theme .auth-wrap .welcome h2,
+  body.dark-theme .auth-wrap .welcome h2 {
+    color: #f8fafc !important;
+  }
+
+  html.dark-theme .auth-wrap .welcome p,
+  body.dark-theme .auth-wrap .welcome p {
+    color: #cbd5e1 !important;
+  }
+
+  /* Mobile Settings Navigation */
+  html.dark-theme .settings-nav,
+  body.dark-theme .settings-nav {
+    border-bottom-color: #334155 !important;
+  }
+
+  html.dark-theme .settings-nav-btn,
+  body.dark-theme .settings-nav-btn {
+    color: #94a3b8 !important;
+  }
+
+  html.dark-theme .settings-nav-btn:hover,
+  body.dark-theme .settings-nav-btn:hover {
+    color: #f8fafc !important;
+    background: #1e293b !important;
+  }
+
+  html.dark-theme .settings-nav-btn.active,
+  body.dark-theme .settings-nav-btn.active {
+    color: #38bdf8 !important;
+    border-bottom: 2px solid #38bdf8 !important;
+  }
+
+  /* Mobile Topbar & Profile */
+  html.dark-theme .topbar,
+  body.dark-theme .topbar {
+    background: #1e293b !important;
+    border-bottom-color: #334155 !important;
+  }
+
+  html.dark-theme .topbar-title,
+  body.dark-theme .topbar-title {
+    color: #f8fafc !important;
+  }
+
+  /* Mobile Dropdown Menus */
+  html.dark-theme .dropdown-menu,
+  body.dark-theme .dropdown-menu {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  html.dark-theme .dropdown-item,
+  body.dark-theme .dropdown-item {
+    color: #f1f5f9 !important;
+  }
+
+  html.dark-theme .dropdown-item:hover,
+  body.dark-theme .dropdown-item:hover {
+    background: #334155 !important;
+    color: #ffffff !important;
+  }
 }
