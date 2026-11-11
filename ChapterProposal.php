@@ -7,7 +7,7 @@
     <title>Chapter Event Proposals | YTR Portal</title>
     <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="assets/api-client.js"></script>
+    <script src="assets/api-client.js?v=<?= time() ?>"></script>
     <style>
     @media print {
       @page {

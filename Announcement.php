@@ -15,7 +15,7 @@
   <?php else: ?>
     <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
   <?php endif; ?>
-  <script src="assets/api-client.js"></script>
+  <script src="assets/api-client.js?v=<?= time() ?>"></script>
 
   <style>
     /* Modal styles */

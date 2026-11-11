@@ -117,7 +117,7 @@
       border-color: #1d4ed8 !important;
     }
   </style>
-  <script src="assets/api-client.js"></script>
+  <script src="assets/api-client.js?v=<?= time() ?>"></script>
 </head>
 <body>
 

@@ -705,7 +705,7 @@
     </div>
   </div>
 
-  <script src="assets/api-client.js"></script>
+  <script src="assets/api-client.js?v=<?= time() ?>"></script>
   <script>
     let currentReportFilter = 'all';
     let selectedReportData = null;

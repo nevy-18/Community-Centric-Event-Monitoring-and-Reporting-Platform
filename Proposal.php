@@ -721,7 +721,7 @@
     </div>
   </div>
 
-  <script src="assets/api-client.js"></script>
+  <script src="assets/api-client.js?v=<?= time() ?>"></script>
   <!-- Interactive JavaScript Logic -->
   <script>
     let activeProposalId = null;

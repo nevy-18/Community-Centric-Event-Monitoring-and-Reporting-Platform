@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
     <!-- Include Phosphor Icons for icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="assets/api-client.js"></script>
+    <script src="assets/api-client.js?v=<?= time() ?>"></script>
 </head>
 <body>
     <div class="app-wrapper">

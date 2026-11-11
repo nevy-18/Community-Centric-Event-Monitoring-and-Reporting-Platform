@@ -22,7 +22,7 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="assets/<?= $is_chapter ? 'Chapter.css' : 'National.css' ?>?v=<?= time() ?>">
   <link rel="stylesheet" href="assets/dark-mode.css?v=<?= time() ?>">
-  <script src="assets/api-client.js"></script>
+  <script src="assets/api-client.js?v=<?= time() ?>"></script>
 
   <!-- Instant Anti-FOUC Theme Initialization -->
   <script>
