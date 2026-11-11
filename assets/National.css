@@ -2107,3 +2107,84 @@ body.sidebar-mobile-open {
   border-radius: 12px;
   margin: 0.5rem 0;
 }
+
+/* ============================================================
+   SHARED UNIFORM TABLE STATUS PILLS & ACTION BUTTONS
+   ============================================================ */
+.status-pill-fixed {
+  width: 124px !important;
+  min-width: 124px !important;
+  max-width: 124px !important;
+  height: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.35rem !important;
+  border-radius: 9999px !important;
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  margin: 0 auto !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+}
+.status-pill-fixed.pending {
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  border: 1px solid #fde68a !important;
+}
+.status-pill-fixed.approved {
+  background: #f0fdf4 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0 !important;
+}
+.status-pill-fixed.revision {
+  background: #fff1f2 !important;
+  color: #e11d48 !important;
+  border: 1px solid #fecdd3 !important;
+}
+.status-pill-fixed.neutral {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.action-btn-uniform {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.35rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+  padding: 0 !important;
+}
+.action-btn-uniform.btn-details {
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+.action-btn-uniform.btn-details:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+.action-btn-uniform.btn-review {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border: 1px solid #2563eb !important;
+}
+.action-btn-uniform.btn-review:hover {
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}

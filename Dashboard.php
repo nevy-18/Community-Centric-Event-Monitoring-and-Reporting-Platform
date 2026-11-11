@@ -12,37 +12,109 @@
   <!-- Centralized CSS -->
   <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
   <style>
-    /* Table Simplification & Responsive Single-Line Fixes */
+    /* Table Simplification & Strict Pixel-Perfect Alignment */
     .table-responsive {
       overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
     }
-    .table-responsive table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 680px;
+    #nationalConductedEventsTable {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      table-layout: fixed !important;
+      min-width: 820px !important;
     }
-    .table-responsive th,
-    .table-responsive td {
+    #nationalConductedEventsTable th,
+    #nationalConductedEventsTable td {
       white-space: nowrap !important;
-      vertical-align: middle;
-      padding: 0.85rem 1.15rem;
+      vertical-align: middle !important;
+      padding: 0.9rem 1rem !important;
+      box-sizing: border-box !important;
     }
-    .dash-text-truncate {
-      display: inline-block;
+    #nationalConductedEventsTable th:nth-child(1), #nationalConductedEventsTable td:nth-child(1) { width: 24%; text-align: left; }
+    #nationalConductedEventsTable th:nth-child(2), #nationalConductedEventsTable td:nth-child(2) { width: 30%; text-align: left; }
+    #nationalConductedEventsTable th:nth-child(3), #nationalConductedEventsTable td:nth-child(3) { width: 16%; text-align: center; }
+    #nationalConductedEventsTable th:nth-child(4), #nationalConductedEventsTable td:nth-child(4) { width: 15%; text-align: center; }
+    #nationalConductedEventsTable th:nth-child(5), #nationalConductedEventsTable td:nth-child(5) { width: 15%; text-align: right; }
+
+    /* Uniform Status Badges */
+    .status-pill-fixed {
+      width: 124px !important;
+      min-width: 124px !important;
+      max-width: 124px !important;
+      height: 28px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      border-radius: 9999px !important;
+      font-size: 0.74rem !important;
+      font-weight: 700 !important;
+      box-sizing: border-box !important;
       white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      vertical-align: middle;
+      margin: 0 auto !important;
+      text-transform: none !important;
+      letter-spacing: 0.01em !important;
     }
-    @media (max-width: 768px) {
-      .table-responsive table:not(.printable-table) td:not([colspan]) {
-        white-space: normal !important;
-      }
-      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
-        max-width: 55vw !important;
-      }
+    .status-pill-fixed.pending {
+      background: #fffbeb !important;
+      color: #b45309 !important;
+      border: 1px solid #fde68a !important;
+    }
+    .status-pill-fixed.approved {
+      background: #f0fdf4 !important;
+      color: #15803d !important;
+      border: 1px solid #bbf7d0 !important;
+    }
+    .status-pill-fixed.revision {
+      background: #fff1f2 !important;
+      color: #e11d48 !important;
+      border: 1px solid #fecdd3 !important;
+    }
+    .status-pill-fixed.neutral {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+
+    /* Uniform Action Buttons */
+    .action-btn-uniform {
+      width: 80px !important;
+      min-width: 80px !important;
+      max-width: 80px !important;
+      height: 32px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      border-radius: 6px !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      transition: all 0.15s ease !important;
+      padding: 0 !important;
+    }
+    .action-btn-uniform.btn-details {
+      border: 1px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      color: #334155 !important;
+    }
+    .action-btn-uniform.btn-details:hover {
+      background: #f8fafc !important;
+      border-color: #94a3b8 !important;
+      color: #0f172a !important;
+    }
+    .action-btn-uniform.btn-review {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border: 1px solid #2563eb !important;
+    }
+    .action-btn-uniform.btn-review:hover {
+      background: #1d4ed8 !important;
+      border-color: #1d4ed8 !important;
     }
   </style>
   <script src="assets/api-client.js"></script>
@@ -150,14 +222,14 @@
           </div>
           
           <div class="table-responsive">
-            <table>
+            <table id="nationalConductedEventsTable">
               <thead class="font-roboto">
                 <tr>
-                  <th>Chapter</th>
-                  <th>Conducted Event</th>
-                  <th>Status</th>
-                  <th>Deadline</th>
-                  <th style="text-align: right;">Action</th>
+                  <th style="width: 24%; text-align: left;">Chapter</th>
+                  <th style="width: 30%; text-align: left;">Conducted Event</th>
+                  <th style="width: 16%; text-align: center;">Status</th>
+                  <th style="width: 15%; text-align: center;">Deadline</th>
+                  <th style="width: 15%; text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="chapter-table-body">
@@ -480,23 +552,23 @@
         // Status Badge
         let statusBadgeHtml = '';
         if (item.status_key === 'overdue') {
-          statusBadgeHtml = `<span class="badge overdue" style="white-space: nowrap;"><i class="ph-bold ph-warning-circle"></i> Overdue</span>`;
+          statusBadgeHtml = `<span class="status-pill-fixed revision font-roboto"><i class="ph-bold ph-warning-circle"></i> Overdue</span>`;
         } else if (item.status_key === 'due_soon') {
-          statusBadgeHtml = `<span class="badge due-soon" style="white-space: nowrap;"><i class="ph-bold ph-hourglass-high"></i> Due Soon</span>`;
+          statusBadgeHtml = `<span class="status-pill-fixed pending font-roboto"><i class="ph-bold ph-hourglass-high"></i> Due Soon</span>`;
         } else if (item.status_key === 'under_review') {
-          statusBadgeHtml = `<span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; white-space: nowrap;"><i class="ph-fill ph-clock"></i> Under Review</span>`;
+          statusBadgeHtml = `<span class="status-pill-fixed neutral font-roboto" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;"><i class="ph-bold ph-clock"></i> Under Review</span>`;
         } else if (item.status_key === 'approved') {
-          statusBadgeHtml = `<span class="badge approved" style="white-space: nowrap;"><i class="ph-fill ph-check"></i> Validated</span>`;
+          statusBadgeHtml = `<span class="status-pill-fixed approved font-roboto"><i class="ph-bold ph-check"></i> Validated</span>`;
         } else {
-          statusBadgeHtml = `<span class="badge timer" style="white-space: nowrap;"><i class="ph ph-timer"></i> Pending Submission</span>`;
+          statusBadgeHtml = `<span class="status-pill-fixed neutral font-roboto"><i class="ph-bold ph-timer"></i> Pending Report</span>`;
         }
 
         // Deadline display
         let deadlineHtml = '';
         if (item.is_validated) {
-          deadlineHtml = `<span class="badge approved" style="white-space: nowrap;"><i class="ph ph-check"></i> Completed</span>`;
+          deadlineHtml = `<span class="status-pill-fixed approved font-roboto"><i class="ph-bold ph-check"></i> Completed</span>`;
         } else if (item.is_report_submitted) {
-          deadlineHtml = `<span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; white-space: nowrap;"><i class="ph-bold ph-check"></i> Submitted</span>`;
+          deadlineHtml = `<span class="status-pill-fixed approved font-roboto" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;"><i class="ph-bold ph-check"></i> Submitted</span>`;
         } else if (item.days_left < 0) {
           deadlineHtml = `<span style="color: #dc2626; font-weight: 700; white-space: nowrap;"><i class="ph-bold ph-warning"></i> Overdue (${Math.abs(item.days_left)}d)</span>`;
         } else if (item.days_left <= 3) {
@@ -507,36 +579,36 @@
 
         // Primary Action button
         const actionBtn = item.is_report_submitted
-          ? `<a href="Report.php" class="btn btn-sm btn-primary font-roboto" style="text-decoration: none; padding: 0.35rem 0.65rem; font-size: 0.8rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">
-               <i class="ph ph-clipboard-text"></i> View Report
+          ? `<a href="Report.php" class="action-btn-uniform font-roboto" style="text-decoration: none; background: #16a34a; border: 1px solid #15803d; color: #ffffff;" title="View Report">
+               <i class="ph ph-clipboard-text"></i> Report
              </a>`
-          : `<button type="button" class="btn btn-sm btn-primary font-roboto" 
+          : `<button type="button" class="action-btn-uniform btn-review font-roboto" 
                onclick="openRemindModal(${item.chapter_id}, '${escapeJs(item.chapter_name)}', ${item.event_id}, '${escapeJs(item.event_title)}', ${item.days_left}, '${escapeJs(item.deadline_formatted || item.deadline)}')" 
-               style="padding: 0.35rem 0.65rem; font-size: 0.8rem; background: #2563eb; color: #ffffff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; white-space: nowrap;">
+               title="Send reminder to chapter admin">
                <i class="ph-bold ph-bell"></i> Remind
              </button>`;
 
         return `
           <tr>
-            <td data-label="Chapter">
-              <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(item.chapter_name)}">
+            <td data-label="Chapter" style="text-align: left; vertical-align: middle;">
+              <span class="font-roboto" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.chapter_name)}">
                 ${escapeHtml(item.chapter_name)}
               </span>
             </td>
-            <td data-label="Conducted Event">
-              <span class="font-roboto dash-text-truncate" style="font-weight: 600; color: #1e3a8a; font-size: 0.9rem; display: inline-block; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(item.event_title)}">
+            <td data-label="Conducted Event" style="text-align: left; vertical-align: middle;">
+              <span class="font-roboto" style="font-weight: 600; color: #1e3a8a; font-size: 0.9rem; display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.event_title)}">
                 ${escapeHtml(item.event_title)}
               </span>
             </td>
-            <td data-label="Status">
+            <td data-label="Status" style="white-space: nowrap; text-align: center; vertical-align: middle;">
               ${statusBadgeHtml}
             </td>
-            <td data-label="Deadline">
+            <td data-label="Deadline" style="white-space: nowrap; text-align: center; vertical-align: middle;">
               ${deadlineHtml}
             </td>
-            <td data-label="Action" style="text-align: right; white-space: nowrap;">
+            <td data-label="Action" style="text-align: right; white-space: nowrap; vertical-align: middle;">
               <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
-                <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openEventDetailsModal(${index})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+                <button type="button" class="action-btn-uniform btn-details font-roboto" onclick="openEventDetailsModal(${index})" title="View event details">
                   <i class="ph ph-info"></i> Details
                 </button>
                 ${actionBtn}

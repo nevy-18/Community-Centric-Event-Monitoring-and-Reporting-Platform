@@ -12,37 +12,109 @@
   <!-- Centralized CSS -->
   <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
   <style>
-    /* Table Simplification & Responsive Single-Line Fixes */
+    /* Table Simplification & Strict Pixel-Perfect Alignment */
     .table-responsive {
       overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
     }
-    .table-responsive table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 680px;
+    #chapterEventsTable {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      table-layout: fixed !important;
+      min-width: 820px !important;
     }
-    .table-responsive th,
-    .table-responsive td {
+    #chapterEventsTable th,
+    #chapterEventsTable td {
       white-space: nowrap !important;
-      vertical-align: middle;
-      padding: 0.85rem 1.15rem;
+      vertical-align: middle !important;
+      padding: 0.9rem 1rem !important;
+      box-sizing: border-box !important;
     }
-    .dash-text-truncate {
-      display: inline-block;
+    #chapterEventsTable th:nth-child(1), #chapterEventsTable td:nth-child(1) { width: 32%; text-align: left; }
+    #chapterEventsTable th:nth-child(2), #chapterEventsTable td:nth-child(2) { width: 18%; text-align: center; }
+    #chapterEventsTable th:nth-child(3), #chapterEventsTable td:nth-child(3) { width: 18%; text-align: center; }
+    #chapterEventsTable th:nth-child(4), #chapterEventsTable td:nth-child(4) { width: 16%; text-align: center; }
+    #chapterEventsTable th:nth-child(5), #chapterEventsTable td:nth-child(5) { width: 16%; text-align: right; }
+
+    /* Uniform Status Badges */
+    .status-pill-fixed {
+      width: 124px !important;
+      min-width: 124px !important;
+      max-width: 124px !important;
+      height: 28px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      border-radius: 9999px !important;
+      font-size: 0.74rem !important;
+      font-weight: 700 !important;
+      box-sizing: border-box !important;
       white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      vertical-align: middle;
+      margin: 0 auto !important;
+      text-transform: none !important;
+      letter-spacing: 0.01em !important;
     }
-    @media (max-width: 768px) {
-      .table-responsive table:not(.printable-table) td:not([colspan]) {
-        white-space: normal !important;
-      }
-      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
-        max-width: 55vw !important;
-      }
+    .status-pill-fixed.pending {
+      background: #fffbeb !important;
+      color: #b45309 !important;
+      border: 1px solid #fde68a !important;
+    }
+    .status-pill-fixed.approved {
+      background: #f0fdf4 !important;
+      color: #15803d !important;
+      border: 1px solid #bbf7d0 !important;
+    }
+    .status-pill-fixed.revision {
+      background: #fff1f2 !important;
+      color: #e11d48 !important;
+      border: 1px solid #fecdd3 !important;
+    }
+    .status-pill-fixed.neutral {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+
+    /* Uniform Action Buttons */
+    .action-btn-uniform {
+      width: 80px !important;
+      min-width: 80px !important;
+      max-width: 80px !important;
+      height: 32px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      border-radius: 6px !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      transition: all 0.15s ease !important;
+      padding: 0 !important;
+    }
+    .action-btn-uniform.btn-details {
+      border: 1px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      color: #334155 !important;
+    }
+    .action-btn-uniform.btn-details:hover {
+      background: #f8fafc !important;
+      border-color: #94a3b8 !important;
+      color: #0f172a !important;
+    }
+    .action-btn-uniform.btn-review {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border: 1px solid #2563eb !important;
+    }
+    .action-btn-uniform.btn-review:hover {
+      background: #1d4ed8 !important;
+      border-color: #1d4ed8 !important;
     }
   </style>
   <script src="assets/api-client.js"></script>
@@ -166,14 +238,14 @@
           
           <!-- Events / Tasks Table -->
           <div class="table-responsive" id="table-container-events">
-            <table>
+            <table id="chapterEventsTable">
               <thead class="font-roboto">
                 <tr>
-                  <th>Event Title</th>
-                  <th>Schedule</th>
-                  <th>Status</th>
-                  <th>Turnout</th>
-                  <th style="text-align: right;">Action</th>
+                  <th style="width: 32%; text-align: left;">Event Title</th>
+                  <th style="width: 18%; text-align: center;">Schedule</th>
+                  <th style="width: 18%; text-align: center;">Status</th>
+                  <th style="width: 16%; text-align: center;">Turnout</th>
+                  <th style="width: 16%; text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="chapter-events-body">
@@ -553,23 +625,23 @@
         // Proposal badge
         let propBadge = '';
         if (e.status === 'approved') {
-          propBadge = `<span class="badge approved" style="white-space: nowrap;"><i class="ph ph-check"></i> Approved</span>`;
+          propBadge = `<span class="status-pill-fixed approved font-roboto"><i class="ph-bold ph-check"></i> Approved</span>`;
         } else if (e.status === 'pending_approval') {
-          propBadge = `<span class="badge pending" style="white-space: nowrap;"><i class="ph ph-clock"></i> Pending Review</span>`;
+          propBadge = `<span class="status-pill-fixed pending font-roboto"><i class="ph-bold ph-clock"></i> Pending Review</span>`;
         } else if (e.status === 'draft') {
-          propBadge = `<span class="badge draft" style="white-space: nowrap;">Draft</span>`;
+          propBadge = `<span class="status-pill-fixed revision font-roboto"><i class="ph-bold ph-pencil-simple"></i> Draft</span>`;
         } else {
-          propBadge = `<span class="badge" style="white-space: nowrap;">${escapeHtml(e.status)}</span>`;
+          propBadge = `<span class="status-pill-fixed neutral font-roboto">${escapeHtml(e.status)}</span>`;
         }
 
         // Primary Action button
         let actionBtn = '';
         if (e.report_id) {
-          actionBtn = `<a href="ChapterReport.php" class="btn btn-sm btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ph ph-file-text"></i> View Report</a>`;
+          actionBtn = `<a href="ChapterReport.php" class="action-btn-uniform font-roboto" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; text-decoration: none;" title="View Report"><i class="ph ph-file-text"></i> Report</a>`;
         } else if (e.status === 'approved') {
-          actionBtn = `<a href="ChapterReport.php?event_id=${e.id}" class="btn btn-sm btn-primary font-roboto" style="background: #16a34a; border-color: #15803d; color: #ffffff; padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;"><i class="ph ph-file-arrow-up"></i> Submit Report</a>`;
+          actionBtn = `<a href="ChapterReport.php?event_id=${e.id}" class="action-btn-uniform font-roboto" style="background: #16a34a; border: 1px solid #15803d; color: #ffffff; text-decoration: none;" title="Submit Post-Event Report"><i class="ph ph-file-arrow-up"></i> Report</a>`;
         } else {
-          actionBtn = `<a href="ChapterProposal.php" class="btn btn-sm btn-outline font-roboto" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">View Proposal</a>`;
+          actionBtn = `<a href="ChapterProposal.php" class="action-btn-uniform font-roboto" style="background: #2563eb; border: 1px solid #2563eb; color: #ffffff; text-decoration: none;" title="View Proposal"><i class="ph ph-eye"></i> View</a>`;
         }
 
         // Turnout calculation
@@ -582,24 +654,24 @@
 
         return `
           <tr>
-            <td data-label="Event Title">
-              <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(e.title)}">
+            <td data-label="Event Title" style="text-align: left; vertical-align: middle;">
+              <span class="font-roboto" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(e.title)}">
                 ${escapeHtml(e.title)}
               </span>
             </td>
-            <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500;">
+            <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500; text-align: center; vertical-align: middle;">
               ${escapeHtml(dateStr)}
             </td>
-            <td data-label="Status">
+            <td data-label="Status" style="white-space: nowrap; text-align: center; vertical-align: middle;">
               ${propBadge}
             </td>
-            <td data-label="Turnout" style="white-space: nowrap; font-size: 0.85rem; font-weight: 600;">
+            <td data-label="Turnout" style="white-space: nowrap; font-size: 0.85rem; font-weight: 600; text-align: center; vertical-align: middle;">
               <span>${actual} / ${target}</span>
               <small style="color: ${isMet ? '#16a34a' : '#d97706'}; margin-left: 0.3rem;">(${pct}%)</small>
             </td>
-            <td data-label="Action" style="text-align: right; white-space: nowrap;">
+            <td data-label="Action" style="text-align: right; white-space: nowrap; vertical-align: middle;">
               <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
-                <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openChapterEventDetailsModal(${index})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+                <button type="button" class="action-btn-uniform btn-details font-roboto" onclick="openChapterEventDetailsModal(${index})" title="View event details">
                   <i class="ph ph-info"></i> Details
                 </button>
                 ${actionBtn}

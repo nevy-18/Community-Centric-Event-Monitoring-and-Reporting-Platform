@@ -8,37 +8,110 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
   <style>
-    /* Table Simplification & Responsive Single-Line Fixes */
+    /* Table Simplification & Strict Pixel-Perfect Alignment */
     .table-responsive {
       overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
     }
-    .table-responsive table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 680px;
+    #proposalsTable {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      table-layout: fixed !important;
+      min-width: 860px !important;
     }
-    .table-responsive th,
-    .table-responsive td {
+    #proposalsTable th,
+    #proposalsTable td {
       white-space: nowrap !important;
-      vertical-align: middle;
-      padding: 0.85rem 1.15rem;
+      vertical-align: middle !important;
+      padding: 0.9rem 1rem !important;
+      box-sizing: border-box !important;
     }
-    .dash-text-truncate {
-      display: inline-block;
+    #proposalsTable th:nth-child(1), #proposalsTable td:nth-child(1) { width: 28%; text-align: left; }
+    #proposalsTable th:nth-child(2), #proposalsTable td:nth-child(2) { width: 18%; text-align: left; }
+    #proposalsTable th:nth-child(3), #proposalsTable td:nth-child(3) { width: 13%; text-align: center; }
+    #proposalsTable th:nth-child(4), #proposalsTable td:nth-child(4) { width: 12%; text-align: center; }
+    #proposalsTable th:nth-child(5), #proposalsTable td:nth-child(5) { width: 14%; text-align: center; }
+    #proposalsTable th:nth-child(6), #proposalsTable td:nth-child(6) { width: 15%; text-align: right; }
+
+    /* Uniform Status Badges - Identical width, height & alignment across all rows */
+    .status-pill-fixed {
+      width: 124px !important;
+      min-width: 124px !important;
+      max-width: 124px !important;
+      height: 28px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      border-radius: 9999px !important;
+      font-size: 0.74rem !important;
+      font-weight: 700 !important;
+      box-sizing: border-box !important;
       white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      vertical-align: middle;
+      margin: 0 auto !important;
+      text-transform: none !important;
+      letter-spacing: 0.01em !important;
     }
-    @media (max-width: 768px) {
-      .table-responsive table:not(.printable-table) td:not([colspan]) {
-        white-space: normal !important;
-      }
-      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
-        max-width: 55vw !important;
-      }
+    .status-pill-fixed.pending {
+      background: #fffbeb !important;
+      color: #b45309 !important;
+      border: 1px solid #fde68a !important;
+    }
+    .status-pill-fixed.approved {
+      background: #f0fdf4 !important;
+      color: #15803d !important;
+      border: 1px solid #bbf7d0 !important;
+    }
+    .status-pill-fixed.revision {
+      background: #fff1f2 !important;
+      color: #e11d48 !important;
+      border: 1px solid #fecdd3 !important;
+    }
+    .status-pill-fixed.neutral {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+
+    /* Uniform Action Buttons - Exact same 80px width & 32px height for all actions */
+    .action-btn-uniform {
+      width: 80px !important;
+      min-width: 80px !important;
+      max-width: 80px !important;
+      height: 32px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      border-radius: 6px !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      transition: all 0.15s ease !important;
+      padding: 0 !important;
+    }
+    .action-btn-uniform.btn-details {
+      border: 1px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      color: #334155 !important;
+    }
+    .action-btn-uniform.btn-details:hover {
+      background: #f8fafc !important;
+      border-color: #94a3b8 !important;
+      color: #0f172a !important;
+    }
+    .action-btn-uniform.btn-review {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border: 1px solid #2563eb !important;
+    }
+    .action-btn-uniform.btn-review:hover {
+      background: #1d4ed8 !important;
+      border-color: #1d4ed8 !important;
     }
 
     /* Proposal-specific modal and interactive styles */
@@ -349,12 +422,12 @@
                 <table id="proposalsTable">
                   <thead class="font-roboto">
                     <tr>
-                      <th>Event Proposal</th>
-                      <th>Chapter</th>
-                      <th>Schedule</th>
-                      <th>Budget</th>
-                      <th>Status</th>
-                      <th style="text-align: right;">Action</th>
+                      <th style="width: 28%; text-align: left;">Event Proposal</th>
+                      <th style="width: 18%; text-align: left;">Chapter</th>
+                      <th style="width: 13%; text-align: center;">Schedule</th>
+                      <th style="width: 12%; text-align: center;">Budget</th>
+                      <th style="width: 14%; text-align: center;">Status</th>
+                      <th style="width: 15%; text-align: right;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="proposalsTableBody">
@@ -735,65 +808,49 @@
             const isApproved = ['approved', 'published', 'ongoing', 'completed'].includes(p.status);
             const isRevision = p.status === 'draft';
 
-            let statusBadge = '<span class="badge pending font-roboto">Pending Review</span>';
-            if (isApproved) statusBadge = '<span class="badge approved font-roboto"><i class="ph ph-check"></i> Approved</span>';
-            if (isRevision) statusBadge = '<span class="badge pending font-roboto" style="background: #fff1f2; color: #e11d48; border-color: #fecdd3;">Needs Revision</span>';
-
-            // Due Date Badge
-            let dueBadgeHtml = '';
-            if (p.due_badge) {
-              const bText = typeof p.due_badge === 'object' ? (p.due_badge.label || p.due_badge.text) : p.due_badge;
-              const bType = typeof p.due_badge === 'object' ? (p.due_badge.type || 'on_track') : 'on_track';
-              const badgeClass = bType === 'overdue' ? 'badge overdue' : (bType === 'due_soon' ? 'badge due-soon' : 'badge timer');
-              const icon = bType === 'overdue' ? 'ph-warning-octagon' : 'ph-clock';
-              dueBadgeHtml = `<span class="${badgeClass} font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ${icon}"></i> ${escapeHtml(bText)}</span>`;
-            }
-
-            // Approval Timer Badge
-            let timerBadgeHtml = '';
-            if (p.approval_timer) {
-              const tText = typeof p.approval_timer === 'object' ? (p.approval_timer.label || p.approval_timer.text) : p.approval_timer;
-              timerBadgeHtml = `<span class="badge timer font-roboto" style="margin-top: 4px; display: inline-flex;"><i class="ph ph-hourglass-high"></i> ${escapeHtml(tText)}</span>`;
+            let statusBadge = '<span class="status-pill-fixed pending font-roboto"><i class="ph-bold ph-clock"></i> Pending Review</span>';
+            if (isApproved) statusBadge = '<span class="status-pill-fixed approved font-roboto"><i class="ph-bold ph-check"></i> Approved</span>';
+            if (isRevision) statusBadge = '<span class="status-pill-fixed revision font-roboto"><i class="ph-bold ph-warning-circle"></i> Needs Revision</span>';
+            if (!isApproved && !isPending && !isRevision) {
+              statusBadge = `<span class="status-pill-fixed neutral font-roboto">${escapeHtml(p.status || 'Pending')}</span>`;
             }
 
             const startDate = p.start_datetime ? p.start_datetime.substring(0, 10) : 'TBD';
             const budgetFormatted = Number(p.budget_amount || 0).toLocaleString();
-            const targetTurnout = p.target_turnout || 100;
 
             row.className = 'proposal-row';
             row.innerHTML = `
-              <td data-label="Event Proposal">
-                <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(p.title)}">
+              <td data-label="Event Proposal" style="text-align: left; vertical-align: middle;">
+                <span class="font-roboto" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(p.title)}">
                   ${escapeHtml(p.title)}
                 </span>
               </td>
-              <td data-label="Chapter">
-                <span class="font-roboto dash-text-truncate" style="font-weight: 600; color: #1e293b; font-size: 0.85rem; display: inline-block; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(p.chapter_name || 'All Chapters')}">
+              <td data-label="Chapter" style="text-align: left; vertical-align: middle;">
+                <span class="font-roboto" style="font-weight: 600; color: #1e293b; font-size: 0.85rem; display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(p.chapter_name || 'All Chapters')}">
                   ${escapeHtml(p.chapter_name || 'All Chapters')}
                 </span>
               </td>
-              <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500;">
+              <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500; text-align: center; vertical-align: middle;">
                 ${startDate}
               </td>
-              <td data-label="Budget" style="white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #0f172a;">
+              <td data-label="Budget" style="white-space: nowrap; font-size: 0.85rem; font-weight: 700; color: #0f172a; text-align: center; vertical-align: middle;">
                 ₱${budgetFormatted}
               </td>
-              <td data-label="Status" style="white-space: nowrap;">
+              <td data-label="Status" style="white-space: nowrap; text-align: center; vertical-align: middle;">
                 ${statusBadge}
               </td>
-              <td data-label="Action" style="text-align: right; white-space: nowrap;">
-                <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
-                  <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openProposalDossier(${p.id})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+              <td data-label="Action" style="text-align: right; white-space: nowrap; vertical-align: middle;">
+                <div style="display: inline-flex; align-items: center; gap: 0.5rem; justify-content: flex-end; white-space: nowrap;">
+                  <button type="button" class="action-btn-uniform btn-details font-roboto" onclick="openProposalDossier(${p.id})" title="View proposal dossier details">
                     <i class="ph ph-info"></i> Details
                   </button>
-                  <button type="button" class="btn btn-sm btn-primary font-roboto" onclick="selectProposalById(${p.id})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; background: #2563eb; color: #ffffff; border: none; font-weight: 600;">
+                  <button type="button" class="action-btn-uniform btn-review font-roboto" onclick="selectProposalById(${p.id})" title="${isPending ? 'Review and approve/return proposal' : 'View evaluation record'}">
                     <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
                   </button>
                 </div>
               </td>
             `;
             tbody.appendChild(row);
-
           });
 
           if (allProposalsData.length > 0 && activeProposalId) {

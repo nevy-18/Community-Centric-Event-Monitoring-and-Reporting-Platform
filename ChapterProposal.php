@@ -163,37 +163,100 @@
       }
     }
 
-    /* Table Simplification & Responsive Single-Line Fixes */
+    /* Table Simplification & Strict Pixel-Perfect Alignment */
     .table-responsive {
       overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
     }
-    .table-responsive table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 680px;
+    #chapterProposalsTable {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      table-layout: fixed !important;
+      min-width: 780px !important;
     }
-    .table-responsive th,
-    .table-responsive td {
+    #chapterProposalsTable th,
+    #chapterProposalsTable td {
       white-space: nowrap !important;
-      vertical-align: middle;
-      padding: 0.85rem 1.15rem;
+      vertical-align: middle !important;
+      padding: 0.9rem 1rem !important;
+      box-sizing: border-box !important;
     }
-    .dash-text-truncate {
-      display: inline-block;
+    #chapterProposalsTable th:nth-child(1), #chapterProposalsTable td:nth-child(1) { width: 34%; text-align: left; }
+    #chapterProposalsTable th:nth-child(2), #chapterProposalsTable td:nth-child(2) { width: 16%; text-align: center; }
+    #chapterProposalsTable th:nth-child(3), #chapterProposalsTable td:nth-child(3) { width: 16%; text-align: center; }
+    #chapterProposalsTable th:nth-child(4), #chapterProposalsTable td:nth-child(4) { width: 18%; text-align: center; }
+    #chapterProposalsTable th:nth-child(5), #chapterProposalsTable td:nth-child(5) { width: 16%; text-align: right; }
+
+    /* Uniform Status Badges - Identical width, height & alignment */
+    .status-pill-fixed {
+      width: 124px !important;
+      min-width: 124px !important;
+      max-width: 124px !important;
+      height: 28px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      border-radius: 9999px !important;
+      font-size: 0.74rem !important;
+      font-weight: 700 !important;
+      box-sizing: border-box !important;
       white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      vertical-align: middle;
+      margin: 0 auto !important;
+      text-transform: none !important;
+      letter-spacing: 0.01em !important;
     }
-    @media (max-width: 768px) {
-      .table-responsive table:not(.printable-table) td:not([colspan]) {
-        white-space: normal !important;
-      }
-      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
-        max-width: 55vw !important;
-      }
+    .status-pill-fixed.pending {
+      background: #fffbeb !important;
+      color: #b45309 !important;
+      border: 1px solid #fde68a !important;
+    }
+    .status-pill-fixed.approved {
+      background: #f0fdf4 !important;
+      color: #15803d !important;
+      border: 1px solid #bbf7d0 !important;
+    }
+    .status-pill-fixed.revision {
+      background: #fff1f2 !important;
+      color: #e11d48 !important;
+      border: 1px solid #fecdd3 !important;
+    }
+    .status-pill-fixed.neutral {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+
+    /* Uniform Action Buttons */
+    .action-btn-uniform {
+      width: 80px !important;
+      min-width: 80px !important;
+      max-width: 80px !important;
+      height: 32px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.35rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      border-radius: 6px !important;
+      box-sizing: border-box !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      transition: all 0.15s ease !important;
+      padding: 0 !important;
+    }
+    .action-btn-uniform.btn-details {
+      border: 1px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      color: #334155 !important;
+    }
+    .action-btn-uniform.btn-details:hover {
+      background: #f8fafc !important;
+      border-color: #94a3b8 !important;
+      color: #0f172a !important;
     }
     </style>
 </head>
@@ -278,14 +341,14 @@
                 <!-- 3. Proposals Table Section -->
                 <div class="table-section">
                     <div class="table-responsive">
-                        <table>
+                        <table id="chapterProposalsTable">
                             <thead class="font-roboto">
                                 <tr>
-                                    <th>Event Title</th>
-                                    <th>Schedule</th>
-                                    <th>Budget</th>
-                                    <th>Status</th>
-                                    <th style="text-align: right;">Action</th>
+                                    <th style="width: 34%; text-align: left;">Event Title</th>
+                                    <th style="width: 16%; text-align: center;">Schedule</th>
+                                    <th style="width: 16%; text-align: center;">Budget</th>
+                                    <th style="width: 18%; text-align: center;">Status</th>
+                                    <th style="width: 16%; text-align: right;">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="proposals-tbody">
@@ -695,13 +758,13 @@
             tbody.innerHTML = filtered.map(p => {
                 let statusBadge = '';
                 if (p.status === 'approved') {
-                    statusBadge = `<span class="badge approved" style="white-space: nowrap;"><i class="ph ph-check"></i> Approved</span>`;
+                    statusBadge = `<span class="status-pill-fixed approved font-roboto"><i class="ph-bold ph-check"></i> Approved</span>`;
                 } else if (p.status === 'pending_approval') {
-                    statusBadge = `<span class="badge pending" style="white-space: nowrap;"><i class="ph ph-clock"></i> In Review</span>`;
+                    statusBadge = `<span class="status-pill-fixed pending font-roboto"><i class="ph-bold ph-clock"></i> In Review</span>`;
                 } else if (p.status === 'draft') {
-                    statusBadge = `<span class="badge draft" style="white-space: nowrap;"><i class="ph ph-arrow-counter-clockwise"></i> Revision Needed</span>`;
+                    statusBadge = `<span class="status-pill-fixed revision font-roboto"><i class="ph-bold ph-arrow-counter-clockwise"></i> Revision Needed</span>`;
                 } else {
-                    statusBadge = `<span class="badge" style="white-space: nowrap;">${escapeHtml(p.status)}</span>`;
+                    statusBadge = `<span class="status-pill-fixed neutral font-roboto">${escapeHtml(p.status)}</span>`;
                 }
 
                 const startDate = p.start_datetime ? p.start_datetime.substring(0, 10) : 'Date TBD';
@@ -710,13 +773,13 @@
                 let primaryAction = '';
                 if (p.status === 'approved') {
                     primaryAction = `
-                        <a href="ChapterReport.php?event_id=${p.id}" class="btn btn-sm btn-primary font-roboto" style="background: #16a34a; border-color: #15803d; color: #ffffff; padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;" title="Submit Post-Event Report">
+                        <a href="ChapterReport.php?event_id=${p.id}" class="action-btn-uniform font-roboto" style="background: #16a34a; border: 1px solid #15803d; color: #ffffff;" title="Submit Post-Event Report">
                             <i class="ph ph-file-arrow-up"></i> Report
                         </a>
                     `;
                 } else if (p.status === 'draft') {
                     primaryAction = `
-                        <button type="button" class="btn btn-sm btn-primary font-roboto" onclick="openProposalDossier(${p.id})" style="background: #e11d48; border: none; color: #ffffff; padding: 0.35rem 0.65rem; font-size: 0.8rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <button type="button" class="action-btn-uniform font-roboto" onclick="openProposalDossier(${p.id})" style="background: #e11d48; border: 1px solid #e11d48; color: #ffffff;" title="Revise proposal">
                             <i class="ph ph-pencil-simple"></i> Revise
                         </button>
                     `;
@@ -724,23 +787,23 @@
 
                 return `
                     <tr>
-                        <td data-label="Event Title">
-                            <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(p.title)}">
+                        <td data-label="Event Title" style="text-align: left; vertical-align: middle;">
+                            <span class="font-roboto" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(p.title)}">
                                 ${escapeHtml(p.title)}
                             </span>
                         </td>
-                        <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500;">
+                        <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500; text-align: center; vertical-align: middle;">
                             ${escapeHtml(startDate)}
                         </td>
-                        <td data-label="Budget" style="white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #0f172a;">
+                        <td data-label="Budget" style="white-space: nowrap; font-size: 0.85rem; font-weight: 700; color: #0f172a; text-align: center; vertical-align: middle;">
                             PHP ${budgetFormatted}
                         </td>
-                        <td data-label="Status" style="white-space: nowrap;">
+                        <td data-label="Status" style="white-space: nowrap; text-align: center; vertical-align: middle;">
                             ${statusBadge}
                         </td>
-                        <td data-label="Action" style="text-align: right; white-space: nowrap;">
+                        <td data-label="Action" style="text-align: right; white-space: nowrap; vertical-align: middle;">
                             <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
-                                <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openProposalDossier(${p.id})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+                                <button type="button" class="action-btn-uniform btn-details font-roboto" onclick="openProposalDossier(${p.id})" title="View proposal details">
                                     <i class="ph ph-info"></i> Details
                                 </button>
                                 ${primaryAction}
