@@ -22,7 +22,7 @@
       width: 100% !important;
       border-collapse: collapse !important;
       table-layout: fixed !important;
-      min-width: 820px !important;
+      min-width: 860px !important;
     }
     #nationalConductedEventsTable th,
     #nationalConductedEventsTable td {
@@ -31,9 +31,9 @@
       padding: 0.9rem 1rem !important;
       box-sizing: border-box !important;
     }
-    #nationalConductedEventsTable th:nth-child(1), #nationalConductedEventsTable td:nth-child(1) { width: 24%; text-align: left; }
-    #nationalConductedEventsTable th:nth-child(2), #nationalConductedEventsTable td:nth-child(2) { width: 30%; text-align: left; }
-    #nationalConductedEventsTable th:nth-child(3), #nationalConductedEventsTable td:nth-child(3) { width: 16%; text-align: center; }
+    #nationalConductedEventsTable th:nth-child(1), #nationalConductedEventsTable td:nth-child(1) { width: 18%; text-align: left; }
+    #nationalConductedEventsTable th:nth-child(2), #nationalConductedEventsTable td:nth-child(2) { width: 38%; text-align: left; }
+    #nationalConductedEventsTable th:nth-child(3), #nationalConductedEventsTable td:nth-child(3) { width: 14%; text-align: center; }
     #nationalConductedEventsTable th:nth-child(4), #nationalConductedEventsTable td:nth-child(4) { width: 15%; text-align: center; }
     #nationalConductedEventsTable th:nth-child(5), #nationalConductedEventsTable td:nth-child(5) { width: 15%; text-align: right; }
 
@@ -225,9 +225,9 @@
             <table id="nationalConductedEventsTable">
               <thead class="font-roboto">
                 <tr>
-                  <th style="width: 24%; text-align: left;">Chapter</th>
-                  <th style="width: 30%; text-align: left;">Conducted Event</th>
-                  <th style="width: 16%; text-align: center;">Status</th>
+                  <th style="width: 18%; text-align: left;">Chapter</th>
+                  <th style="width: 38%; text-align: left;">Conducted Event</th>
+                  <th style="width: 14%; text-align: center;">Status</th>
                   <th style="width: 15%; text-align: center;">Deadline</th>
                   <th style="width: 15%; text-align: right;">Action</th>
                 </tr>

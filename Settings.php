@@ -352,6 +352,9 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
             <button type="button" class="settings-nav-btn" id="tab-btn-diagnostics" onclick="switchSettingsTab('diagnostics')">
               <i class="ph-bold ph-activity"></i> System Diagnostics
             </button>
+            <button type="button" class="settings-nav-btn ceo-only-tab" id="tab-btn-executive" onclick="switchSettingsTab('executive')" style="display: none; color: #dc2626;">
+              <i class="ph-bold ph-shield-star" style="color: #dc2626;"></i> Chief Executive Control
+            </button>
           </div>
 
           <!-- ============================================================
@@ -846,6 +849,156 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
             </div>
           </div>
 
+        
+
+          <!-- ============================================================
+               TAB 6: CHIEF EXECUTIVE CONTROL (CEO ONLY)
+               ============================================================ -->
+          <div id="tab-pane-executive" class="settings-tab-pane" style="display: none;">
+            
+            <!-- Executive Clearance Banner -->
+            <div class="settings-card" style="border-left: 4px solid #dc2626; margin-bottom: 1.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.85rem;">
+                  <div style="width: 44px; height: 44px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+                    <i class="ph-bold ph-shield-star"></i>
+                  </div>
+                  <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-main, #0f172a); font-weight: 800;">Chief Executive Officer Control Center</h3>
+                    <p style="margin: 0.2rem 0 0; font-size: 0.8rem; color: #64748b;">Exclusive administrative authority: Download full system archives, retrieve flushed history, and manage baseline restoration.</p>
+                  </div>
+                </div>
+                <span class="ceo-exclusive-badge font-roboto" style="display: inline-flex;"><i class="ph-bold ph-shield-check"></i> Chief Executive Clearance</span>
+              </div>
+            </div>
+
+            <!-- Card 1: System Data Backup -->
+            <div class="settings-card">
+              <div class="settings-card-header">
+                <div>
+                  <h3><i class="ph-bold ph-download-simple" style="color: #2563eb;"></i> System Data Backup &amp; Snapshot Export</h3>
+                  <p style="color: #64748b; font-size: 0.8rem; margin: 2px 0 0;">Generate and download a complete cryptographic export of all platform tables, proposals, attendance records, and poster queues.</p>
+                </div>
+                <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 700;">Live Production Export</span>
+              </div>
+
+              <!-- Live Database Statistics -->
+              <div style="font-size: 0.825rem; color: #475569; margin-bottom: 0.65rem;">
+                <strong>Current Active Database Records:</strong>
+              </div>
+              <div class="flush-stat-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+                <div class="flush-stat-pill" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                  <strong id="execStatEvents" style="font-size: 1.4rem; color: #1e3a8a; display: block;">--</strong>
+                  <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">Events</span>
+                </div>
+                <div class="flush-stat-pill" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                  <strong id="execStatRequests" style="font-size: 1.4rem; color: #d97706; display: block;">--</strong>
+                  <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">Poster Requests</span>
+                </div>
+                <div class="flush-stat-pill" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                  <strong id="execStatReports" style="font-size: 1.4rem; color: #16a34a; display: block;">--</strong>
+                  <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">Event Reports</span>
+                </div>
+                <div class="flush-stat-pill" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                  <strong id="execStatUsers" style="font-size: 1.4rem; color: #7c3aed; display: block;">--</strong>
+                  <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">Accounts</span>
+                </div>
+                <div class="flush-stat-pill" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                  <strong id="execStatFiles" style="font-size: 1.4rem; color: #0284c7; display: block;">--</strong>
+                  <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">Uploaded Files</span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-primary font-roboto" onclick="triggerSystemBackup(event)" style="padding: 0.55rem 1.15rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.45rem; background: #2563eb;">
+                  <i class="ph-bold ph-download-simple"></i> Download JSON Archive
+                </button>
+                <button type="button" class="btn btn-outline font-roboto" onclick="downloadBackupSqlDump()" style="padding: 0.55rem 1.15rem; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.45rem;">
+                  <i class="ph-bold ph-database"></i> Download SQL Database Dump
+                </button>
+              </div>
+            </div>
+
+            <!-- Card 2: Archived Data & Retrieval Ledger -->
+            <div class="settings-card">
+              <div class="settings-card-header">
+                <div>
+                  <h3><i class="ph-bold ph-archive-box" style="color: #059669;"></i> System Archives &amp; Data Retrieval Ledger</h3>
+                  <p style="color: #64748b; font-size: 0.8rem; margin: 2px 0 0;">Inspect safely preserved historical snapshots and restore records directly back into active production tables.</p>
+                </div>
+                <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="loadExecutiveArchivesList()" style="gap: 0.35rem; display: inline-flex; align-items: center; font-size: 0.78rem;">
+                  <i class="ph-bold ph-arrows-clockwise"></i> Refresh Archives
+                </button>
+              </div>
+
+              <div id="execArchivesListContainer">
+                <div style="text-align: center; padding: 2rem; color: #64748b;">
+                  <i class="ph ph-spinner-gap ph-spin" style="font-size: 1.5rem;"></i>
+                  <p style="margin-top: 0.5rem; font-size: 0.8rem;">Loading archived snapshots...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Non-Destructive System Flush & Baseline Reset -->
+            <div class="settings-card" style="border: 1px solid #fecdd3;">
+              <div class="settings-card-header" style="border-bottom-color: #fecdd3;">
+                <div>
+                  <h3 style="color: #b91c1c;"><i class="ph-bold ph-warning-octagon" style="color: #dc2626;"></i> Reset &amp; Flush System Data</h3>
+                  <p style="color: #b91c1c; font-size: 0.8rem; margin: 2px 0 0;">All flushed records are automatically archived before clearing, enabling complete non-destructive restoration.</p>
+                </div>
+                <span class="badge rose" style="font-weight: 700;">Executive Reset Engine</span>
+              </div>
+
+              <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.825rem; color: #991b1b; display: flex; align-items: center; gap: 0.65rem;">
+                <i class="ph-bold ph-shield-check" style="font-size: 1.5rem; color: #dc2626; flex-shrink: 0;"></i>
+                <div>
+                  <strong>Automated Non-Destructive Archiving:</strong> A complete snapshot batch is automatically created before any tables are touched.
+                </div>
+              </div>
+
+              <div style="margin-bottom: 1.25rem;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-main, #0f172a); margin-bottom: 0.5rem; display: block;">Select Reset Mode:</label>
+                <div class="flush-option-list" style="display: flex; flex-direction: column; gap: 0.65rem;">
+                  <label class="flush-option-label active" id="execOptLabelActivity" onclick="selectExecFlushMode('activity')" style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; border: 1.5px solid #2563eb; background: #eff6ff; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="exec_flush_mode" value="activity" checked style="margin-top: 3px;">
+                    <div>
+                      <strong style="color: #1e40af; font-size: 0.875rem; display: block;">🧹 Flush Operational Activity</strong>
+                      <span style="color: #475569; font-size: 0.78rem;">Archives all events, proposals, requests, milestones, and reports. <strong>User accounts and partner chapters remain intact.</strong></span>
+                    </div>
+                  </label>
+
+                  <label class="flush-option-label" id="execOptLabelFull" onclick="selectExecFlushMode('full')" style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="exec_flush_mode" value="full" style="margin-top: 3px;">
+                    <div>
+                      <strong style="color: #0f172a; font-size: 0.875rem; display: block;">🔄 Factory Reset to Baseline</strong>
+                      <span style="color: #475569; font-size: 0.78rem;">Archives current records and restores original baseline chapters and default administrative accounts.</span>
+                    </div>
+                  </label>
+
+                  <label class="flush-option-label" id="execOptLabelDemo" onclick="selectExecFlushMode('demo')" style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="exec_flush_mode" value="demo" style="margin-top: 3px;">
+                    <div>
+                      <strong style="color: #0f172a; font-size: 0.875rem; display: block;">🚀 Reset &amp; Seed Demo Data</strong>
+                      <span style="color: #475569; font-size: 0.78rem;">Archives current records, resets tables, and populates fresh demonstration events, compliance countdowns, and proposals.</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+                <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #dc2626; margin-bottom: 0.35rem;">
+                  <i class="ph-bold ph-shield-warning"></i> Security Check: Type "FLUSH" to proceed
+                </label>
+                <input type="text" id="execFlushConfirmInput" placeholder="Type FLUSH to confirm" oninput="checkExecFlushInput()" style="width: 100%; max-width: 320px; padding: 0.55rem 0.75rem; border-radius: 6px; border: 1.5px solid #cbd5e1; font-weight: 700; font-size: 0.875rem;">
+              </div>
+
+              <button type="button" class="btn btn-primary font-roboto" id="btnExecExecuteFlush" onclick="executeSettingsFlush()" disabled style="background: #dc2626; border-color: #b91c1c; font-weight: 700; padding: 0.6rem 1.25rem; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.45rem; opacity: 0.5; cursor: not-allowed;">
+                <i class="ph-bold ph-trash"></i> Execute System Reset &amp; Archive
+              </button>
+            </div>
+
+          </div>
+
         </div>
       </main>
     </div>
@@ -888,6 +1041,10 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
     }
 
     function switchSettingsTab(tabName) {
+      if (tabName === 'executive' && !isChiefExecutiveUser()) {
+        alert('Access Denied: Chief Executive Officer authorization required.');
+        return;
+      }
       document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.settings-tab-pane').forEach(p => p.style.display = 'none');
 
@@ -895,6 +1052,11 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       const pane = document.getElementById(`tab-pane-${tabName}`);
       if (btn) btn.classList.add('active');
       if (pane) pane.style.display = 'block';
+
+      if (tabName === 'executive') {
+        loadExecutiveSummaryStats();
+        loadExecutiveArchivesList();
+      }
     }
 
     // ==========================================
@@ -1191,6 +1353,11 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       const saveOrgBtn = document.getElementById('btnSaveOrgDetailsContainer');
       const orgInputs = document.querySelectorAll('.ceo-editable-input');
       const subtitle = document.getElementById('logoCardSubtitle');
+
+      const execTabBtn = document.getElementById('tab-btn-executive');
+      if (execTabBtn) {
+        execTabBtn.style.display = isCEO ? 'inline-flex' : 'none';
+      }
 
       if (isCEO) {
         if (lockBanner) lockBanner.style.display = 'none';

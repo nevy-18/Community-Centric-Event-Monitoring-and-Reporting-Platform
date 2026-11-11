@@ -18,7 +18,7 @@
       width: 100% !important;
       border-collapse: collapse !important;
       table-layout: fixed !important;
-      min-width: 860px !important;
+      min-width: 980px !important;
     }
     #proposalsTable th,
     #proposalsTable td {
@@ -27,12 +27,12 @@
       padding: 0.9rem 1rem !important;
       box-sizing: border-box !important;
     }
-    #proposalsTable th:nth-child(1), #proposalsTable td:nth-child(1) { width: 28%; text-align: left; }
-    #proposalsTable th:nth-child(2), #proposalsTable td:nth-child(2) { width: 18%; text-align: left; }
-    #proposalsTable th:nth-child(3), #proposalsTable td:nth-child(3) { width: 13%; text-align: center; }
-    #proposalsTable th:nth-child(4), #proposalsTable td:nth-child(4) { width: 12%; text-align: center; }
-    #proposalsTable th:nth-child(5), #proposalsTable td:nth-child(5) { width: 14%; text-align: center; }
-    #proposalsTable th:nth-child(6), #proposalsTable td:nth-child(6) { width: 15%; text-align: right; }
+    #proposalsTable th:nth-child(1), #proposalsTable td:nth-child(1) { width: 40%; text-align: left; }
+    #proposalsTable th:nth-child(2), #proposalsTable td:nth-child(2) { width: 16%; text-align: left; }
+    #proposalsTable th:nth-child(3), #proposalsTable td:nth-child(3) { width: 11%; text-align: center; }
+    #proposalsTable th:nth-child(4), #proposalsTable td:nth-child(4) { width: 8%; text-align: center; }
+    #proposalsTable th:nth-child(5), #proposalsTable td:nth-child(5) { width: 11%; text-align: center; }
+    #proposalsTable th:nth-child(6), #proposalsTable td:nth-child(6) { width: 14%; text-align: right; }
 
     /* Uniform Status Badges - Identical width, height & alignment across all rows */
     .status-pill-fixed {
@@ -422,12 +422,12 @@
                 <table id="proposalsTable">
                   <thead class="font-roboto">
                     <tr>
-                      <th style="width: 28%; text-align: left;">Event Proposal</th>
-                      <th style="width: 18%; text-align: left;">Chapter</th>
-                      <th style="width: 13%; text-align: center;">Schedule</th>
-                      <th style="width: 12%; text-align: center;">Budget</th>
-                      <th style="width: 14%; text-align: center;">Status</th>
-                      <th style="width: 15%; text-align: right;">Action</th>
+                      <th style="width: 40%; text-align: left;">Event Proposal</th>
+                      <th style="width: 16%; text-align: left;">Chapter</th>
+                      <th style="width: 11%; text-align: center;">Schedule</th>
+                      <th style="width: 8%; text-align: center;">Budget</th>
+                      <th style="width: 11%; text-align: center;">Status</th>
+                      <th style="width: 14%; text-align: right;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="proposalsTableBody">

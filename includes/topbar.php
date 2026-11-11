@@ -447,22 +447,7 @@ html, body {
       <a href="Proposal.php" class="dropdown-item"><i class="ph ph-file-plus"></i> Chapter Proposals</a>
       <a href="Report.php" class="dropdown-item"><i class="ph ph-file-text"></i> Event Reports</a>
 
-      <!-- Executive Tools (Restricted to Executive Director & Regional Director (National)) -->
-      <div id="executive-tools-dropdown-section" style="display: none;">
-        <div class="dropdown-divider"></div>
-        <div style="padding: 0.35rem 0.75rem 0.2rem; font-size: 0.68rem; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.35rem;">
-          <i class="ph-bold ph-shield-check"></i> Chief Executive Control
-        </div>
-        <a href="#" class="dropdown-item" onclick="triggerSystemBackup(event)" style="color: #1e3a8a;">
-          <i class="ph-bold ph-download-simple" style="color: #2563eb;"></i> Backup System Data
-        </a>
-        <a href="#" class="dropdown-item" onclick="openTopLevelFlushModal(event, 'archives')" style="color: #047857;">
-          <i class="ph-bold ph-clock-counter-clockwise" style="color: #059669;"></i> Retrieve Flushed Data
-        </a>
-        <a href="#" class="dropdown-item text-rose" onclick="openTopLevelFlushModal(event, 'flush')">
-          <i class="ph-bold ph-arrow-counter-clockwise" style="color: #dc2626;"></i> Flush System Data
-        </a>
-      </div>
+
 
       <div class="dropdown-divider"></div>
       <a href="login.php" class="dropdown-item" onclick="ytrGlobalSignOut(event)"><i class="ph ph-arrows-clockwise"></i> Switch Account</a>

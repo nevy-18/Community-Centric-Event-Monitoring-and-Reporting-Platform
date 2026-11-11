@@ -31,11 +31,11 @@
       padding: 0.9rem 1rem !important;
       box-sizing: border-box !important;
     }
-    #chapterEventsTable th:nth-child(1), #chapterEventsTable td:nth-child(1) { width: 32%; text-align: left; }
-    #chapterEventsTable th:nth-child(2), #chapterEventsTable td:nth-child(2) { width: 18%; text-align: center; }
-    #chapterEventsTable th:nth-child(3), #chapterEventsTable td:nth-child(3) { width: 18%; text-align: center; }
-    #chapterEventsTable th:nth-child(4), #chapterEventsTable td:nth-child(4) { width: 16%; text-align: center; }
-    #chapterEventsTable th:nth-child(5), #chapterEventsTable td:nth-child(5) { width: 16%; text-align: right; }
+    #chapterEventsTable th:nth-child(1), #chapterEventsTable td:nth-child(1) { width: 42%; text-align: left; }
+    #chapterEventsTable th:nth-child(2), #chapterEventsTable td:nth-child(2) { width: 15%; text-align: center; }
+    #chapterEventsTable th:nth-child(3), #chapterEventsTable td:nth-child(3) { width: 14%; text-align: center; }
+    #chapterEventsTable th:nth-child(4), #chapterEventsTable td:nth-child(4) { width: 14%; text-align: center; }
+    #chapterEventsTable th:nth-child(5), #chapterEventsTable td:nth-child(5) { width: 15%; text-align: right; }
 
     /* Uniform Status Badges */
     .status-pill-fixed {
@@ -241,11 +241,11 @@
             <table id="chapterEventsTable">
               <thead class="font-roboto">
                 <tr>
-                  <th style="width: 32%; text-align: left;">Event Title</th>
-                  <th style="width: 18%; text-align: center;">Schedule</th>
-                  <th style="width: 18%; text-align: center;">Status</th>
-                  <th style="width: 16%; text-align: center;">Turnout</th>
-                  <th style="width: 16%; text-align: right;">Action</th>
+                  <th style="width: 42%; text-align: left;">Event Title</th>
+                  <th style="width: 15%; text-align: center;">Schedule</th>
+                  <th style="width: 14%; text-align: center;">Status</th>
+                  <th style="width: 14%; text-align: center;">Turnout</th>
+                  <th style="width: 15%; text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="chapter-events-body">

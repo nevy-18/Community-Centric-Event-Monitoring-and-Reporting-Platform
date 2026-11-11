@@ -469,8 +469,8 @@ class TestYTRBackendAPI(unittest.TestCase):
         print("[PASS] Registration with National and Chapter positions passed.")
 
     def test_30_executive_authorization_backup_and_flush(self):
-        # 1. Executive Director authorized for backup
-        res_exec = self.client.get('/api/system/backup?format=json', headers={'X-User-Email': 'admin@ytr.org'})
+        # 1. Chief Executive Officer authorized for backup
+        res_exec = self.client.get('/api/system/backup?format=json', headers={'X-User-Email': 'YTR.org@gmail.com'})
         self.assertEqual(res_exec.status_code, 200)
         data_exec = res_exec.get_json()
         self.assertEqual(data_exec['status'], 'success')
@@ -494,7 +494,7 @@ class TestYTRBackendAPI(unittest.TestCase):
         self.assertEqual(res_flush_chap.status_code, 403)
 
         # 6. Executive allowed to flush (HTTP 200)
-        res_flush_exec = self.client.post('/api/system/flush', json={'mode': 'demo', 'confirmation': 'FLUSH'}, headers={'X-User-Email': 'admin@ytr.org'})
+        res_flush_exec = self.client.post('/api/system/flush', json={'mode': 'demo', 'confirmation': 'FLUSH'}, headers={'X-User-Email': 'YTR.org@gmail.com'})
         self.assertEqual(res_flush_exec.status_code, 200)
         print("[PASS] Executive authorization for backup and reset/flush passed.")
 
