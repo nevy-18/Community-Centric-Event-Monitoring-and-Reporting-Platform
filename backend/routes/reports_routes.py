@@ -84,7 +84,7 @@ def list_reports():
 
 @reports_bp.route('/signatories', methods=['GET'])
 def get_report_signatories():
-    """Returns official executive signatories including Chief Executive Operation and signature."""
+    """Returns official executive signatories including Chief Executive Officer and signature."""
     with get_db() as conn:
         with conn.cursor() as cur:
             # Fetch chief executive / national admin
@@ -102,7 +102,7 @@ def get_report_signatories():
             exec_user = cur.fetchone()
 
     exec_name = exec_user['full_name'] if exec_user else 'Hanskee Joyce Jose'
-    exec_pos = 'Chief Executive Operation'
+    exec_pos = 'Chief Executive Officer'
     exec_sig = exec_user.get('signature_image') if exec_user else None
 
     return api_response({

@@ -44,8 +44,8 @@ def seed_database():
             ytr_hash = hash_password('ytrnational')
             default_hash = hash_password('Password123!')
             users = [
-                (None, 'Hanskee Joyce Jose', 'YTR.org@gmail.com', ytr_hash, 'national_admin', 'Chief Executive Operation', 'active'),
-                (None, 'Hanskee Joyce Jose', 'admin@ytr.org', ytr_hash, 'national_admin', 'Chief Executive Operation', 'active'),
+                (None, 'Hanskee Joyce Jose', 'YTR.org@gmail.com', ytr_hash, 'national_admin', 'Chief Executive Officer', 'active'),
+                (None, 'Hanskee Joyce Jose', 'admin@ytr.org', ytr_hash, 'national_admin', 'Chief Executive Officer', 'active'),
                 (laguna_id, 'Joan Dela Cruz', 'joan.dela@gmail.com', default_hash, 'chapter_admin', 'Chapter Coordinator', 'active'),
                 (ncr_id, 'Mark Bautista', 'mark.bautista@gmail.com', default_hash, 'chapter_admin', 'Chapter President', 'pending'),
             ]

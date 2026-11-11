@@ -704,7 +704,7 @@
               </div>
               <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
               <p id="dossierReviewerName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hanskee Joyce Jose</p>
-              <p id="dossierReviewerTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
+              <p id="dossierReviewerTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Officer</p>
               <p id="dossierReviewNotes" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Cleared for Chapter Execution</p>
             </div>
           </div>
@@ -1256,7 +1256,7 @@
         statusBadge.style.cssText = 'background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-size: 0.75rem; padding: 3px 8px; font-weight: 800;';
         statusBadge.textContent = 'OFFICIALLY APPROVED';
         document.getElementById('dossierReviewerName').textContent = p.reviewer_name || 'Hanskee Joyce Jose';
-        document.getElementById('dossierReviewerTitle').textContent = p.reviewer_position || 'Chief Executive Operation';
+        document.getElementById('dossierReviewerTitle').textContent = (p.reviewer_position === 'Chief Executive Operation' ? 'Chief Executive Officer' : (p.reviewer_position || 'Chief Executive Officer'));
         document.getElementById('dossierReviewNotes').textContent = p.review_note ? `Note: "${p.review_note}"` : 'Cleared for Chapter Execution';
       } else if (isPending) {
         statusBadge.className = 'badge pending font-roboto';

@@ -766,7 +766,7 @@
             </div>
             <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
             <p id="dossierReviewerName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hanskee Joyce Jose</p>
-            <p id="dossierReviewerTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
+            <p id="dossierReviewerTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Officer</p>
             <p id="dossierReviewNotes" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Cleared for Chapter Execution</p>
           </div>
         </div>
@@ -1504,7 +1504,7 @@
             <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Verified Chapter Submission</p>
           </div>
 
-          <!-- 2. APPROVED BY (Chief Executive Operation) -->
+          <!-- 2. APPROVED BY (Chief Executive Officer) -->
           <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
             <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
               Approved for National Records:
@@ -1514,7 +1514,7 @@
             </div>
             <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
             <p style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">${escapeHtml(execName)}</p>
-            <p style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
+            <p style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Officer</p>
             <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Youth on the Rock National Movement</p>
           </div>
 
@@ -1560,7 +1560,7 @@
             requester_name: match.signed_by_name || 'Chapter Administrator',
             requester_position: 'Chapter Administrator',
             reviewer_name: nationalExecName || 'Hanskee Joyce Jose',
-            reviewer_position: 'Chief Executive Operation',
+            reviewer_position: 'Chief Executive Officer',
             review_note: 'Cleared for Chapter Execution',
             status: match.event_status || 'approved'
           };
@@ -1691,7 +1691,7 @@
             : `<span id="dossierStatusBadge" class="badge approved font-roboto" style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-size: 0.75rem; padding: 3px 8px; font-weight: 800;">OFFICIALLY APPROVED</span>`;
         }
         document.getElementById('dossierReviewerName').textContent = p.reviewer_name || (nationalExecName || 'Hanskee Joyce Jose');
-        document.getElementById('dossierReviewerTitle').textContent = p.reviewer_position || 'Chief Executive Operation';
+        document.getElementById('dossierReviewerTitle').textContent = (p.reviewer_position === 'Chief Executive Operation' ? 'Chief Executive Officer' : (p.reviewer_position || 'Chief Executive Officer'));
         document.getElementById('dossierReviewNotes').textContent = p.review_note ? `Note: "${p.review_note}"` : 'Cleared for Chapter Execution';
       } else if (isPending) {
         if (sigContainer) {

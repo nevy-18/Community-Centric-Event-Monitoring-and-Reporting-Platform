@@ -231,7 +231,7 @@
                 <option value="Regional Director (Chapter)">Regional Director (Chapter)</option>
               </optgroup>
               <optgroup label="── NATIONAL POSITIONS ──" id="optGrpNational">
-                <option value="Chief Executive Operation">Chief Executive Operation</option>
+                <option value="Chief Executive Officer">Chief Executive Officer</option>
                 <option value="Executive Director">Executive Director</option>
                 <option value="Regional Director (National)">Regional Director (National)</option>
                 <option value="National Youth Officer">National Youth Officer</option>
@@ -334,7 +334,7 @@
           </div>
           <div>
             <h3 style="color: #166534; margin: 0; font-size: 1rem;">Assign Regional Director</h3>
-            <p style="color: #15803d; margin: 0; font-size: 0.75rem;">Chief Executive Operation Authorization · Designate official Regional Director for chapter report endorsement and print certification.</p>
+            <p style="color: #15803d; margin: 0; font-size: 0.75rem;">Chief Executive Officer Authorization · Designate official Regional Director for chapter report endorsement and print certification.</p>
           </div>
         </div>
         <button type="button" onclick="closeAssignDirectorModal()"><i class="ph ph-x"></i></button>
@@ -791,7 +791,7 @@
                   <i class="ph ph-pencil-simple"></i> Assign Director
                 </button>
               ` : `
-                <button class="btn btn-outline font-roboto" disabled title="Only the Chief Executive Operation can assign Regional Directors" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; margin: 0 auto; display: inline-flex; align-items: center; gap: 0.35rem; opacity: 0.55; cursor: not-allowed; background: #f8fafc; color: #94a3b8; border-color: #cbd5e1;">
+                <button class="btn btn-outline font-roboto" disabled title="Only the Chief Executive Officer can assign Regional Directors" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; margin: 0 auto; display: inline-flex; align-items: center; gap: 0.35rem; opacity: 0.55; cursor: not-allowed; background: #f8fafc; color: #94a3b8; border-color: #cbd5e1;">
                   <i class="ph-bold ph-lock-key"></i> Restricted (CEO Only)
                 </button>
               `}
@@ -805,7 +805,7 @@
     // Modal Handlers for Regional Director Assignment
     function openAssignDirectorModal(ch) {
       if (!isChiefExecutiveUser()) {
-        alert('Access Denied: Only the Chief Executive Operation can assign Regional Directors for chapters.');
+        alert('Access Denied: Only the Chief Executive Officer can assign Regional Directors for chapters.');
         return;
       }
       document.getElementById('assignDirectorChapterId').value = ch.id;
@@ -843,7 +843,7 @@
 
     async function saveDirectorAssignment() {
       if (!isChiefExecutiveUser()) {
-        alert('Access Denied: Only the Chief Executive Operation can assign Regional Directors for chapters.');
+        alert('Access Denied: Only the Chief Executive Officer can assign Regional Directors for chapters.');
         return;
       }
       const chId = document.getElementById('assignDirectorChapterId').value;
@@ -965,7 +965,7 @@
     }
 
     const NATIONAL_POSITIONS = [
-      'Chief Executive Operation',
+      'Chief Executive Officer',
       'Executive Director',
       'Regional Director (National)',
       'National Youth Officer'
@@ -1942,7 +1942,7 @@
         const rawUser = localStorage.getItem('ytr_user');
         if (rawUser) {
           const u = JSON.parse(rawUser);
-          const ceoPositions = ['Chief Executive Operation', 'Chief Executive Officer', 'CEO', 'Chief Executive'];
+          const ceoPositions = ['Chief Executive Officer', 'Chief Executive Officer', 'CEO', 'Chief Executive'];
           return (u.position && ceoPositions.includes(u.position.trim())) || (u.email && u.email.toLowerCase() === 'admin@ytr.org');
         }
       } catch (e) {}

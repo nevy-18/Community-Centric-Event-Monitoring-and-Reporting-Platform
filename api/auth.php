@@ -82,7 +82,7 @@ switch ($action) {
         $_SESSION['user_name']    = $user['full_name'];
         $_SESSION['user_email']   = $user['email'];
         $_SESSION['user_role']    = $user['role'];
-        $_SESSION['user_position']= $user['position'] ?? ($user['role'] === 'national_admin' ? 'Chief Executive Operation' : 'Chapter Coordinator');
+        $_SESSION['user_position']= $user['position'] ?? ($user['role'] === 'national_admin' ? 'Chief Executive Officer' : 'Chapter Coordinator');
         $_SESSION['chapter_id']   = $user['chapter_id'];
         $_SESSION['chapter_name'] = $user['chapter_name'];
 

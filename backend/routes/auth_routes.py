@@ -7,7 +7,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 EMAIL_REGEX = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 
-NATIONAL_ROLES = ['Chief Executive Operation', 'Executive Director', 'Regional Director (National)', 'National Youth Officer']
+NATIONAL_ROLES = ['Chief Executive Officer', 'Executive Director', 'Regional Director (National)', 'National Youth Officer']
 CHAPTER_ROLES = ['Chapter Coordinator', 'Chapter President', 'Regional Director (Chapter)']
 
 @auth_bp.route('/login', methods=['POST'])
@@ -95,7 +95,7 @@ def login():
         'full_name': user['full_name'],
         'email': user['email'],
         'role': user['role'],
-        'position': user.get('position') or ('Chief Executive Operation' if user['role'] == 'national_admin' else 'Chapter Coordinator'),
+        'position': user.get('position') or ('Chief Executive Officer' if user['role'] == 'national_admin' else 'Chapter Coordinator'),
         'chapter_id': user['chapter_id'],
         'chapter_name': user['chapter_name'],
         'signature_image': user.get('signature_image'),

@@ -120,11 +120,11 @@ AUTHORIZED_CEO_POSITIONS = [
 
 @chapters_bp.route('/<int:chapter_id>/regional-director', methods=['PUT', 'POST'])
 def assign_regional_director(chapter_id):
-    """Assign or update the Regional Director for a specific chapter. Restricted to Chief Executive Operation."""
+    """Assign or update the Regional Director for a specific chapter. Restricted to Chief Executive Officer."""
     reviewer_id = request.headers.get('X-User-Id') or session.get('user_id')
     reviewer_email = request.headers.get('X-User-Email') or session.get('user_email')
 
-    # Authority Check: Only Chief Executive Operation can assign Regional Director for chapters
+    # Authority Check: Only Chief Executive Officer can assign Regional Director for chapters
     if reviewer_id or reviewer_email:
         with get_db() as conn:
             with conn.cursor() as cur:
@@ -140,7 +140,7 @@ def assign_regional_director(chapter_id):
                 pos = str(rev.get('position') or '').strip()
                 email = str(rev.get('email') or '').strip().lower()
                 if pos not in AUTHORIZED_CEO_POSITIONS and email != 'admin@ytr.org':
-                    return api_error("Access Denied: Only the Chief Executive Operation can assign Regional Directors for chapters.", 403)
+                    return api_error("Access Denied: Only the Chief Executive Officer can assign Regional Directors for chapters.", 403)
 
     data = request.get_json(silent=True) or request.form.to_dict() or {}
     director_name = data.get('regional_director_name', '').strip()

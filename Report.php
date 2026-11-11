@@ -475,7 +475,7 @@
                   <i class="ph ph-check"></i> Loaded
                 </span>
               </div>
-              <div style="font-size: 0.72rem; color: #475569;">National Administrator signature will be placed automatically above Chief Executive Operation for official report endorsement.</div>
+              <div style="font-size: 0.72rem; color: #475569;">National Administrator signature will be placed automatically above Chief Executive Officer for official report endorsement.</div>
             </div>
           </div>
           <div>
@@ -605,7 +605,7 @@
               <p id="printSignerTimestamp" style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Verified Chapter Submission</p>
             </div>
 
-            <!-- 2. APPROVED BY (Chief Executive Operation) -->
+            <!-- 2. APPROVED BY (Chief Executive Officer) -->
             <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 110px; text-align: left;">
               <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">
                 Approved for National Records:
@@ -615,7 +615,7 @@
               </div>
               <div style="border-top: 1.5px solid #0f172a; width: 100%; margin-bottom: 4px;"></div>
               <p id="printChiefExecName" style="font-size: 0.825rem; font-weight: 800; margin: 0; color: #0f172a;">Hanskee Joyce Jose</p>
-              <p id="printChiefExecTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Operation</p>
+              <p id="printChiefExecTitle" style="font-size: 0.72rem; color: #1e3a8a; font-weight: 700; margin: 1px 0 0;">Chief Executive Officer</p>
               <p style="font-size: 0.65rem; color: #64748b; margin: 1px 0 0;">Youth on the Rock National Movement</p>
             </div>
 
@@ -642,7 +642,7 @@
           </div>
           <div>
             <h3 style="color: #1e40af; margin: 0; font-size: 1rem;">National Administrator Signature</h3>
-            <p style="color: #3b82f6; margin: 0; font-size: 0.75rem;">Upload or draw your official signature for Chief Executive Operation reports endorsement.</p>
+            <p style="color: #3b82f6; margin: 0; font-size: 0.75rem;">Upload or draw your official signature for Chief Executive Officer reports endorsement.</p>
           </div>
         </div>
         <button type="button" onclick="closeSignatureManagerModal()"><i class="ph ph-x"></i></button>
@@ -691,7 +691,7 @@
             Hanskee Joyce Jose
           </div>
           <div style="text-align: center; font-size: 0.72rem; color: #2563eb; font-weight: 700;">
-            Chief Executive Operation
+            Chief Executive Officer
           </div>
         </div>
 
@@ -927,7 +927,7 @@
 
     let currentSignatories = {
       chief_executive_name: 'Hanskee Joyce Jose',
-      chief_executive_title: 'Chief Executive Operation',
+      chief_executive_title: 'Chief Executive Officer',
       chief_executive_signature: null
     };
 
@@ -941,7 +941,7 @@
         const res = await YTR_API.reports.getSignatories();
         if (res.status === 'success' && res.data) {
           currentSignatories.chief_executive_name = res.data.chief_executive_name || 'Hanskee Joyce Jose';
-          currentSignatories.chief_executive_title = res.data.chief_executive_title || 'Chief Executive Operation';
+          currentSignatories.chief_executive_title = (res.data.chief_executive_title === 'Chief Executive Operation' ? 'Chief Executive Officer' : (res.data.chief_executive_title || 'Chief Executive Officer'));
           if (res.data.chief_executive_signature) {
             currentSignatories.chief_executive_signature = res.data.chief_executive_signature;
           }
@@ -1196,9 +1196,9 @@
         submitterSigBox.innerHTML = `<span style="font-size: 0.72rem; color: #16a34a; font-weight: 600;"><i class="ph ph-check-circle"></i> Digital Dossier Signed</span>`;
       }
 
-      // 2. Chief Executive Operation Signatory Block
+      // 2. Chief Executive Officer Signatory Block
       document.getElementById('printChiefExecName').textContent = currentSignatories.chief_executive_name || 'Hanskee Joyce Jose';
-      document.getElementById('printChiefExecTitle').textContent = currentSignatories.chief_executive_title || 'Chief Executive Operation';
+      document.getElementById('printChiefExecTitle').textContent = (currentSignatories.chief_executive_title === 'Chief Executive Operation' ? 'Chief Executive Officer' : (currentSignatories.chief_executive_title || 'Chief Executive Officer'));
       
       const natSigBox = document.getElementById('printNationalSigBox');
       const sigStatusBadge = document.getElementById('printSigStatusBadge');
