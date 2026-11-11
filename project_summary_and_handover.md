@@ -145,6 +145,21 @@ flowchart TD
     - Integrated `.dash-text-truncate` with graceful ellipsis (`text-overflow: ellipsis`) and hover tooltips for long titles.
     - Enforced responsive 1-column grid collapse (`.chapter-dash-grid` at `@media (max-width: 1100px)`) so monitoring tables never cramp against announcements.
     - Configured smooth horizontal touch-scrolling (`overflow-x: auto !important; -webkit-overflow-scrolling: touch !important;`) on table containers.
+  - **Fixed Chapter Dashboard Grid Pushing Announcements (`ChapterDashboard.php`):**
+    - Constrained `.chapter-dash-grid` using `grid-template-columns: minmax(0, 1fr) 340px !important;` and set `min-width: 0 !important;` on column containers.
+    - Prevented wide monitoring tables from expanding the grid track, permanently anchoring the Announcements feed at 340px on desktop without being pushed.
+- **Event Proposal Simplification & Pop-up Dossier Modals (`Proposal.php` & `ChapterProposal.php`):**
+  - **National Proposals Table (`Proposal.php`):**
+    - Condensed rows to 6 clean single-line columns: *Event Proposal, Chapter, Schedule, Budget, Status, Action*.
+    - Stripped out up to 7 stacked badges per row (program pillar, audience, soft copy, drive link, timer badges).
+    - Added clean "Details" button calling `openProposalDossier(id)` to open the complete official dossier pop-up modal alongside the "Review / View" button.
+  - **Chapter Proposals Table (`ChapterProposal.php`):**
+    - Condensed rows to 5 clean single-line columns: *Event Title, Schedule, Budget, Status, Action*.
+    - Removed nested badge clutter and venue wrapping from the default rows.
+    - Integrated "Details" button opening the full electronic proposal dossier pop-up modal with print/soft-copy export.
+  - **Responsive Single-Line Layout:**
+    - Applied `white-space: nowrap !important;` across all table headers and cells.
+    - Integrated `.dash-text-truncate` with ellipsis and full tooltip on hover.
 
 ---
 

@@ -8,6 +8,39 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="assets/National.css?v=<?= time() ?>">
   <style>
+    /* Table Simplification & Responsive Single-Line Fixes */
+    .table-responsive {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+    }
+    .table-responsive table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    .table-responsive th,
+    .table-responsive td {
+      white-space: nowrap !important;
+      vertical-align: middle;
+      padding: 0.85rem 1.15rem;
+    }
+    .dash-text-truncate {
+      display: inline-block;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      vertical-align: middle;
+    }
+    @media (max-width: 768px) {
+      .table-responsive table:not(.printable-table) td:not([colspan]) {
+        white-space: normal !important;
+      }
+      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
+        max-width: 55vw !important;
+      }
+    }
+
     /* Proposal-specific modal and interactive styles */
     .modal-overlay {
       display: none;
@@ -318,10 +351,10 @@
                     <tr>
                       <th>Event Proposal</th>
                       <th>Chapter</th>
-                      <th>Proposed Date & Venue</th>
-                      <th style="text-align: center;">Target / Budget</th>
-                      <th style="text-align: center;">Status</th>
-                      <th style="text-align: center;">Action</th>
+                      <th>Schedule</th>
+                      <th>Budget</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="proposalsTableBody">
@@ -730,40 +763,31 @@
             row.className = 'proposal-row';
             row.innerHTML = `
               <td data-label="Event Proposal">
-                <div class="td-user">
-                  <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
-                    <i class="ph-fill ph-compass"></i>
-                  </div>
-                  <div>
-                    <span class="proposal-name font-roboto" style="font-weight: 800; color: #0f172a; font-size: 0.9rem; display: block;">${escapeHtml(p.title)}</span>
-                    <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin: 2px 0;">
-                      <span class="td-sub font-roboto" style="font-weight: 600; color: #2563eb;">${escapeHtml(String(p.event_type || 'chapter').toUpperCase())} EVENT</span>
-                      ${p.ytr_program ? `<span class="badge font-roboto" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.7rem; padding: 1px 6px; font-weight: 700;"><i class="ph-bold ph-compass"></i> ${escapeHtml(p.ytr_program)}</span>` : ''}
-                      <span class="badge font-roboto" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 0.7rem; padding: 1px 6px; font-weight: 600;"><i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}</span>
-                      ${p.attachment_path ? `<span class="badge font-roboto" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 0.7rem; padding: 1px 6px;" title="Proposal File Soft Copy Attached"><i class="ph-bold ph-paperclip"></i> Soft Copy</span>` : ''}
-                      ${p.drive_link ? `<a href="${escapeHtml(p.drive_link)}" target="_blank" rel="noopener noreferrer" class="badge font-roboto" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.7rem; padding: 1px 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 2px;" title="Open Cloud / Google Drive Proposal"><i class="ph-bold ph-google-drive-logo"></i> Drive</a>` : ''}
-                    </div>
-                    <div>${timerBadgeHtml} ${dueBadgeHtml}</div>
-                  </div>
-                </div>
+                <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(p.title)}">
+                  ${escapeHtml(p.title)}
+                </span>
               </td>
-              <td data-label="Chapter"><span class="badge chapter-admin font-roboto">${escapeHtml(p.chapter_name || 'All Chapters')}</span></td>
-              <td data-label="Schedule & Venue">
-                <p class="font-roboto" style="font-size: 0.825rem; font-weight: bold; color: #0f172a; margin: 0;">${startDate}</p>
-                <p class="td-sub font-roboto" style="margin: 2px 0 0;"><i class="ph ph-map-pin"></i> ${escapeHtml(p.venue || 'TBD')}</p>
+              <td data-label="Chapter">
+                <span class="font-roboto dash-text-truncate" style="font-weight: 600; color: #1e293b; font-size: 0.85rem; display: inline-block; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(p.chapter_name || 'All Chapters')}">
+                  ${escapeHtml(p.chapter_name || 'All Chapters')}
+                </span>
               </td>
-              <td data-label="Target / Budget" style="text-align: center;">
-                <p class="font-roboto" style="font-weight: bold; font-size: 0.85rem; color: #0f172a; margin: 0;"><i class="ph-fill ph-users" style="color: #60a5fa;"></i> ${targetTurnout} Target</p>
-                <p class="td-sub font-roboto" style="margin: 2px 0 0;">₱${budgetFormatted}</p>
+              <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500;">
+                ${startDate}
               </td>
-              <td data-label="Status" style="text-align: center;">${statusBadge}</td>
-              <td data-label="Action" style="text-align: center;">
-                <div style="display: flex; gap: 0.35rem; justify-content: center; align-items: center;">
-                  <button class="btn btn-primary btn-sm font-roboto" onclick="selectProposalById(${p.id})">
-                    <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
+              <td data-label="Budget" style="white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #0f172a;">
+                ₱${budgetFormatted}
+              </td>
+              <td data-label="Status" style="white-space: nowrap;">
+                ${statusBadge}
+              </td>
+              <td data-label="Action" style="text-align: right; white-space: nowrap;">
+                <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
+                  <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openProposalDossier(${p.id})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+                    <i class="ph ph-info"></i> Details
                   </button>
-                  <button class="btn btn-outline btn-sm font-roboto" title="View &amp; Download Soft Copy (Dossier PDF)" onclick="openProposalDossier(${p.id})" style="padding: 0.4rem 0.55rem; color: #1e3a8a; border-color: #cbd5e1;">
-                    <i class="ph-bold ph-printer"></i>
+                  <button type="button" class="btn btn-sm btn-primary font-roboto" onclick="selectProposalById(${p.id})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; background: #2563eb; color: #ffffff; border: none; font-weight: 600;">
+                    <i class="ph ph-eye"></i> ${isPending ? 'Review' : 'View'}
                   </button>
                 </div>
               </td>

@@ -13,18 +13,36 @@
   <link rel="stylesheet" href="assets/Chapter.css?v=<?= time() ?>">
   <style>
     /* Chapter Dashboard Responsive Table & Grid Enhancements */
-    .table-responsive {
+    .chapter-dash-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 340px !important;
+      gap: 1.5rem !important;
+      align-items: start !important;
+      margin-bottom: 2rem !important;
+      width: 100% !important;
+    }
+    .chapter-dash-grid > div {
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    .chapter-dash-grid .table-section {
+      min-width: 0 !important;
+      width: 100% !important;
+      overflow: hidden !important;
+    }
+    .chapter-dash-grid .table-responsive {
       overflow-x: auto !important;
       -webkit-overflow-scrolling: touch !important;
       width: 100% !important;
+      min-width: 0 !important;
     }
-    .table-responsive table {
-      width: 100%;
+    .chapter-dash-grid .table-responsive table {
+      width: 100% !important;
+      min-width: 520px !important;
       border-collapse: collapse;
-      min-width: 680px;
     }
-    .table-responsive th,
-    .table-responsive td {
+    .chapter-dash-grid th,
+    .chapter-dash-grid td {
       white-space: nowrap !important;
       vertical-align: middle;
       padding: 0.85rem 1.15rem;
@@ -40,7 +58,6 @@
     @media (max-width: 1100px) {
       .chapter-dash-grid {
         grid-template-columns: 1fr !important;
-        gap: 1.5rem !important;
       }
     }
     @media (max-width: 768px) {
@@ -138,7 +155,7 @@
         </div>
 
         <!-- 2-Column Responsive Dashboard Layout (Left: Monitoring Hub, Right: Announcements & Actions) -->
-        <div class="chapter-dash-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2rem;">
+        <div class="chapter-dash-grid">
           
           <!-- LEFT COLUMN: Main Monitoring Table & Tabs -->
           <div>

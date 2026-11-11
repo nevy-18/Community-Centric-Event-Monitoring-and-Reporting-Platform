@@ -162,6 +162,39 @@
         color: #1e3a8a !important;
       }
     }
+
+    /* Table Simplification & Responsive Single-Line Fixes */
+    .table-responsive {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+    }
+    .table-responsive table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+    .table-responsive th,
+    .table-responsive td {
+      white-space: nowrap !important;
+      vertical-align: middle;
+      padding: 0.85rem 1.15rem;
+    }
+    .dash-text-truncate {
+      display: inline-block;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      vertical-align: middle;
+    }
+    @media (max-width: 768px) {
+      .table-responsive table:not(.printable-table) td:not([colspan]) {
+        white-space: normal !important;
+      }
+      .table-responsive table:not(.printable-table) td:not([colspan]) .dash-text-truncate {
+        max-width: 55vw !important;
+      }
+    }
     </style>
 </head>
 <body>
@@ -248,17 +281,16 @@
                         <table>
                             <thead class="font-roboto">
                                 <tr>
-                                    <th>Event Details</th>
-                                    <th>Schedule & Location</th>
-                                    <th>Turnout Threshold</th>
-                                    <th>Budget Allocation</th>
-                                    <th>Status & Review Notes</th>
-                                    <th>Actions</th>
+                                    <th>Event Title</th>
+                                    <th>Schedule</th>
+                                    <th>Budget</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="proposals-tbody">
                                 <tr>
-                                    <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                                    <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
                                         <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Loading chapter proposals...
                                     </td>
                                 </tr>
@@ -651,7 +683,7 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b;">
+                        <td colspan="5" style="text-align: center; padding: 2.5rem; color: #64748b;">
                             <i class="ph ph-file-dashed" style="font-size: 2rem; color: #94a3b8;"></i>
                             <p style="margin-top: 0.5rem;">No proposals found under this filter. Click <strong>Submit Event Proposal</strong> above to propose an event.</p>
                         </td>
@@ -662,114 +694,58 @@
 
             tbody.innerHTML = filtered.map(p => {
                 let statusBadge = '';
-                let timerHtml = '';
-                if (p.approval_timer) {
-                    const timerText = typeof p.approval_timer === 'object' ? (p.approval_timer.label || p.approval_timer.text) : p.approval_timer;
-                    const timerCls = (typeof p.approval_timer === 'object' && p.approval_timer.cls) ? p.approval_timer.cls : 'badge timer';
-                    timerHtml = `<div style="margin-top: 4px;"><span class="${timerCls}"><i class="ph ph-timer"></i> ${escapeHtml(timerText)}</span></div>`;
-                }
-
-                let dueHtml = '';
-                if (p.due_badge) {
-                    const dueText = typeof p.due_badge === 'object' ? (p.due_badge.label || p.due_badge.text) : p.due_badge;
-                    const dueCls = (typeof p.due_badge === 'object' && p.due_badge.cls) ? p.due_badge.cls : 'badge timer';
-                    dueHtml = `<span class="${dueCls}" style="margin-left: 4px;"><i class="ph ph-clock"></i> ${escapeHtml(dueText)}</span>`;
-                }
-
                 if (p.status === 'approved') {
-                    statusBadge = `<span class="badge approved"><i class="ph ph-check"></i> Approved</span>`;
+                    statusBadge = `<span class="badge approved" style="white-space: nowrap;"><i class="ph ph-check"></i> Approved</span>`;
                 } else if (p.status === 'pending_approval') {
-                    statusBadge = `<span class="badge pending"><i class="ph ph-clock"></i> In Review</span>`;
+                    statusBadge = `<span class="badge pending" style="white-space: nowrap;"><i class="ph ph-clock"></i> In Review</span>`;
                 } else if (p.status === 'draft') {
-                    statusBadge = `<span class="badge draft"><i class="ph ph-arrow-counter-clockwise"></i> Revision Needed</span>`;
+                    statusBadge = `<span class="badge draft" style="white-space: nowrap;"><i class="ph ph-arrow-counter-clockwise"></i> Revision Needed</span>`;
                 } else {
-                    statusBadge = `<span class="badge">${p.status}</span>`;
+                    statusBadge = `<span class="badge" style="white-space: nowrap;">${escapeHtml(p.status)}</span>`;
                 }
 
-                let actions = '';
-                const softCopyBtn = `
-                    <button class="btn btn-outline" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; color: #1e3a8a; border-color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.25rem;" onclick="openProposalDossier(${p.id})" title="View and Download Official Proposal Soft Copy">
-                        <i class="ph-bold ph-file-pdf"></i> Soft Copy
-                    </button>
-                `;
+                const startDate = p.start_datetime ? p.start_datetime.substring(0, 10) : 'Date TBD';
+                const budgetFormatted = (p.budget_amount || 0).toLocaleString();
 
+                let primaryAction = '';
                 if (p.status === 'approved') {
-                    actions = `
-                        <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center;">
-                            ${softCopyBtn}
-                            <a href="ChapterRequest.php" class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.75rem; text-decoration: none;" title="Request Poster">
-                                <i class="ph ph-image"></i> Poster
-                            </a>
-                            <a href="ChapterReport.php?event_id=${p.id}" class="btn btn-primary" style="background: #16a34a; border-color: #15803d; padding: 0.3rem 0.5rem; font-size: 0.75rem; text-decoration: none;" title="Submit Report">
-                                <i class="ph ph-file-arrow-up"></i> Report
-                            </a>
-                        </div>
+                    primaryAction = `
+                        <a href="ChapterReport.php?event_id=${p.id}" class="btn btn-sm btn-primary font-roboto" style="background: #16a34a; border-color: #15803d; color: #ffffff; padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;" title="Submit Post-Event Report">
+                            <i class="ph ph-file-arrow-up"></i> Report
+                        </a>
                     `;
-                } else {
-                    actions = `
-                        <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center;">
-                            ${softCopyBtn}
-                            <button class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" onclick="openProposalDossier(${p.id})">Details</button>
-                        </div>
+                } else if (p.status === 'draft') {
+                    primaryAction = `
+                        <button type="button" class="btn btn-sm btn-primary font-roboto" onclick="openProposalDossier(${p.id})" style="background: #e11d48; border: none; color: #ffffff; padding: 0.35rem 0.65rem; font-size: 0.8rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <i class="ph ph-pencil-simple"></i> Revise
+                        </button>
                     `;
-                }
-                let progBadge = '';
-                if (p.ytr_program) {
-                    let pBg = '#eff6ff', pCol = '#1d4ed8', pBorder = '#bfdbfe';
-                    if (p.ytr_program.startsWith('Rise up')) {
-                        pBg = '#fffbeb'; pCol = '#b45309'; pBorder = '#fde68a';
-                    } else if (p.ytr_program.startsWith('Build up')) {
-                        pBg = '#f0fdf4'; pCol = '#15803d'; pBorder = '#bbf7d0';
-                    } else if (p.ytr_program.startsWith('Gear up')) {
-                        pBg = '#faf5ff'; pCol = '#7e22ce'; pBorder = '#e9d5ff';
-                    }
-                    progBadge = `<span class="badge" style="background: ${pBg}; color: ${pCol}; border: 1px solid ${pBorder}; font-size: 0.72rem; padding: 2px 7px; font-weight: 700;">
-                        <i class="ph-bold ph-compass"></i> ${escapeHtml(p.ytr_program)}
-                    </span>`;
-                }
-
-                const audienceBadge = `<span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-size: 0.72rem; padding: 2px 7px; font-weight: 600;">
-                    <i class="ph ph-users-three"></i> ${escapeHtml(p.target_audience || 'Open for All')}
-                </span>`;
-
-                let docBadges = '';
-                if (p.attachment_path) {
-                    docBadges += `<span class="badge" style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 0.7rem; padding: 2px 6px;" title="Proposal Soft Copy Attached"><i class="ph-bold ph-paperclip"></i> Soft Copy</span>`;
-                }
-                if (p.drive_link) {
-                    docBadges += `<a href="${escapeHtml(p.drive_link)}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.7rem; padding: 2px 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;" title="Open Cloud / Google Drive Proposal"><i class="ph-bold ph-google-drive-logo"></i> Drive</a>`;
                 }
 
                 return `
                     <tr>
-                        <td data-label="Event Details">
-                            <div style="font-weight: 700; color: #0f172a;">${escapeHtml(p.title)}</div>
-                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; margin-top: 3px;">
-                                <small style="color: #64748b; text-transform: uppercase;">${escapeHtml(p.event_type || 'Event')}</small>
-                                ${progBadge}
-                                ${audienceBadge}
-                                ${docBadges}
-                            </div>
-                        </td>
-                        <td data-label="Schedule & Location">
-                            <div style="font-size: 0.85rem; color: #1e293b;">${escapeHtml(p.start_datetime ? p.start_datetime.substring(0, 10) : 'Date TBD')}</div>
-                            <small style="color: #64748b;">${escapeHtml(p.venue || 'Venue TBD')}</small>
-                        </td>
-                        <td data-label="Turnout Threshold">
-                            <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 700;">
-                                <i class="ph ph-users"></i> Target: ${p.target_turnout || 100}
+                        <td data-label="Event Title">
+                            <span class="font-roboto dash-text-truncate" style="font-weight: 700; color: #0f172a; font-size: 0.92rem; display: inline-block; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;" title="${escapeHtml(p.title)}">
+                                ${escapeHtml(p.title)}
                             </span>
                         </td>
-                        <td data-label="Budget Allocation">
-                            <span style="font-weight: 600; color: #0f172a;">PHP ${(p.budget_amount || 0).toLocaleString()}</span>
-                            ${dueHtml}
+                        <td data-label="Schedule" style="white-space: nowrap; font-size: 0.85rem; color: #1e293b; font-weight: 500;">
+                            ${escapeHtml(startDate)}
                         </td>
-                        <td data-label="Status & Review Notes">
+                        <td data-label="Budget" style="white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: #0f172a;">
+                            PHP ${budgetFormatted}
+                        </td>
+                        <td data-label="Status" style="white-space: nowrap;">
                             ${statusBadge}
-                            ${timerHtml}
-                            ${p.review_note ? `<p style="margin: 4px 0 0; font-size: 0.75rem; color: #64748b; font-style: italic;">"${escapeHtml(p.review_note)}"</p>` : ''}
                         </td>
-                        <td data-label="Actions">${actions}</td>
+                        <td data-label="Action" style="text-align: right; white-space: nowrap;">
+                            <div style="display: inline-flex; align-items: center; gap: 0.45rem; justify-content: flex-end; white-space: nowrap;">
+                                <button type="button" class="btn btn-sm btn-outline font-roboto" onclick="openProposalDossier(${p.id})" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff; color: #334155;">
+                                    <i class="ph ph-info"></i> Details
+                                </button>
+                                ${primaryAction}
+                            </div>
+                        </td>
                     </tr>
                 `;
             }).join('');
