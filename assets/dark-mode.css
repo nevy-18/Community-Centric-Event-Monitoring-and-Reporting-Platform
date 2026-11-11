@@ -1039,3 +1039,240 @@ html.dark-theme .print-document-sheet th {
     color: #ffffff !important;
   }
 }
+
+/* ============================================================
+   13. UNREPORTED SECTION, BANNERS & SPECIAL ALERT CARDS (DARK THEME)
+   Guarantees maximum visibility and dark theme harmony for alerts and titles
+   ============================================================ */
+
+/* Chapter Report "Events Awaiting Submission" Section */
+html.dark-theme .unreported-section,
+body.dark-theme .unreported-section,
+html.dark-theme #unreported-section,
+body.dark-theme #unreported-section {
+  background: #111a2e !important;
+  border: 1px solid #1e293b !important;
+  box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.45) !important;
+}
+
+html.dark-theme .unreported-section-title,
+body.dark-theme .unreported-section-title,
+html.dark-theme #unreported-section h3,
+body.dark-theme #unreported-section h3 {
+  color: #fde68a !important;
+  font-weight: 800 !important;
+}
+
+html.dark-theme #unreported-section h3 i,
+body.dark-theme #unreported-section h3 i {
+  color: #f59e0b !important;
+}
+
+/* Individual Unreported Event Cards */
+html.dark-theme .unreported-card,
+body.dark-theme .unreported-card,
+html.dark-theme #unreported-list > div,
+body.dark-theme #unreported-list > div {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark-theme .unreported-card-title,
+body.dark-theme .unreported-card-title,
+html.dark-theme #unreported-list h4,
+body.dark-theme #unreported-list h4 {
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+}
+
+html.dark-theme .unreported-card-meta,
+body.dark-theme .unreported-card-meta,
+html.dark-theme #unreported-list .unreported-card-meta,
+body.dark-theme #unreported-list .unreported-card-meta {
+  color: #cbd5e1 !important;
+}
+
+html.dark-theme #unreported-list strong,
+body.dark-theme #unreported-list strong {
+  color: #fde68a !important;
+}
+
+html.dark-theme #unreported-list i,
+body.dark-theme #unreported-list i {
+  color: #f59e0b !important;
+}
+
+/* Chapter Administrator Policy Notice Banner */
+html.dark-theme .chapter-notice-banner,
+body.dark-theme .chapter-notice-banner,
+html.dark-theme #chapter-admin-notice-banner,
+body.dark-theme #chapter-admin-notice-banner {
+  background: #064e3b33 !important;
+  border: 1px solid #065f46 !important;
+}
+
+html.dark-theme .chapter-notice-banner div,
+body.dark-theme .chapter-notice-banner div,
+html.dark-theme #chapter-admin-notice-banner div,
+body.dark-theme #chapter-admin-notice-banner div {
+  color: #a7f3d0 !important;
+}
+
+html.dark-theme .chapter-notice-banner strong,
+body.dark-theme .chapter-notice-banner strong,
+html.dark-theme #chapter-admin-notice-banner strong,
+body.dark-theme #chapter-admin-notice-banner strong {
+  color: #ecfdf5 !important;
+}
+
+/* Universal Pending Alert Banners */
+html.dark-theme .pending-alert-banner,
+body.dark-theme .pending-alert-banner,
+html.dark-theme #dash-alert-banner,
+body.dark-theme #dash-alert-banner,
+html.dark-theme #chapter-alert-banner,
+body.dark-theme #chapter-alert-banner,
+html.dark-theme #pendingReviewBanner,
+body.dark-theme #pendingReviewBanner,
+html.dark-theme #pending-alert,
+body.dark-theme #pending-alert {
+  background: #1c1917 !important;
+  border-color: #78350f !important;
+  border-left: 5px solid #d97706 !important;
+  box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.45) !important;
+}
+
+html.dark-theme .pending-alert-banner strong,
+body.dark-theme .pending-alert-banner strong {
+  color: #fef08a !important;
+}
+
+html.dark-theme .pending-alert-banner p,
+body.dark-theme .pending-alert-banner p,
+html.dark-theme .pending-alert-banner span,
+body.dark-theme .pending-alert-banner span {
+  color: #fde68a !important;
+}
+
+html.dark-theme .pending-alert-banner i,
+body.dark-theme .pending-alert-banner i {
+  color: #f59e0b !important;
+}
+
+/* National Compliance Banner (Red Alert) */
+html.dark-theme #national-compliance-alert,
+body.dark-theme #national-compliance-alert {
+  background: #2a0b12 !important;
+  border-color: #881337 !important;
+  border-left: 5px solid #e11d48 !important;
+}
+
+html.dark-theme #national-compliance-alert strong,
+body.dark-theme #national-compliance-alert strong,
+html.dark-theme #national-compliance-alert p,
+body.dark-theme #national-compliance-alert p,
+html.dark-theme #national-compliance-alert div,
+body.dark-theme #national-compliance-alert div {
+  color: #fecdd3 !important;
+}
+
+/* Session Timeout Alert Banner */
+html.dark-theme #sessionTimeoutAlert,
+body.dark-theme #sessionTimeoutAlert {
+  background: #1f1b0a !important;
+  border-color: #78350f !important;
+  border-left: 4px solid #f59e0b !important;
+  color: #fde68a !important;
+}
+
+html.dark-theme #sessionTimeoutAlertText,
+body.dark-theme #sessionTimeoutAlertText {
+  color: #fde68a !important;
+}
+
+/* Badges in Dark Mode */
+html.dark-theme .badge.due-soon,
+body.dark-theme .badge.due-soon,
+html.dark-theme #unreported-badge,
+body.dark-theme #unreported-badge {
+  background: #78350f !important;
+  color: #fde68a !important;
+  border-color: #b45309 !important;
+}
+
+html.dark-theme .badge.pending,
+body.dark-theme .badge.pending {
+  background: #78350f !important;
+  color: #fde68a !important;
+  border-color: #b45309 !important;
+}
+
+html.dark-theme .badge.overdue,
+body.dark-theme .badge.overdue {
+  background: #881337 !important;
+  color: #fecdd3 !important;
+  border-color: #be123c !important;
+}
+
+html.dark-theme .badge.approved,
+html.dark-theme .badge.completed,
+body.dark-theme .badge.approved,
+body.dark-theme .badge.completed {
+  background: #064e3b !important;
+  color: #6ee7b7 !important;
+  border-color: #047857 !important;
+}
+
+html.dark-theme .badge.blue,
+body.dark-theme .badge.blue {
+  background: #1e3a8a !important;
+  color: #bfdbfe !important;
+  border-color: #2563eb !important;
+}
+
+html.dark-theme .badge.draft,
+html.dark-theme .badge.timer,
+body.dark-theme .badge.draft,
+body.dark-theme .badge.timer {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+/* Program Badges in Dark Mode */
+html.dark-theme .badge-program-lead,
+body.dark-theme .badge-program-lead,
+html.dark-theme .program-badge[style*="#eff6ff"],
+body.dark-theme .program-badge[style*="#eff6ff"] {
+  background: #1e3a8a !important;
+  color: #bfdbfe !important;
+  border-color: #2563eb !important;
+}
+
+html.dark-theme .badge-program-rise,
+body.dark-theme .badge-program-rise,
+html.dark-theme .program-badge[style*="#fffbeb"],
+body.dark-theme .program-badge[style*="#fffbeb"] {
+  background: #78350f !important;
+  color: #fde68a !important;
+  border-color: #b45309 !important;
+}
+
+html.dark-theme .badge-program-build,
+body.dark-theme .badge-program-build,
+html.dark-theme .program-badge[style*="#f0fdf4"],
+body.dark-theme .program-badge[style*="#f0fdf4"] {
+  background: #064e3b !important;
+  color: #a7f3d0 !important;
+  border-color: #059669 !important;
+}
+
+html.dark-theme .badge-program-gear,
+body.dark-theme .badge-program-gear,
+html.dark-theme .program-badge[style*="#faf5ff"],
+body.dark-theme .program-badge[style*="#faf5ff"] {
+  background: #581c87 !important;
+  color: #e9d5ff !important;
+  border-color: #7e22ce !important;
+}

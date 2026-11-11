@@ -272,9 +272,9 @@
         </div>
 
         <!-- Role Policy Notice Banner -->
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.85rem;">
+        <div id="chapter-admin-notice-banner" class="chapter-notice-banner" style="border-radius: 8px; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.85rem;">
           <i class="ph-fill ph-shield-check" style="font-size: 1.5rem; color: #16a34a;"></i>
-          <div style="font-size: 0.875rem; color: #166534;">
+          <div style="font-size: 0.875rem;">
             <strong>Chapter Administrator Exclusive:</strong> Post-event evaluation dossiers and attendee rosters are submitted exclusively by Chapter Admins. National Admins verify e-signatures and endorse printable records.
           </div>
         </div>
@@ -319,9 +319,9 @@
         </div>
 
         <!-- 2. Events Needing Post-Event Reports -->
-        <div id="unreported-section" style="background: #ffffff; border-radius: 10px; border: 1px solid #e2e8f0; padding: 1.25rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: none;">
+        <div id="unreported-section" class="unreported-section" style="border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 class="font-roboto" style="margin: 0; color: #92400e; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <h3 class="unreported-section-title font-roboto" style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
               <i class="ph-fill ph-warning-circle" style="color: #d97706;"></i> Events Awaiting Submission
             </h3>
             <span class="badge due-soon" id="unreported-badge">Action Needed</span>
@@ -1032,15 +1032,19 @@
 
     function getProgramBadge(program) {
       if (!program) return '';
+      let cls = 'badge-program-lead';
       let pBg = '#eff6ff', pCol = '#1d4ed8', pBorder = '#bfdbfe';
       if (program.startsWith('Rise up')) {
+        cls = 'badge-program-rise';
         pBg = '#fffbeb'; pCol = '#b45309'; pBorder = '#fde68a';
       } else if (program.startsWith('Build up')) {
+        cls = 'badge-program-build';
         pBg = '#f0fdf4'; pCol = '#15803d'; pBorder = '#bbf7d0';
       } else if (program.startsWith('Gear up')) {
+        cls = 'badge-program-gear';
         pBg = '#faf5ff'; pCol = '#7e22ce'; pBorder = '#e9d5ff';
       }
-      return `<span class="badge" style="background: ${pBg}; color: ${pCol}; border: 1px solid ${pBorder}; font-size: 0.72rem; padding: 2px 7px; font-weight: 700;">
+      return `<span class="badge program-badge ${cls}" style="background: ${pBg}; color: ${pCol}; border: 1px solid ${pBorder}; font-size: 0.72rem; padding: 2px 7px; font-weight: 700;">
         <i class="ph-bold ph-compass"></i> ${escapeHtml(program)}
       </span>`;
     }
@@ -1057,21 +1061,21 @@
       document.getElementById('unreported-badge').textContent = `${unreportedEvents.length} Event(s) Awaiting Report`;
 
       list.innerHTML = unreportedEvents.map(e => `
-        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="unreported-card" style="border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem;">
-              <h4 style="margin: 0; color: #92400e; font-size: 0.95rem;">${escapeHtml(e.title)}</h4>
+              <h4 class="unreported-card-title font-roboto" style="margin: 0; font-size: 0.95rem;">${escapeHtml(e.title)}</h4>
             </div>
             <div style="margin-bottom: 0.5rem;">
               ${getProgramBadge(e.ytr_program || 'Lead up (Youth Leadership)')}
             </div>
-            <div style="font-size: 0.8rem; color: #78350f; margin-bottom: 0.5rem;">
+            <div class="unreported-card-meta font-roboto" style="font-size: 0.8rem; margin-bottom: 0.5rem;">
               <i class="ph ph-calendar"></i> ${escapeHtml(e.start_datetime ? e.start_datetime.substring(0, 10) : 'Date TBD')}<br>
               <i class="ph ph-map-pin"></i> ${escapeHtml(e.venue || 'Venue TBD')}<br>
               <i class="ph ph-users"></i> Target Goal: <strong>${e.target_turnout || 100} attendees</strong>
             </div>
           </div>
-          <button class="btn btn-primary" style="background: #d97706; border-color: #b45309; padding: 0.4rem 0.75rem; font-size: 0.8rem; width: 100%;" onclick="startReportForEvent(${e.id})">
+          <button class="btn btn-primary font-roboto" style="background: #d97706; border-color: #b45309; padding: 0.4rem 0.75rem; font-size: 0.8rem; width: 100%;" onclick="startReportForEvent(${e.id})">
             <i class="ph ph-file-arrow-up"></i> File Report Now
           </button>
         </div>
