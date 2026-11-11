@@ -102,7 +102,7 @@
             <div class="table-section">
               
               <!-- Tabs & Action Bar: Unified full-width baseline with seamless button placement -->
-              <div class="tab-controls-wrapper" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 0 1.25rem 0 0; background: #ffffff; margin-bottom: 0;">
+              <div class="tab-controls-wrapper" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 0 1.25rem 0 0; background: var(--white, #ffffff); margin-bottom: 0;">
                 <div class="tabs-container font-roboto" style="display: flex; gap: 0.5rem; padding: 0 1.25rem; border-bottom: none; margin-bottom: 0; overflow-x: auto; flex: 1;">
                   <button class="tab-btn" onclick="switchAccountTab('all', this)"><i class="ph ph-users"></i> All Accounts</button>
                   <button class="tab-btn active" onclick="switchAccountTab('pending', this)"><i class="ph ph-clock"></i> Pending Requests</button>

@@ -310,7 +310,7 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
             <div>
               <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
-                <h1 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0;" class="font-roboto">System Settings</h1>
+                <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-main, #0f172a); margin: 0;" class="font-roboto">System Settings</h1>
                 <span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.72rem; padding: 2px 8px;">
                   <?= htmlspecialchars($user_position) ?>
                 </span>

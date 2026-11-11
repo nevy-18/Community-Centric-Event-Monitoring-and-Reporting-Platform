@@ -499,3 +499,254 @@ html.dark-theme .login-theme-toggle {
   border-color: #334155 !important;
   color: #f8fafc !important;
 }
+
+/* ============================================================
+   11. UNIVERSAL TITLE, HEADING & TEXT VISIBILITY (DARK THEME)
+   Guarantees high-contrast visibility for all titles and labels
+   ============================================================ */
+
+/* All Standard Headings */
+html.dark-theme h1,
+body.dark-theme h1,
+html.dark-theme h2,
+body.dark-theme h2,
+html.dark-theme h3,
+body.dark-theme h3,
+html.dark-theme h4,
+body.dark-theme h4,
+html.dark-theme h5,
+body.dark-theme h5,
+html.dark-theme h6,
+body.dark-theme h6 {
+  color: #f8fafc !important;
+}
+
+/* Page Header Titles across National and Chapter Portals */
+html.dark-theme .page-header h1,
+body.dark-theme .page-header h1,
+html.dark-theme .page-header h2,
+body.dark-theme .page-header h2,
+html.dark-theme .header-title-group h1,
+body.dark-theme .header-title-group h1,
+html.dark-theme .header-title-group h2,
+body.dark-theme .header-title-group h2,
+html.dark-theme #chapter-portal-title,
+body.dark-theme #chapter-portal-title {
+  color: #f8fafc !important;
+  font-weight: 800 !important;
+}
+
+html.dark-theme .page-header p,
+body.dark-theme .page-header p,
+html.dark-theme .header-title-group p,
+body.dark-theme .header-title-group p {
+  color: #94a3b8 !important;
+}
+
+/* Section & Table Headers */
+html.dark-theme .table-header h2,
+body.dark-theme .table-header h2,
+html.dark-theme .table-header h3,
+body.dark-theme .table-header h3,
+html.dark-theme .table-header h4,
+body.dark-theme .table-header h4,
+html.dark-theme .review-panel-title,
+body.dark-theme .review-panel-title {
+  color: #f8fafc !important;
+  font-weight: 800 !important;
+}
+
+html.dark-theme .table-header p,
+body.dark-theme .table-header p {
+  color: #94a3b8 !important;
+}
+
+/* Metric Cards & Number Indicators */
+html.dark-theme .metric-card,
+body.dark-theme .metric-card {
+  background: #111a2e !important;
+  border-color: #1e293b !important;
+}
+
+html.dark-theme .metric-title,
+body.dark-theme .metric-title,
+html.dark-theme h5.metric-title,
+body.dark-theme h5.metric-title {
+  color: #60a5fa !important;
+  font-weight: 700 !important;
+}
+
+html.dark-theme .metric-value,
+body.dark-theme .metric-value,
+html.dark-theme .stat-value,
+body.dark-theme .stat-value {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+html.dark-theme .metric-sub,
+body.dark-theme .metric-sub {
+  color: #94a3b8 !important;
+}
+
+/* Settings Workspace Headings & Card Elements */
+html.dark-theme .settings-card,
+body.dark-theme .settings-card {
+  background: #111a2e !important;
+  border-color: #1e293b !important;
+}
+
+html.dark-theme .settings-card-header h3,
+body.dark-theme .settings-card-header h3,
+html.dark-theme .settings-card h3,
+body.dark-theme .settings-card h3,
+html.dark-theme .settings-card h4,
+body.dark-theme .settings-card h4,
+html.dark-theme #previewCardTitle,
+body.dark-theme #previewCardTitle,
+html.dark-theme #logoStatusHeading,
+body.dark-theme #logoStatusHeading {
+  color: #f8fafc !important;
+}
+
+html.dark-theme .settings-card label,
+body.dark-theme .settings-card label,
+html.dark-theme .settings-card strong,
+body.dark-theme .settings-card strong {
+  color: #e2e8f0 !important;
+}
+
+html.dark-theme #previewCardInner,
+body.dark-theme #previewCardInner,
+html.dark-theme #logoDisplayContainer,
+body.dark-theme #logoDisplayContainer {
+  background: #0d1527 !important;
+  border-color: #1e293b !important;
+}
+
+/* Tabs & Toolbar Strips */
+html.dark-theme .tab-controls-wrapper,
+body.dark-theme .tab-controls-wrapper {
+  background: #111a2e !important;
+  border-color: #1e293b !important;
+}
+
+html.dark-theme .tabs-container,
+body.dark-theme .tabs-container {
+  background: transparent !important;
+  border-color: #1e293b !important;
+}
+
+html.dark-theme .tab-btn,
+body.dark-theme .tab-btn {
+  color: #94a3b8 !important;
+}
+
+html.dark-theme .tab-btn:hover,
+body.dark-theme .tab-btn:hover {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark-theme .tab-btn.active,
+body.dark-theme .tab-btn.active {
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+/* Modal Headings & Pop-up Titles */
+html.dark-theme .modal-header h2,
+body.dark-theme .modal-header h2,
+html.dark-theme .modal-header h3,
+body.dark-theme .modal-header h3,
+html.dark-theme .modal-header h4,
+body.dark-theme .modal-header h4,
+html.dark-theme .modal-card-title,
+body.dark-theme .modal-card-title,
+html.dark-theme #modal-announcement-title,
+body.dark-theme #modal-announcement-title,
+html.dark-theme #ch-modal-title,
+body.dark-theme #ch-modal-title {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+html.dark-theme .modal-body-scroll,
+body.dark-theme .modal-body-scroll {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+/* Table Header Titles & Cell Bold Names */
+html.dark-theme table th,
+body.dark-theme table th {
+  background: #152037 !important;
+  color: #cbd5e1 !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid #1e293b !important;
+}
+
+html.dark-theme table td strong,
+body.dark-theme table td strong,
+html.dark-theme table td .dash-text-truncate,
+body.dark-theme table td .dash-text-truncate,
+html.dark-theme table td span.font-roboto[style*="font-weight: 700"],
+body.dark-theme table td span.font-roboto[style*="font-weight:700"] {
+  color: #f8fafc !important;
+}
+
+/* Universal Dark Text Inversion for Non-Print Elements */
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #0f172a"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #0f172a"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color:#0f172a"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color:#0f172a"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #0F172A"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #0F172A"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: rgb(15, 23, 42)"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: rgb(15, 23, 42)"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #1a2f63"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #1a2f63"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #1e3a8a"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #1e3a8a"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #1e293b"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #1e293b"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #17263a"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #17263a"] {
+  color: #f8fafc !important;
+}
+
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #64748b"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #64748b"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #475569"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #475569"],
+html.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #334155"],
+body.dark-theme :not(.print-document-sheet):not(.print-document-sheet *)[style*="color: #334155"] {
+  color: #94a3b8 !important;
+}
+
+/* Strict Preservation of Soft Copy / PDF Paper Preview */
+html.dark-theme .print-document-sheet,
+body.dark-theme .print-document-sheet,
+html.dark-theme #printableProposalDossier,
+body.dark-theme #printableProposalDossier,
+html.dark-theme #printableReportDocument,
+body.dark-theme #printableReportDocument {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.dark-theme .print-document-sheet h1,
+html.dark-theme .print-document-sheet h2,
+html.dark-theme .print-document-sheet h3,
+html.dark-theme .print-document-sheet h4,
+html.dark-theme .print-document-sheet td,
+html.dark-theme .print-document-sheet strong,
+html.dark-theme .print-document-sheet span {
+  color: #0f172a !important;
+}
+
+html.dark-theme .print-document-sheet th {
+  background: #1a2f63 !important;
+  color: #ffffff !important;
+}

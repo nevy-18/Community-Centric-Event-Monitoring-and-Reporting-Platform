@@ -227,7 +227,7 @@
             <div class="header-icon"><i class="ph-fill ph-shield-check"></i></div>
             <div>
               <div style="display: flex; align-items: center; gap: 0.65rem;">
-                <h1 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 800;">National Reports</h1>
+                <h1 class="font-roboto" style="margin: 0; color: var(--text-main, #0f172a); font-weight: 800;">National Reports</h1>
                 <span class="portal-indicator national"><i class="ph-fill ph-shield-check"></i> National Admin Portal</span>
               </div>
               <p class="font-roboto" style="margin-top: 0.25rem;">Review chapter-submitted dossiers, inspect attendee turnouts and thresholds, verify digital e-signatures, and print official documents.</p>

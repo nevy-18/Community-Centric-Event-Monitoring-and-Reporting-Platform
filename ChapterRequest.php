@@ -24,7 +24,7 @@
                 <div class="page-header flex-between" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
                     <div>
                         <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.4rem;">
-                            <h1 class="font-roboto" style="margin: 0; color: #0f172a; font-weight: 800;">Chapter Poster Requests</h1>
+                            <h1 class="font-roboto" style="margin: 0; color: var(--text-main, #0f172a); font-weight: 800;">Chapter Poster Requests</h1>
                             <span class="portal-indicator chapter"><i class="ph-fill ph-buildings"></i> Chapter Branch Portal</span>
                         </div>
                         <p style="color: var(--text-muted); margin: 0;">Request official publicity posters and download approved promotional media for your chapter's events.</p>
