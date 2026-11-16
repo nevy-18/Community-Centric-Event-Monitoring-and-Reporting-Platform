@@ -8,10 +8,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#122b4a" />
   <title>YTR | Sign in</title>
-    <link rel="stylesheet" href="assets/style.css?v=20261103" />
-  <link rel="stylesheet" href="assets/dark-mode.css?v=20261111" />
+  <link rel="stylesheet" href="assets/style.css?v=<?= time() ?>" />
+  <link rel="stylesheet" href="assets/dark-mode.css?v=<?= time() ?>" />
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script>
+    // 1. Immediate Theme Pre-render Initialization (Zero FOUC)
     (function() {
       try {
         const savedTheme = localStorage.getItem('ytr_theme') || (document.cookie.match(/(?:^|;\s*)ytr_theme=([^;]+)/) || [])[1] || 'light';
@@ -19,30 +20,96 @@
           document.documentElement.classList.add('dark-theme');
           if (document.body) document.body.classList.add('dark-theme');
         }
-        const customLogo = localStorage.getItem('ytr_custom_logo');
-        if (customLogo) {
-                // Check for session timeout notice in URL
-      (function() {
-        try {
-          const url = new URL(window.location.href);
-          if (url.searchParams.get('timeout') === '1') {
-            const mins = url.searchParams.get('mins') || '30';
-            const alertBox = document.getElementById('sessionTimeoutAlert');
-            const alertText = document.getElementById('sessionTimeoutAlertText');
-            if (alertBox && alertText) {
-              alertText.textContent = `Your session expired after ${mins} minutes of inactivity. Please sign in again.`;
-              alertBox.style.display = 'flex';
-            }
-          }
-        } catch(e) {}
-      })();
-      document.addEventListener('DOMContentLoaded', function() {
-            const l = document.getElementById('LOGO');
-            if (l) l.src = customLogo;
-          });
-        }
       } catch(e) {}
     })();
+
+    // 2. Global Login Theme Functions
+    window.updateLoginThemeIcon = function() {
+      const icon = document.getElementById('loginThemeIcon');
+      const toggleBtn = document.getElementById('loginThemeToggle');
+      const isDark = document.documentElement.classList.contains('dark-theme');
+      if (icon) {
+        if (isDark) {
+          icon.className = 'ph ph-sun';
+          if (toggleBtn) toggleBtn.setAttribute('title', 'Switch to Light Mode');
+        } else {
+          icon.className = 'ph ph-moon';
+          if (toggleBtn) toggleBtn.setAttribute('title', 'Switch to Dark Mode');
+        }
+      }
+    };
+
+    window.setYTRLoginTheme = function(themeName) {
+      if (themeName === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+        if (document.body) document.body.classList.add('dark-theme');
+        localStorage.setItem('ytr_theme', 'dark');
+        document.cookie = "ytr_theme=dark; path=/; max-age=" + (365*24*60*60);
+      } else if (themeName === 'light') {
+        document.documentElement.classList.remove('dark-theme');
+        if (document.body) document.body.classList.remove('dark-theme');
+        localStorage.setItem('ytr_theme', 'light');
+        document.cookie = "ytr_theme=light; path=/; max-age=" + (365*24*60*60);
+      } else { // system
+        localStorage.setItem('ytr_theme', 'system');
+        document.cookie = "ytr_theme=system; path=/; max-age=" + (365*24*60*60);
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          document.documentElement.classList.add('dark-theme');
+          if (document.body) document.body.classList.add('dark-theme');
+        } else {
+          document.documentElement.classList.remove('dark-theme');
+          if (document.body) document.body.classList.remove('dark-theme');
+        }
+      }
+      window.updateLoginThemeIcon();
+    };
+
+    window.toggleYTRLoginTheme = function(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const isCurrentlyDark = document.documentElement.classList.contains('dark-theme');
+      const nextTheme = isCurrentlyDark ? 'light' : 'dark';
+      window.setYTRLoginTheme(nextTheme);
+    };
+
+    // Global aliases for full cross-portal compatibility
+    window.toggleYTRTheme = window.toggleYTRLoginTheme;
+    window.setYTRTheme = window.setYTRLoginTheme;
+
+    // 3. Document Ready Initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sync toggle icon immediately
+      window.updateLoginThemeIcon();
+
+      // Bind button click listener directly
+      const themeBtn = document.getElementById('loginThemeToggle');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', window.toggleYTRLoginTheme);
+      }
+
+      // Check for session timeout notice in URL (?timeout=1)
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('timeout') === '1') {
+          const mins = url.searchParams.get('mins') || '30';
+          const alertBox = document.getElementById('sessionTimeoutAlert');
+          const alertText = document.getElementById('sessionTimeoutAlertText');
+          if (alertBox && alertText) {
+            alertText.textContent = `Your session expired after ${mins} minutes of inactivity. Please sign in again.`;
+            alertBox.style.display = 'flex';
+          }
+        }
+      } catch(e) {}
+
+      // Apply custom logo if configured
+      try {
+        const customLogo = localStorage.getItem('ytr_custom_logo');
+        if (customLogo) {
+          const l = document.getElementById('LOGO');
+          if (l) l.src = customLogo;
+        }
+      } catch(e) {}
+    });
   </script>
     <script>
       // Clear previous session when returning to login page
@@ -75,7 +142,7 @@
 <body>
 
     <main class="page-shell">
-    <button id="loginThemeToggle" class="login-theme-toggle" onclick="toggleYTRLoginTheme()" title="Toggle Dark/Light Mode" style="position: fixed; top: 1.25rem; right: 1.25rem; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.8); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569; box-shadow: 0 4px 12px rgba(0,0,0,0.12); transition: all 0.2s ease; z-index: 9999;">
+    <button id="loginThemeToggle" class="login-theme-toggle" onclick="toggleYTRLoginTheme(event)" title="Toggle Dark/Light Mode" style="position: fixed; top: 1.25rem; right: 1.25rem; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.8); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569; box-shadow: 0 4px 12px rgba(0,0,0,0.12); transition: all 0.2s ease; z-index: 9999;">
       <i id="loginThemeIcon" class="ph ph-moon" style="font-size: 1.25rem;"></i>
     </button>
 

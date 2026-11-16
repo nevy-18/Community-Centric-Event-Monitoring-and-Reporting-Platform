@@ -433,3 +433,34 @@ const loginTab = document.getElementById('loginTab');
         btnSubmitForgot.style.opacity = '1';
       }
     });
+
+// ==========================================
+// Theme Toggler Support on Login Page
+// ==========================================
+if (typeof window !== 'undefined') {
+  if (!window.toggleYTRLoginTheme) {
+    window.toggleYTRLoginTheme = function(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const isDark = document.documentElement.classList.contains('dark-theme');
+      const nextTheme = isDark ? 'light' : 'dark';
+      if (window.setYTRLoginTheme) {
+        window.setYTRLoginTheme(nextTheme);
+      } else {
+        if (nextTheme === 'dark') {
+          document.documentElement.classList.add('dark-theme');
+          if (document.body) document.body.classList.add('dark-theme');
+          localStorage.setItem('ytr_theme', 'dark');
+          document.cookie = "ytr_theme=dark; path=/; max-age=" + (365*24*60*60);
+        } else {
+          document.documentElement.classList.remove('dark-theme');
+          if (document.body) document.body.classList.remove('dark-theme');
+          localStorage.setItem('ytr_theme', 'light');
+          document.cookie = "ytr_theme=light; path=/; max-age=" + (365*24*60*60);
+        }
+        if (window.updateLoginThemeIcon) window.updateLoginThemeIcon();
+      }
+    };
+  }
+  window.toggleYTRTheme = window.toggleYTRLoginTheme;
+  if (window.updateLoginThemeIcon) window.updateLoginThemeIcon();
+}

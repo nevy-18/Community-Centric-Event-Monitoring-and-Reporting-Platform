@@ -495,10 +495,27 @@ body.dark-theme .auth-modal-title {
   color: #f8fafc !important;
 }
 
-html.dark-theme .login-theme-toggle {
+html.dark-theme .login-theme-toggle,
+body.dark-theme .login-theme-toggle {
   background: #1e293b !important;
   border-color: #334155 !important;
-  color: #f8fafc !important;
+  color: #facc15 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+}
+
+html.dark-theme .login-theme-toggle:hover,
+body.dark-theme .login-theme-toggle:hover {
+  background: #334155 !important;
+  color: #fef08a !important;
+  border-color: #475569 !important;
+  transform: scale(1.05);
+}
+
+.login-theme-toggle:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  transform: scale(1.05);
 }
 
 /* ============================================================
