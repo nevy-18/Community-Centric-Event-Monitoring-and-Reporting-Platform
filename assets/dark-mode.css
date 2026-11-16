@@ -18,6 +18,16 @@ body.dark-theme {
   --text-muted: #94a3b8 !important;
   --border: #1e293b !important;
   --border-light: #334155 !important;
+  /* Map style.css custom properties to dark theme */
+  --panel: #111a2e !important;
+  --page: #090d16 !important;
+  --ink: #f8fafc !important;
+  --muted: #94a3b8 !important;
+  --line: #1e293b !important;
+  --navy: #60a5fa !important;
+  --navy-deep: #1e293b !important;
+  --blue-soft: #1e293b !important;
+  --shadow: 0 24px 70px rgba(0, 0, 0, .6) !important;
   
   background-color: #090d16 !important;
   color: #f8fafc !important;
@@ -389,6 +399,12 @@ body.dark-theme ::-webkit-scrollbar-thumb:hover {
 /* ============================================================
    10. LOGIN & AUTHENTICATION SCREENS (login.php)
    ============================================================ */
+
+html.dark-theme .brand-panel,
+body.dark-theme .brand-panel {
+  background: linear-gradient(145deg, #090e18 0%, #0d1627 55%, #060910 100%) !important;
+}
+
 html.dark-theme .page-shell,
 body.dark-theme .page-shell {
   background: #090d16 !important;

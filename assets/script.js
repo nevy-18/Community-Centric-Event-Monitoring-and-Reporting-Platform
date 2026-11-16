@@ -438,9 +438,17 @@ const loginTab = document.getElementById('loginTab');
 // Theme Toggler Support on Login Page
 // ==========================================
 if (typeof window !== 'undefined') {
+  let _fbLoginThemeBusy = false;
   if (!window.toggleYTRLoginTheme) {
     window.toggleYTRLoginTheme = function(e) {
-      if (e && e.preventDefault) e.preventDefault();
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
+      if (_fbLoginThemeBusy) return;
+      _fbLoginThemeBusy = true;
+      setTimeout(function() { _fbLoginThemeBusy = false; }, 300);
+
       const isDark = document.documentElement.classList.contains('dark-theme');
       const nextTheme = isDark ? 'light' : 'dark';
       if (window.setYTRLoginTheme) {
@@ -449,12 +457,12 @@ if (typeof window !== 'undefined') {
         if (nextTheme === 'dark') {
           document.documentElement.classList.add('dark-theme');
           if (document.body) document.body.classList.add('dark-theme');
-          localStorage.setItem('ytr_theme', 'dark');
+          try { localStorage.setItem('ytr_theme', 'dark'); } catch(err) {}
           document.cookie = "ytr_theme=dark; path=/; max-age=" + (365*24*60*60);
         } else {
           document.documentElement.classList.remove('dark-theme');
           if (document.body) document.body.classList.remove('dark-theme');
-          localStorage.setItem('ytr_theme', 'light');
+          try { localStorage.setItem('ytr_theme', 'light'); } catch(err) {}
           document.cookie = "ytr_theme=light; path=/; max-age=" + (365*24*60*60);
         }
         if (window.updateLoginThemeIcon) window.updateLoginThemeIcon();

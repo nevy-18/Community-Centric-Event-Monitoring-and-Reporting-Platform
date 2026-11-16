@@ -1,3 +1,8 @@
+<?php
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -23,7 +28,7 @@
       } catch(e) {}
     })();
 
-    // 2. Global Login Theme Functions
+    // 2. Global Login Theme Functions with Anti-Double-Firing Debounce Guard
     window.updateLoginThemeIcon = function() {
       const icon = document.getElementById('loginThemeIcon');
       const toggleBtn = document.getElementById('loginThemeToggle');
@@ -31,42 +36,56 @@
       if (icon) {
         if (isDark) {
           icon.className = 'ph ph-sun';
-          if (toggleBtn) toggleBtn.setAttribute('title', 'Switch to Light Mode');
+          icon.style.color = '#facc15';
+          if (toggleBtn) {
+            toggleBtn.setAttribute('title', 'Switch to Light Mode');
+            toggleBtn.setAttribute('aria-label', 'Switch to Light Mode');
+            toggleBtn.style.background = '#1e293b';
+            toggleBtn.style.borderColor = '#334155';
+            toggleBtn.style.color = '#facc15';
+            toggleBtn.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.5)';
+          }
         } else {
           icon.className = 'ph ph-moon';
-          if (toggleBtn) toggleBtn.setAttribute('title', 'Switch to Dark Mode');
+          icon.style.color = '#475569';
+          if (toggleBtn) {
+            toggleBtn.setAttribute('title', 'Switch to Dark Mode');
+            toggleBtn.setAttribute('aria-label', 'Switch to Dark Mode');
+            toggleBtn.style.background = 'rgba(255, 255, 255, 0.9)';
+            toggleBtn.style.borderColor = 'rgba(226, 232, 240, 0.85)';
+            toggleBtn.style.color = '#475569';
+            toggleBtn.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)';
+          }
         }
       }
     };
 
     window.setYTRLoginTheme = function(themeName) {
-      if (themeName === 'dark') {
+      const isDark = (themeName === 'dark') || (themeName === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
         document.documentElement.classList.add('dark-theme');
         if (document.body) document.body.classList.add('dark-theme');
-        localStorage.setItem('ytr_theme', 'dark');
+        try { localStorage.setItem('ytr_theme', 'dark'); } catch(e) {}
         document.cookie = "ytr_theme=dark; path=/; max-age=" + (365*24*60*60);
-      } else if (themeName === 'light') {
+      } else {
         document.documentElement.classList.remove('dark-theme');
         if (document.body) document.body.classList.remove('dark-theme');
-        localStorage.setItem('ytr_theme', 'light');
+        try { localStorage.setItem('ytr_theme', 'light'); } catch(e) {}
         document.cookie = "ytr_theme=light; path=/; max-age=" + (365*24*60*60);
-      } else { // system
-        localStorage.setItem('ytr_theme', 'system');
-        document.cookie = "ytr_theme=system; path=/; max-age=" + (365*24*60*60);
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (prefersDark) {
-          document.documentElement.classList.add('dark-theme');
-          if (document.body) document.body.classList.add('dark-theme');
-        } else {
-          document.documentElement.classList.remove('dark-theme');
-          if (document.body) document.body.classList.remove('dark-theme');
-        }
       }
       window.updateLoginThemeIcon();
     };
 
+    let _loginThemeBusy = false;
     window.toggleYTRLoginTheme = function(e) {
-      if (e && e.preventDefault) e.preventDefault();
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
+      if (_loginThemeBusy) return;
+      _loginThemeBusy = true;
+      setTimeout(function() { _loginThemeBusy = false; }, 300);
+
       const isCurrentlyDark = document.documentElement.classList.contains('dark-theme');
       const nextTheme = isCurrentlyDark ? 'light' : 'dark';
       window.setYTRLoginTheme(nextTheme);
@@ -80,12 +99,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       // Sync toggle icon immediately
       window.updateLoginThemeIcon();
-
-      // Bind button click listener directly
-      const themeBtn = document.getElementById('loginThemeToggle');
-      if (themeBtn) {
-        themeBtn.addEventListener('click', window.toggleYTRLoginTheme);
-      }
 
       // Check for session timeout notice in URL (?timeout=1)
       try {
@@ -142,8 +155,8 @@
 <body>
 
     <main class="page-shell">
-    <button id="loginThemeToggle" class="login-theme-toggle" onclick="toggleYTRLoginTheme(event)" title="Toggle Dark/Light Mode" style="position: fixed; top: 1.25rem; right: 1.25rem; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.8); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569; box-shadow: 0 4px 12px rgba(0,0,0,0.12); transition: all 0.2s ease; z-index: 9999;">
-      <i id="loginThemeIcon" class="ph ph-moon" style="font-size: 1.25rem;"></i>
+    <button id="loginThemeToggle" class="login-theme-toggle" type="button" onclick="toggleYTRLoginTheme(event)" title="Toggle Dark/Light Mode" aria-label="Toggle Dark/Light Mode" style="position: fixed; top: 1.25rem; right: 1.25rem; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; z-index: 9999; border: 1px solid rgba(226,232,240,0.85); background: rgba(255,255,255,0.9); color: #475569; box-shadow: 0 4px 12px rgba(0,0,0,0.12);">
+      <i id="loginThemeIcon" class="ph ph-moon" style="font-size: 1.25rem; pointer-events: none;"></i>
     </button>
 
     <aside class="brand-panel" aria-label="Youth on the Rock introduction">
