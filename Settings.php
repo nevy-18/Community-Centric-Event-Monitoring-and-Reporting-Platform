@@ -754,7 +754,7 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
                     <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: #0f172a; font-size: 0.875rem;">
                       <i class="ph-bold ph-database" style="color: #0284c7;"></i> Cloud Managed MySQL
                     </div>
-                    <span id="healthDbBadge" class="badge approved" style="font-size: 0.65rem;">CONNECTED</span>
+                    <span id="healthDbBadge" class="badge" style="font-size: 0.65rem; background:#f1f5f9; color:#64748b;">CHECKING...</span>
                   </div>
                   <p style="font-size: 0.75rem; color: #64748b; margin: 0 0 0.5rem 0;">Aiven Cloud Managed High-Availability Cluster.</p>
                   <small style="color: #334155; font-family: monospace; font-size: 0.72rem; display: block; word-break: break-all;">
@@ -768,7 +768,7 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
                     <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: #0f172a; font-size: 0.875rem;">
                       <i class="ph-bold ph-brackets-curly" style="color: #16a34a;"></i> Flask API Engine
                     </div>
-                    <span id="healthApiBadge" class="badge approved" style="font-size: 0.65rem;">OPERATIONAL</span>
+                    <span id="healthApiBadge" class="badge" style="font-size: 0.65rem; background:#f1f5f9; color:#64748b;">CHECKING...</span>
                   </div>
                   <p style="font-size: 0.75rem; color: #64748b; margin: 0 0 0.5rem 0;">Python 3.x WSGI Microservice (:5000) reverse-proxied via Apache.</p>
                   <small style="color: #334155; font-family: monospace; font-size: 0.72rem; display: block;" id="healthServerTime">
@@ -782,7 +782,7 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
                     <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: #0f172a; font-size: 0.875rem;">
                       <i class="ph-bold ph-hard-drives" style="color: #d97706;"></i> Media &amp; Upload Storage
                     </div>
-                    <span class="badge approved" style="font-size: 0.65rem;">WRITABLE</span>
+                    <span id="healthStorageBadge" class="badge" style="font-size: 0.65rem; background:#f1f5f9; color:#64748b;">CHECKING...</span>
                   </div>
                   <p style="font-size: 0.75rem; color: #64748b; margin: 0 0 0.5rem 0;">Persistent file ledger storing digital signatures, attendance sheets, and proposals.</p>
                   <small style="color: #334155; font-family: monospace; font-size: 0.72rem; display: block;">
@@ -1058,6 +1058,9 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       if (tabName === 'executive') {
         loadExecutiveSummaryStats();
         loadExecutiveArchivesList();
+      }
+      if (tabName === 'diagnostics') {
+        checkSystemHealth();
       }
     }
 
@@ -1460,18 +1463,148 @@ if (!$is_chapter && (in_array(strtolower(trim($user_position)), $ceo_titles) || 
       }
     }
 
+    // ==========================================
+    // HEALTH CHECK HELPERS
+    // ==========================================
+    function _setBadge(id, text, type) {
+      // type: 'ok' | 'error' | 'warn' | 'pending'
+      const el = document.getElementById(id);
+      if (!el) return;
+      const styles = {
+        ok:      { bg: '#ecfdf5', color: '#065f46', border: '#6ee7b7' },
+        error:   { bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' },
+        warn:    { bg: '#fffbeb', color: '#92400e', border: '#fde68a' },
+        pending: { bg: '#f1f5f9', color: '#64748b', border: '#e2e8f0' }
+      };
+      const s = styles[type] || styles.pending;
+      el.textContent = text;
+      el.style.background = s.bg;
+      el.style.color = s.color;
+      el.style.border = `1px solid ${s.border}`;
+    }
+
     async function checkSystemHealth() {
+      _setBadge('healthDbBadge',      'CHECKING...', 'pending');
+      _setBadge('healthApiBadge',     'CHECKING...', 'pending');
+      _setBadge('healthStorageBadge', 'CHECKING...', 'pending');
+      const timeEl = document.getElementById('healthServerTime');
+      if (timeEl) timeEl.textContent = 'Contacting API...';
+
       try {
         const res = await YTR_API.system.getHealth();
+
+        // — API badge
+        if (res.ok === false && (!res.status || res.status === 0)) {
+          _setBadge('healthApiBadge', 'UNREACHABLE', 'error');
+          _setBadge('healthDbBadge',  'UNKNOWN',     'warn');
+          _setBadge('healthStorageBadge', 'UNKNOWN', 'warn');
+          if (timeEl) timeEl.textContent = 'API offline or unreachable.';
+          return;
+        }
+
+        // API responded
+        _setBadge('healthApiBadge', 'OPERATIONAL', 'ok');
+
+        const d = res.data || {};
+
+        // — Server clock
+        if (timeEl && d.server_time) {
+          timeEl.textContent = 'UTC: ' + d.server_time.replace('T', ' ').substring(0, 19);
+        }
+
+        // — Database badge
+        const db = d.database || {};
+        if (db.status === 'connected') {
+          const tableInfo = db.tables_count != null ? ' · ' + db.tables_count + ' tables' : '';
+          _setBadge('healthDbBadge', 'CONNECTED' + tableInfo, 'ok');
+        } else if (res.status === 'error' || res.httpStatus >= 500) {
+          // Health endpoint itself returned an error — DB is likely down
+          _setBadge('healthDbBadge', 'DISCONNECTED', 'error');
+        } else {
+          _setBadge('healthDbBadge', 'UNKNOWN', 'warn');
+        }
+
+        // — Storage badge (derived from API availability; a full check would need a separate endpoint)
+        _setBadge('healthStorageBadge', 'WRITABLE', 'ok');
+
+      } catch (err) {
+        _setBadge('healthApiBadge',     'ERROR',   'error');
+        _setBadge('healthDbBadge',      'UNKNOWN', 'warn');
+        _setBadge('healthStorageBadge', 'UNKNOWN', 'warn');
+        if (timeEl) timeEl.textContent = 'Error: ' + (err.message || 'Unknown');
+        console.warn('Health check failed:', err);
+      }
+    }
+
+    // ==========================================
+    // EXECUTIVE SUMMARY STATS (CEO TAB)
+    // ==========================================
+    async function loadExecutiveSummaryStats() {
+      const ids = ['execStatEvents','execStatRequests','execStatReports','execStatUsers','execStatFiles'];
+      ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '…'; });
+      try {
+        const res = await YTR_API.system.getSummary();
         if (res.status === 'success' && res.data) {
-          const d = res.data;
-          const timeEl = document.getElementById('healthServerTime');
-          if (timeEl && d.server_time) {
-            timeEl.textContent = 'UTC: ' + d.server_time.replace('T', ' ').substring(0, 19);
-          }
+          const c = res.data.table_counts || {};
+          const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val != null ? val : '--'; };
+          set('execStatEvents',   c.events ?? c.event_proposals ?? '--');
+          set('execStatRequests', c.poster_requests ?? '--');
+          set('execStatReports',  c.event_reports ?? '--');
+          set('execStatUsers',    c.users ?? '--');
+          set('execStatFiles',    res.data.uploaded_files_count ?? '--');
+        } else {
+          ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '--'; });
         }
       } catch (err) {
-        console.warn('Health check unreachable:', err);
+        ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '!'; });
+        console.warn('Failed to load executive stats:', err);
+      }
+    }
+
+    // ==========================================
+    // EXECUTIVE ARCHIVES LIST (CEO TAB)
+    // ==========================================
+    async function loadExecutiveArchivesList() {
+      const container = document.getElementById('execArchivesListContainer');
+      if (!container) return;
+      container.innerHTML = '<div style="text-align:center;padding:2rem;color:#64748b;"><i class="ph ph-spinner-gap ph-spin" style="font-size:1.5rem;"></i><p style="margin-top:0.5rem;font-size:0.8rem;">Loading archived snapshots...</p></div>';
+      try {
+        const res = await YTR_API.system.getArchives();
+        if (res.status === 'success' && Array.isArray(res.data) && res.data.length > 0) {
+          container.innerHTML = res.data.map(batch => `
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem 1rem;margin-bottom:0.65rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;background:#f8fafc;">
+              <div>
+                <strong style="font-size:0.82rem;color:#0f172a;display:block;">${batch.batch_id || 'Archive'}</strong>
+                <span style="font-size:0.72rem;color:#64748b;">${batch.created_at ? batch.created_at.substring(0,19).replace('T',' ') : ''} · ${batch.total_records ?? '?'} records</span>
+              </div>
+              <button type="button" class="btn btn-outline btn-sm font-roboto" onclick="restoreArchiveBatch('${batch.batch_id}')" style="font-size:0.75rem;color:#0284c7;border-color:#bae6fd;">
+                <i class="ph-bold ph-arrow-counter-clockwise"></i> Restore
+              </button>
+            </div>`).join('');
+        } else if (res.status === 'success') {
+          container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#64748b;font-size:0.82rem;"><i class="ph ph-archive" style="font-size:1.75rem;display:block;margin-bottom:0.5rem;"></i>No archived snapshots found.</div>';
+        } else {
+          container.innerHTML = '<div style="color:#dc2626;font-size:0.82rem;padding:1rem;">Failed to load archives: ' + (res.message || 'Unknown error') + '</div>';
+        }
+      } catch (err) {
+        container.innerHTML = '<div style="color:#dc2626;font-size:0.82rem;padding:1rem;">Error loading archives: ' + (err.message || 'Network error') + '</div>';
+        console.warn('Failed to load executive archives:', err);
+      }
+    }
+
+    async function restoreArchiveBatch(batchId) {
+      if (!confirm('Restore archive batch "' + batchId + '" back into production tables?\n\nThis will NOT delete current live records — it only re-inserts archived data.')) return;
+      try {
+        const res = await YTR_API.system.restoreArchive(batchId);
+        if (res.status === 'success') {
+          alert('Archive batch restored successfully.');
+          loadExecutiveArchivesList();
+          loadExecutiveSummaryStats();
+        } else {
+          alert('Restore failed: ' + (res.message || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
       }
     }
   </script>
